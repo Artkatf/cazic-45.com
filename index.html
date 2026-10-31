@@ -124,14 +124,21 @@
                 </div>
             </div>
         </div>
-    </div><script>
+    </div>
+    <script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
+        
+        // В win теперь указаны чистые множители ставки (X) для каждого символа
         const symbolsConfig = [
-            { char: '🍑', weight: 12, win: 100 }, { char: '🍏', weight: 9, win: 500 },
-            { char: '🍋', weight: 7, win: 1000 }, { char: '🍓', weight: 5, win: 1500 },
-            { char: '🍇', weight: 4, win: 2000 }, { char: '7️⃣', weight: 3, win: 3000 },
-            { char: '9️⃣', weight: 2, win: 5000 }
+            { char: '🍑', weight: 12, win: 2 },   // персик = ставка х2
+            { char: '🍏', weight: 9, win: 4 },    // слива = ставка х4
+            { char: '🍋', weight: 7, win: 5 },    // лимон = ставка х5
+            { char: '🍓', weight: 5, win: 0 },    // клубника (пока без множителя)
+            { char: '🍇', weight: 4, win: 3 },    // малина = ставка х3
+            { char: '7️⃣', weight: 3, win: 5 },    // семь (1 или 2 шт) = ставка х5
+            { char: '9️⃣', weight: 2, win: 7 }     // девять = ставка х7
         ];
+        
         let pool = [];
         symbolsConfig.forEach(s => { for(let i=0; i<s.weight; i++) pool.push(s.char); });
 
@@ -196,36 +203,49 @@
             setTimeout(() => {
                 let el = document.getElementById(id), ticks = 0;
                 let iv = setInterval(() => {
-                    el.innerHTML = `<div class="symbol-item">${pool[Math.floor(Math.random() * pool.length)]}</div>`;
-                    if (++ticks >= 12) { clearInterval(iv); el.innerHTML = `<div class="symbol-item">${sym}</div>`; if (cb) cb(); }
+                    el.innerHTML = `<div class="symbol-item">${pool[Math.floor(Math.random() * pool.length)]}</div>`;if (++ticks >= 12) { clearInterval(iv); el.innerHTML = `<div class="symbol-item">${sym}</div>`; if (cb) cb(); }
                 }, 80);
             }, delay);
         }
 
+        // Логика расчета динамического выигрыша по множителям
         function evaluate(s1, s2, s3) {
-            state.isSpinning = false; document.getElementById('spin-button').disabled = false;const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
+            state.isSpinning = false; document.getElementById('spin-button').disabled = false;
+            const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
             
+            // 1. Проверка на СУПЕР-ДЖЕКПОТ (Три семерки в ряд = ставка х 1 000 000)
             if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
-                h.innerText = "JACKPOT"; state.balance += 1000000;
-                m.className = "message msg-success"; m.innerText = "JACKPOT! +1 000 000 валюты!";
+                let jackpotWin = state.currentBet * 1000000;
+                h.innerText = "JACKPOT"; 
+                state.balance += jackpotWin;
+                m.className = "message msg-success"; 
+                m.innerText = `JACKPOT!!! Выигрыш: +${jackpotWin.toLocaleString()}!`;
                 updateDisplay();
                 return;
             }
 
+            // 2. Расчет поштучно на основе текущей ставки
             let totalWin = 0;
             [s1, s2, s3].forEach(sym => {
                 const c = symbolsConfig.find(x => x.char === sym);
-                if (c && c.win > 0) totalWin += c.win;
+                if (c && c.win > 0) {
+                    totalWin += (state.currentBet * c.win);
+                }
             });
 
+            // 3. Вывод итогов
             if (totalWin > 0) {
-                h.innerText = "WIN!"; state.balance += totalWin;
-                m.className = "message msg-success"; m.innerText = `+${totalWin}`;
+                h.innerText = "WIN!"; 
+                state.balance += totalWin;
+                m.className = "message msg-success"; 
+                m.innerText = `+${totalWin.toLocaleString()}`;
             } else {
-                h.innerText = "BIG WIN"; m.className = "message msg-error"; m.innerText = "Нет совпадений.";
+                h.innerText = "BIG WIN"; 
+                m.className = "message msg-error"; 
+                m.innerText = "Нет совпадений.";
             }
             updateDisplay();
         }
     </script>
 </body>
-</html>
+</html>       
