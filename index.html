@@ -34,28 +34,7 @@
         .message { margin-top: 15px; font-size: 14px; font-weight: bold; min-height: 20px; }
         .msg-error { color: var(--danger-color); }
         .msg-success { color: #2ecc71; }
-        .game-layout { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 700px; }.slot-machine-container { background: linear-gradient(135deg, #bdc3c7, #2c3e50); border: 12px solid #c0392b; border-radius: 20px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); margin-bottom: 30px; }
-        .machine-header { background-color: #111; border: 4px solid #f1c40f; border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 0 15px #f1c40f; }
-        .machine-header h1 { color: #f1c40f; font-size: 28px; font-weight: 900; letter-spacing: 3px; }
-        .reels-wrapper { background-color: #f39c12; border: 6px solid #d35400; border-radius: 10px; display: flex; justify-content: space-around; padding: 15px 10px; gap: 10px; }
-        .reel-window { background-color: white; width: 30%; height: 120px; border: 4px solid #34495e; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
-        .reel-strip { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
-        .symbol-item { height: 120px; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 55px; }
-        .controls-panel { background-color: var(--card-bg); border: 1px solid #1a2642; border-radius: 12px; padding: 25px; width: 100%; display: flex; flex-direction: column; gap: 20px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
-        .bet-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .bet-group label { color: var(--text-muted); font-size: 14px; }
-        .bet-controls-inner { display: flex; gap: 10px; }
-        .bet-input { margin-bottom: 0; text-align: left; padding-left: 15px; }
-        .confirm-btn { width: auto; white-space: nowrap; background-color: #2980b9; color: white; }
-        .spin-btn { flex: 1; height: 50px; font-size: 20px; text-transform: uppercase; background-color: #27ae60; color: white; }
-        .spin-btn:disabled { background-color: #7f8c8d; cursor: not-allowed; opacity: 0.6; }
-        .payout-table { margin-top: 25px; background-color: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 15px; width: 100%; }
-        .payout-table h4 { color: var(--text-muted); margin-bottom: 10px; text-align: center; font-size: 14px; }
-        .payout-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; font-size: 13px; }
-        .payout-item { background-color: var(--card-bg); padding: 8px; border-radius: 4px; border: 1px solid #1a2642; }
-    </style>
-</head><body>
+        .game-layout { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 700px; }<body>
     <header>
         <div class="logo-area" onclick="showScreen('main-screen')">
             <div class="user-icon">
@@ -121,14 +100,13 @@
                 <div class="payout-table">
                     <h4>Коэффициенты совпадений (3 в ряд)</h4>
                     <div class="payout-grid">
-                        <div class="payout-item">777: JACKPOT (1M)</div>
-                        <div class="payout-item">999: +5000</div>
+                        <div class="payout-item">7️⃣7️⃣7️⃣: JACKPOT (1M)</div>
+                        <div class="payout-item">9️⃣9️⃣9️⃣: +5000</div>
                         <div class="payout-item">🍇 Малина: +2000</div>
                         <div class="payout-item">🍓 Клубника: +1500</div>
                         <div class="payout-item">🍋 Лимон: +1000</div>
                         <div class="payout-item">🍏 Слива: +500</div>
                         <div class="payout-item">🍑 Персик: +100</div>
-                        <div class="payout-item">🍌 Банан: 0</div>
                     </div>
                 </div>
             </div>
@@ -136,10 +114,13 @@
     </div><script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
         const symbolsConfig = [
-            { char: '🍌', weight: 15, win: 0 }, { char: '🍑', weight: 12, win: 100 },
-            { char: '🍏', weight: 9, win: 500 }, { char: '🍋', weight: 7, win: 1000 },
-            { char: '🍓', weight: 5, win: 1500 }, { char: '🍇', weight: 4, win: 2000 },
-            { char: '9', weight: 2, win: 5000 }, { char: '7', weight: 1, win: 3000 }
+            { char: '🍑', weight: 12, win: 100 },
+            { char: '🍏', weight: 9, win: 500 },
+            { char: '🍋', weight: 7, win: 1000 },
+            { char: '🍓', weight: 5, win: 1500 },
+            { char: '🍇', weight: 4, win: 2000 },
+            { char: '7️⃣', weight: 3, win: 3000 },
+            { char: '9️⃣', weight: 2, win: 5000 }
         ];
         let pool = [];
         symbolsConfig.forEach(s => { for(let i=0; i<s.weight; i++) pool.push(s.char); });
@@ -156,6 +137,7 @@
             document.getElementById('promo-input').value = "";
         }
 
+        // Промокоды
         function activatePromo() {
             const input = document.getElementById('promo-input').value.trim();
             const msg = document.getElementById('promo-message');
@@ -165,6 +147,7 @@
             } else { msg.className = "message msg-error"; msg.innerText = "Неверный промокод."; }
         }
 
+        // Проверка ставки
         function confirmBet() {
             const betInput = document.getElementById('bet-input');
             const gameMsg = document.getElementById('game-message');
@@ -209,20 +192,21 @@
                 let interval = setInterval(() => {
                     strip.innerHTML = `<div class="symbol-item">${pool[Math.floor(Math.random() * pool.length)]}</div>`;
                     if (++ticks >= 12) {
-                        clearInterval(interval);
-                        strip.innerHTML = `<div class="symbol-item">${finalSymbol}</div>`;if (callback) callback();
+                        clearInterval(interval);strip.innerHTML = `<div class="symbol-item">${finalSymbol}</div>`;
+                        if (callback) callback();
                     }
                 }, 80);
             }, delay);
         }
 
+        // Подсчет результатов
         function evaluateResult(s1, s2, s3) {
             state.isSpinning = false; document.getElementById('spin-button').disabled = false;
             const statusHeader = document.getElementById('machine-status');
             const gameMsg = document.getElementById('game-message');
 
             if (s1 === s2 && s2 === s3) {
-                if (s1 === '7') {
+                if (s1 === '7️⃣') {
                     statusHeader.innerText = "JACKPOT"; state.balance += 1000000;
                     gameMsg.className = "message msg-success"; gameMsg.innerText = "JACKPOT! +1 000 000 валюты!";
                 } else {
@@ -230,7 +214,7 @@
                     if (config && config.win > 0) {
                         statusHeader.innerText = "WIN!"; state.balance += config.win;
                         gameMsg.className = "message msg-success"; gameMsg.innerText = `Выигрыш: +${config.win}`;
-                    } else { statusHeader.innerText = "BIG WIN"; gameMsg.className = "message"; gameMsg.innerText = "Выигрыш: 0"; }
+                    }
                 }
             } else { statusHeader.innerText = "BIG WIN"; gameMsg.className = "message msg-error"; gameMsg.innerText = "Нет совпадений."; }
             updateBalanceDisplay();
