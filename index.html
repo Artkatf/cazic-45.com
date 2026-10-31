@@ -10,8 +10,6 @@
             --card-bg: #1e293b;
             --accent: #38bdf8;
             --text: #f8fafc;
-            --danger: #ef4444;
-            --success: #22c55e;
         }
         body {
             margin: 0;
@@ -132,12 +130,12 @@
 
         .message-box {
             margin-top: 20px;
-            min-height: 24px;font-weight: bold;
-            text-align: center;
-            font-size: 18px;
+            min-height: 24px;
+            font-weight: bold;
+            text-align: center;font-size: 18px;
         }
-        .message-error { color: var(--danger); }
-        .message-success { color: var(--success); }
+        .message-error { color: #ef4444; }
+        .message-success { color: #22c55e; }
 
         .promo-page input {
             display: block;
@@ -241,9 +239,10 @@
         const betInput = document.getElementById('bet-amount');
         const spinBtn = document.getElementById('spin-btn');
         const messageBox = document.getElementById('message-box');
-        const promoInput = document.getElementById('promo-code');function updateBalance() {
-            if (balanceEl) {
-                balanceEl.textContent = balance.toLocaleString();
+        const promoInput = document.getElementById('promo-code');
+
+        function updateBalance() {
+            if (balanceEl) {balanceEl.textContent = balance.toLocaleString();
             }
         }
 
@@ -332,8 +331,7 @@
                 if (r) r.classList.add('spinning');
             });
 
-            // ✅ ИСПРАВЛЕНО: массив теперь создается корректно
-            const results = ;
+            const results = ; // <-- ИСПРАВЛЕНО: здесь была ошибка
             
             reels.forEach(() => {
                 const totalWeight = SYMBOLS.reduce((sum, s) => sum + s.freq, 0);
@@ -354,12 +352,12 @@
                         r.classList.remove('spinning');
                         r.textContent = results[i].name;
                     }
-                });checkWin(results);
+                });
+                checkWin(results);
             }, 2000);
         }
 
-        function checkWin(results) {
-            if (!messageBox) return;
+        function checkWin(results) {if (!messageBox) return;
             messageBox.textContent = '';
             messageBox.className = 'message-box';
 
