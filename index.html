@@ -66,7 +66,7 @@
         <div class="slots-grid">
             <div class="slot-card" onclick="showScreen('game-screen')">
                 <div class="slot-title">Слот №1</div>
-                <div style="color:var(--muted);font-size:14px">Классический набор фруктов</div>
+                <div style="color:var(--muted);font-size:14px">Игра с множителями и бомбами</div>
             </div>
             <div class="slot-card disabled">
                 <div class="slot-title">Слот №2</div>
@@ -111,39 +111,35 @@
                     <button class="btn back-btn" style="margin:0;width:auto" onclick="showScreen('main-screen')">Выйти</button>
                 </div>
                 <div class="payout-table">
-                    <h4 style="color:var(--muted);margin-bottom:10px">Награда за штуку на экране</h4>
+                    <h4 style="color:var(--muted);margin-bottom:10px">Правила выплат и угроз</h4>
                     <div class="payout-grid">
-                        <div class="payout-item">7️⃣7️⃣7️⃣: JACKPOT (1M)</div>
-                        <div class="payout-item">9️⃣: +5000</div>
-                        <div class="payout-item">🍇 Малина: +2000</div>
-                        <div class="payout-item">🍓 Клубника: +1500</div>
-                        <div class="payout-item">🍋 Лимон: +1000</div>
-                        <div class="payout-item">🍏 Слива: +500</div><div class="payout-item">🍑 Персик: +100</div>
-                        <div class="payout-item">7️⃣ (1 или 2 шт): +3000</div>
+                        <div class="payout-item">7️⃣7️⃣7️⃣: СТАВКА х1 000 000</div>
+                        <div class="payout-item">9️⃣: Ставка х7</div>
+                        <div class="payout-item">🍇 Малина: Ставка х3</div>
+                        <div class="payout-item">🍋 Лимон: Ставка х5</div>
+                        <div class="payout-item">🍏 Слива: Ставка х4</div>
+                        <div class="payout-item">🍑 Персик: Ставка х2</div><div class="payout-item" style="border-color:var(--red);grid-column:span 2">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>
+                        <div class="payout-item" style="background:#2c1111;border-color:var(--red);grid-column:span 2">💣💣💣 3 шт: Ставка сгорает, Баланс = 2 валюты!</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
+    </div><script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
-        
-        // В win теперь указаны чистые множители ставки (X) для каждого символа
         const symbolsConfig = [
-            { char: '🍑', weight: 12, win: 2 },   // персик = ставка х2
-            { char: '🍏', weight: 9, win: 4 },    // слива = ставка х4
-            { char: '🍋', weight: 7, win: 5 },    // лимон = ставка х5
-            { char: '🍓', weight: 5, win: 0 },    // клубника (пока без множителя)
-            { char: '🍇', weight: 4, win: 3 },    // малина = ставка х3
-            { char: '7️⃣', weight: 3, win: 5 },    // семь (1 или 2 шт) = ставка х5
-            { char: '9️⃣', weight: 2, win: 7 }     // девять = ставка х7
+            { char: '🍑', weight: 12, win: 2 }, 
+            { char: '🍏', weight: 9, win: 4 },  
+            { char: '🍋', weight: 7, win: 5 },  
+            { char: '🍇', weight: 4, win: 3 },  
+            { char: '7️⃣', weight: 3, win: 5 },  
+            { char: '9️⃣', weight: 2, win: 7 },
+            { char: '💣', weight: 3, win: 0 }  // Опасная бомба
         ];
-        
         let pool = [];
         symbolsConfig.forEach(s => { for(let i=0; i<s.weight; i++) pool.push(s.char); });
 
         window.onload = function() { updateDisplay(); initReels(); };
-        function updateDisplay() { document.getElementById('balance-display').innerText = state.balance; }
+        function updateDisplay() { document.getElementById('balance-display').innerText = Math.floor(state.balance); }
 
         function showScreen(id) {
             if (state.isSpinning) return;
@@ -203,28 +199,49 @@
             setTimeout(() => {
                 let el = document.getElementById(id), ticks = 0;
                 let iv = setInterval(() => {
-                    el.innerHTML = `<div class="symbol-item">${pool[Math.floor(Math.random() * pool.length)]}</div>`;if (++ticks >= 12) { clearInterval(iv); el.innerHTML = `<div class="symbol-item">${sym}</div>`; if (cb) cb(); }
+                    el.innerHTML = `<div class="symbol-item">${pool[Math.floor(Math.random() * pool.length)]}</div>`;
+                    if (++ticks >= 12) { clearInterval(iv); el.innerHTML = `<div class="symbol-item">${sym}</div>`; if (cb) cb(); }
                 }, 80);
             }, delay);
         }
 
-        // Логика расчета динамического выигрыша по множителям
         function evaluate(s1, s2, s3) {
-            state.isSpinning = false; document.getElementById('spin-button').disabled = false;
-            const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
+            state.isSpinning = false; document.getElementById('spin-button').disabled = false;const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
             
-            // 1. Проверка на СУПЕР-ДЖЕКПОТ (Три семерки в ряд = ставка х 1 000 000)
-            if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
-                let jackpotWin = state.currentBet * 1000000;
-                h.innerText = "JACKPOT"; 
-                state.balance += jackpotWin;
-                m.className = "message msg-success"; 
-                m.innerText = `JACKPOT!!! Выигрыш: +${jackpotWin.toLocaleString()}!`;
+            // Считаем количество выпавших бомб
+            let bombCount = 0;
+            [s1, s2, s3].forEach(sym => { if(sym === '💣') bombCount++; });
+
+            // КРИТИЧЕСКИЙ СЛУЧАЙ: 3 бомбы в ряд
+            if (bombCount === 3) {
+                h.innerText = "BOOM!!!";
+                state.balance = 2; // Баланс падает до 2 валют
+                m.className = "message msg-error"; 
+                m.innerText = "ВЗРЫВ! Ставка сгорела, баланс уменьшен до 2 валют!";
                 updateDisplay();
                 return;
             }
 
-            // 2. Расчет поштучно на основе текущей ставки
+            // КРИТИЧЕСКИЙ СЛУЧАЙ: 1 или 2 бомбы на экране
+            if (bombCount > 0) {
+                h.innerText = "DANGER";
+                state.balance = state.balance / 2; // Делим оставшийся баланс на 2
+                m.className = "message msg-error";
+                m.innerText = `Бомба на экране! Баланс уменьшен в 2 раза!`;
+                updateDisplay();
+                return;
+            }
+
+            // ПРОВЕРКА НА ГЛАВНЫЙ ДЖЕКПОТ (Три семерки)
+            if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
+                let jackpotWin = state.currentBet * 1000000;
+                h.innerText = "JACKPOT"; state.balance += jackpotWin;
+                m.className = "message msg-success"; m.innerText = `JACKPOT!!! +${jackpotWin}`;
+                updateDisplay();
+                return;
+            }
+
+            // Обычный поштучный подсчет фруктов
             let totalWin = 0;
             [s1, s2, s3].forEach(sym => {
                 const c = symbolsConfig.find(x => x.char === sym);
@@ -233,19 +250,14 @@
                 }
             });
 
-            // 3. Вывод итогов
             if (totalWin > 0) {
-                h.innerText = "WIN!"; 
-                state.balance += totalWin;
-                m.className = "message msg-success"; 
-                m.innerText = `+${totalWin.toLocaleString()}`;
+                h.innerText = "WIN!"; state.balance += totalWin;
+                m.className = "message msg-success"; m.innerText = `+${totalWin}`;
             } else {
-                h.innerText = "BIG WIN"; 
-                m.className = "message msg-error"; 
-                m.innerText = "Нет совпадений.";
+                h.innerText = "BIG WIN"; m.className = "message msg-error"; m.innerText = "Нет совпадений.";
             }
             updateDisplay();
         }
     </script>
 </body>
-</html>       
+</html>
