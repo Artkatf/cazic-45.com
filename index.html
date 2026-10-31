@@ -124,16 +124,17 @@
                 </div>
             </div>
         </div>
-    </div><script>
+    </div>
+    <script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
         const symbolsConfig = [
             { char: '🍑', weight: 12, win: 2 }, 
             { char: '🍏', weight: 9, win: 4 },  
             { char: '🍋', weight: 7, win: 5 },  
             { char: '🍇', weight: 4, win: 3 },  
-            { char: '7️⃣', weight: 3, win: 5 },  
-            { char: '9️⃣', weight: 2, win: 7 },
-            { char: '💣', weight: 3, win: 0 }  // Опасная бомба
+            { char: '7️⃣', weight: 5, win: 5 },  
+            { char: '9️⃣', weight: 5, win: 7 },
+            { char: '💣', weight: 8, win: 0 }  // Опасная бомба
         ];
         let pool = [];
         symbolsConfig.forEach(s => { for(let i=0; i<s.weight; i++) pool.push(s.char); });
