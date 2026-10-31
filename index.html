@@ -28,7 +28,7 @@
         .input-field:focus { border-color: var(--green); }
         .btn { background: var(--green); color: #0b111e; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; }
         .back-btn { background: transparent; color: var(--muted); border: 1px solid #1f3154; margin-top: 15px; }
-        .message { margin-top: 15px; font-size: 14px; font-weight: bold; min-height: 20px; }
+        .message { margin-top: 15px; font-size: 18px; font-weight: bold; min-height: 24px; }
         .msg-error { color: var(--red); }
         .msg-success { color: #2ecc71; }
         .slot-machine-container { background: linear-gradient(135deg, #bdc3c7, #2c3e50); border: 12px solid #c0392b; border-radius: 20px; padding: 25px; width: 100%; max-width: 500px; margin-bottom: 30px; }
@@ -111,19 +111,20 @@
                     <button class="btn back-btn" style="margin:0;width:auto" onclick="showScreen('main-screen')">Выйти</button>
                 </div>
                 <div class="payout-table">
-                    <h4 style="color:var(--muted);margin-bottom:10px">Коэффициенты совпадений (3 в ряд)</h4>
+                    <h4 style="color:var(--muted);margin-bottom:10px">Награда за штуку на экране</h4>
                     <div class="payout-grid">
                         <div class="payout-item">7️⃣7️⃣7️⃣: JACKPOT (1M)</div>
-                        <div class="payout-item">9️⃣9️⃣9️⃣: +5000</div>
+                        <div class="payout-item">9️⃣: +5000</div>
                         <div class="payout-item">🍇 Малина: +2000</div>
                         <div class="payout-item">🍓 Клубника: +1500</div>
                         <div class="payout-item">🍋 Лимон: +1000</div>
-                        <div class="payout-item">🍏 Слива: +500</div>
-                        <div class="payout-item">🍑 Персик: +100</div>
+                        <div class="payout-item">🍏 Слива: +500</div><div class="payout-item">🍑 Персик: +100</div>
+                        <div class="payout-item">7️⃣ (1 или 2 шт): +3000</div>
                     </div>
                 </div>
             </div>
-        </div><script>
+        </div>
+    </div><script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
         const symbolsConfig = [
             { char: '🍑', weight: 12, win: 100 }, { char: '🍏', weight: 9, win: 500 },
@@ -203,18 +204,28 @@
 
         function evaluate(s1, s2, s3) {
             state.isSpinning = false; document.getElementById('spin-button').disabled = false;const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
-            if (s1 === s2 && s2 === s3) {
-                if (s1 === '7️⃣') {
-                    h.innerText = "JACKPOT"; state.balance += 1000000;
-                    m.className = "message msg-success"; m.innerText = "JACKPOT! +1 000 000 валюты!";
-                } else {
-                    const c = symbolsConfig.find(x => x.char === s1);
-                    if (c && c.win > 0) { h.innerText = "WIN!"; state.balance += c.win; m.className = "message msg-success"; m.innerText = `Выигрыш: +${c.win}`; }
-                }
-            } else { h.innerText = "BIG WIN"; m.className = "message msg-error"; m.innerText = "Нет совпадений."; }
+            
+            if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
+                h.innerText = "JACKPOT"; state.balance += 1000000;
+                m.className = "message msg-success"; m.innerText = "JACKPOT! +1 000 000 валюты!";
+                updateDisplay();
+                return;
+            }
+
+            let totalWin = 0;
+            [s1, s2, s3].forEach(sym => {
+                const c = symbolsConfig.find(x => x.char === sym);
+                if (c && c.win > 0) totalWin += c.win;
+            });
+
+            if (totalWin > 0) {
+                h.innerText = "WIN!"; state.balance += totalWin;
+                m.className = "message msg-success"; m.innerText = `+${totalWin}`;
+            } else {
+                h.innerText = "BIG WIN"; m.className = "message msg-error"; m.innerText = "Нет совпадений.";
+            }
             updateDisplay();
         }
     </script>
 </body>
 </html>
-    </div>
