@@ -3,416 +3,656 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Казино X</title>
+    <title>CASINO X</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
+            --bg-color: #0b111e;
+            --card-bg: #111a2e;
+            --accent-green: #00ffcc;
+            --text-color: #ffffff;
+            --text-muted: #8fa0be;
+            --danger-color: #ff4a4a;
         }
-        body {
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
         }
-        .header {
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Шапка сайта */
+        header {
+            background-color: var(--card-bg);
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 25px;
-            background-color: var(--card-bg);
-            border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+            border-bottom: 2px solid #1a2642;
         }
-        .balance-box {
-            background-color: #0f172a;
-            border: 1px solid var(--accent);
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: var(--accent);
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #7f8c8d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .user-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
+        }
+
+        .brand-name {
+            font-size: 24px;
             font-weight: bold;
+            color: #2980b9;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+
+        .balance-container {
+            background-color: #0d1726;
+            border: 1px solid #1f3154;
+            padding: 8px 16px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        .balance-box button {
-            background: none;
-            border: none;
-            color: var(--accent);
-            cursor: pointer;
-            font-size: 16px;
             font-weight: bold;
         }
-        .main-menu {
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+
+        .balance-label {
+            color: var(--text-muted);
+            font-size: 14px;
         }
+
+        .balance-value {
+            color: var(--accent-green);
+            font-size: 18px;
+        }
+
+        .plus-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .plus-btn:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Главный контейнер экранов */
+        .screen {
+            display: none;
+            padding: 40px 20px;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ЭКРАН 1: Главная страница */
+        .slots-grid {display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
         .slot-card {
             background-color: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
+            border: 1px solid #1a2642;
+            border-radius: 10px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
         }
+
         .slot-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(56, 189, 248, 0.2);
+            border-color: var(--accent-green);
         }
-        .slot-card h3 { margin: 0 0 10px 0; color: var(--accent); }
-        .slot-card p { margin: 0; opacity: 0.8; }
 
-        .slot-page, .promo-page {
-            display: none;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
+        .slot-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
-        .bet-area {
-            margin-bottom: 20px;
-            text-align: left;
+
+        .slot-card.disabled:hover {
+            transform: none;
+            border-color: #1a2642;
         }
-        .bet-area label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .bet-area input {
+
+        .slot-title {
+            color: var(--accent-green);
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .slot-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* ЭКРАН 2: Страница промокодов */
+        .promo-panel {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #1a2642;
             width: 100%;
-            padding: 10px;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
-        .bet-area button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: var(--accent);
+
+        .promo-panel h2 {
+            margin-bottom: 25px;
+            color: var(--accent-green);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            background-color: #0d1726;
+            border: 1px solid #1f3154;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-green);
+        }
+
+        .btn {
+            background-color: var(--accent-green);
+            color: #0b111e;
             border: none;
-            color: #0f172a;
+            padding: 12px 30px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            width: 100%;
+            transition: opacity 0.2s;
         }
-        
-        .reels-container {
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid #1f3154;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            background-color: #1a2642;
+            color: white;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        .msg-error { color: var(--danger-color); }
+        .msg-success { color: #2ecc71; }
+
+        /* ЭКРАН 3: Игровая зона Слот-машины */
+        .game-layout {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 30px 0;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 700px;
         }
-        .reel {
-            width: 80px;
-            height: 120px;
-            background-color: #334155;
+
+        /* Стилизация самого игрового автомата на основе фото */
+        .slot-machine-container {
+            background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+            border: 12px solid #c0392b;
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7), inset 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .machine-header {
+            background-color: #111;
+            border: 4px solid #f1c40f;
             border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px #f1c40f;
+        }.machine-header h1 {
+            color: #f1c40f;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #f1c40f;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; text-shadow: 0 0 20px #f39c12, 0 0 30px #ff0000; }
+        }
+
+        /* Барабаны */
+        .reels-wrapper {
+            background-color: #f39c12;
+            border: 6px solid #d35400;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 10px;
+            gap: 10px;
+        }
+
+        .reel-window {
+            background-color: white;
+            width: 30%;
+            height: 120px;
+            border: 4px solid #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            color: white;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid var(--accent);
-        }
-        .reel.spinning {
-            animation: spin 0.1s infinite linear;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
         }
 
-        .message-box {
-            margin-top: 20px;
-            min-height: 24px;
-            font-weight: bold;
-            text-align: center;font-size: 18px;
-        }
-        .message-error { color: #ef4444; }
-        .message-success { color: #22c55e; }
-
-        .promo-page input {
-            display: block;
+        .reel-strip {
+            position: absolute;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            max-width: 300px;
-            padding: 10px;
-            margin: 10px auto;
-            background-color: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
+            transition: top 0s ease-in-out;
         }
-        .promo-page button {
-            padding: 10px 20px;
-            background-color: var(--accent);
-            border: none;
-            color: #0f172a;
+
+        .symbol-item {
+            height: 120px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
             font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
         }
 
-        .back-btn, .back-btn-promo {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #334155;
-            border: none;
+        /* Панель управления под автоматом */
+        .controls-panel {
+            background-color: var(--card-bg);
+            border: 1px solid #1a2642;
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .bet-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .bet-group label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .bet-controls-inner {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bet-input {
+            margin-bottom: 0;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .confirm-btn {
+            width: auto;
+            white-space: nowrap;
+            background-color: #2980b9;
             color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        <div class="logo" style="font-weight: bold; color: var(--accent);">CASINO X</div>
-        <div class="balance-box">
-            Баланс: <span id="balance-display">100000</span>
-            <button id="open-promo-btn">+</button>
-        </div>
-    </div>
-
-    <div class="main-menu" id="main-menu">
-        <div class="slot-card" onclick="openSlot(1)">
-            <h3>Слот №1</h3>
-            <p>Классический набор фруктов</p>
-        </div>
-        <div class="slot-card" onclick="openSlot(2)">
-            <h3>Слот №2</h3>
-            <p>Скоро будет доступен</p>
-        </div>
-    </div>
-
-    <div class="slot-page" id="slot-page">
-        <h2 style="text-align: center;">Игровой автомат</h2>
-        <div class="bet-area">
-            <label>Введите сумму ставки:</label>
-            <input type="number" id="bet-amount" placeholder="Например: 1000">
-            <button onclick="confirmBet()">Подтвердить</button>
-        </div>
-        <div class="reels-container">
-            <div class="reel" id="reel-1">?</div>
-            <div class="reel" id="reel-2">?</div>
-            <div class="reel" id="reel-3">?</div>
-        </div>
-        <button onclick="spinReels()" id="spin-btn" disabled style="width: 100%; padding: 15px; font-size: 18px;">КРУТИТЬ</button>
-        <div class="message-box" id="message-box"></div>
-        <button class="back-btn" onclick="goBack()">← Назад в лобби</button>
-    </div>
-
-    <div class="promo-page" id="promo-page">
-        <h2 style="text-align: center;">Промокод</h2>
-        <p style="text-align: center;">Введите промокод для получения бонуса:</p>
-        <input type="text" id="promo-code" placeholder="Например: Pasha">
-        <button onclick="applyPromo()">Активировать</button>
-        <button class="back-btn-promo" onclick="goBack()">← Назад</button>
-    </div>
-
-    <script>
-        let balance = 100000;
-        
-        const SYMBOLS = [
-            { name: 'Персик', val: 100, freq: 15 },
-            { name: 'Слива', val: 500, freq: 12 },
-            { name: 'Лимон', val: 1000, freq: 10 },
-            { name: 'Клубника', val: 1500, freq: 8 },
-            { name: 'Малина', val: 2000, freq: 6 },
-            { name: '9', val: 5000, freq: 4 },
-            { name: '7', val: 3000, freq: 3 },
-        ];
-
-        const balanceEl = document.getElementById('balance-display');
-        const mainMenu = document.getElementById('main-menu');
-        const slotPage = document.getElementById('slot-page');
-        const promoPage = document.getElementById('promo-page');
-        const betInput = document.getElementById('bet-amount');
-        const spinBtn = document.getElementById('spin-btn');
-        const messageBox = document.getElementById('message-box');
-        const promoInput = document.getElementById('promo-code');
-
-        function updateBalance() {
-            if (balanceEl) {balanceEl.textContent = balance.toLocaleString();
-            }
         }
 
-        function openSlot(id) {
-            if (mainMenu) mainMenu.style.display = 'none';
-            if (slotPage) slotPage.style.display = 'block';
-            if (messageBox) {
-                messageBox.textContent = '';
-                messageBox.className = 'message-box';
-            }
-            if (betInput) betInput.value = '';
-            if (spinBtn) spinBtn.disabled = true;
-            
-            const reels = ['reel-1', 'reel-2', 'reel-3'];
-            reels.forEach(id => {
-                const reel = document.getElementById(id);
-                if (reel) {
-                    reel.textContent = '?';
-                    reel.classList.remove('spinning');
-                }
-            });
-        }
+        .confirm-btn:hover {
+Используйте код с осторожностью.
+background-color: #3498db;
+}
+.spin-btn {
+flex: 1;
+height: 50px;
+font-size: 20px;
+text-transform: uppercase;
+letter-spacing: 1px;
+background-color: #27ae60;
+color: white;
+box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+}
+.spin-btn:hover {
+background-color: #2ecc71;
+}
+.spin-btn:disabled {
+background-color: #7f8c8d;
+cursor: not-allowed;
+box-shadow: none;
+opacity: 0.6;
+}
+/* Таблица выплат */
+.payout-table {
+margin-top: 25px;
+background-color: #0d1726;
+border: 1px solid #1f3154;
+border-radius: 8px;
+padding: 15px;
+width: 100%;
+}
+.payout-table h4 {
+color: var(--text-muted);
+margin-bottom: 10px;
+text-align: center;
+font-size: 14px;
+}
+.payout-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 10px;
+text-align: center;
+font-size: 13px;
+}
+.payout-item {
+background-color: var(--card-bg);
+padding: 8px;
+border-radius: 4px;
+border: 1px solid #1a2642;
+}
 
-        function openPromo() {
-            if (mainMenu) mainMenu.style.display = 'none';
-            if (slotPage) slotPage.style.display = 'none';
-            if (promoPage) promoPage.style.display = 'block';
-            if (messageBox) messageBox.textContent = '';
-        }
 
-        function goBack() {
-            if (mainMenu) mainMenu.style.display = 'grid';
-            if (slotPage) slotPage.style.display = 'none';
-            if (promoPage) promoPage.style.display = 'none';
-            if (messageBox) messageBox.textContent = '';
-        }
+CASINO X
 
-        const promoBtn = document.getElementById('open-promo-btn');
-        if (promoBtn) {
-            promoBtn.onclick = openPromo;
-        }
 
-        function confirmBet() {
-            const bet = parseInt(betInput.value);
-            if (messageBox) {
-                messageBox.textContent = '';
-                messageBox.className = 'message-box';
-            }
-            
-            if (!bet || bet <= 0) {
-                if (messageBox) {
-                    messageBox.textContent = 'Введите корректную сумму.';
-                    messageBox.className = 'message-box message-error';
-                }
-                return;
-            }
-            if (bet > balance) {
-                if (messageBox) {
-                    messageBox.textContent = 'Сумма недопустима. Недостаточно средств.';
-                    messageBox.className = 'message-box message-error';
-                }
-                return;
-            }
-            
-            if (spinBtn) spinBtn.disabled = false;
-            if (messageBox) {
-                messageBox.textContent = `Ставка принята: \${bet.toLocaleString()}`;
-                messageBox.className = 'message-box message-success';
-            }
-        }
+Баланс:
+5000
++
 
-        function spinReels() {
-            const bet = parseInt(betInput.value);
-            if (!bet || bet <= 0 || bet > balance) return;
+Слот №1
+Классический набор фруктов
 
-            balance -= bet;
-            updateBalance();
 
-            const reels = [
-                document.getElementById('reel-1'),
-                document.getElementById('reel-2'),
-                document.getElementById('reel-3')
-            ];
+Слот №2
+Скоро будет доступен
 
-            reels.forEach(r => {
-                if (r) r.classList.add('spinning');
-            });
 
-            const results = ; // <-- ИСПРАВЛЕНО: здесь была ошибка
-            
-            reels.forEach(() => {
-                const totalWeight = SYMBOLS.reduce((sum, s) => sum + s.freq, 0);
-                let rand = Math.random() * totalWeight;
-                let current = 0;
-                for (const symbol of SYMBOLS) {
-                    current += symbol.freq;
-                    if (rand <= current) {
-                        results.push(symbol);
-                        break;
-                    }
-                }
-            });
+Активация промокода
 
-            setTimeout(() => {
-                reels.forEach((r, i) => {
-                    if (r) {
-                        r.classList.remove('spinning');
-                        r.textContent = results[i].name;
-                    }
-                });
-                checkWin(results);
-            }, 2000);
-        }
+Подтвердить
 
-        function checkWin(results) {if (!messageBox) return;
-            messageBox.textContent = '';
-            messageBox.className = 'message-box';
+Назад
 
-            const symbols = results.map(r => r.name);
+BIG WIN
 
-            if (symbols.every(s => s === '7')) {
-                const winAmount = 1000000;
-                balance += winAmount;
-                updateBalance();
-                messageBox.textContent = 'JACKPOT! Вы выиграли 1,000,000!';
-                messageBox.className = 'message-box message-success';
-                return;
-            }
 
-            const counts = {};
-            symbols.forEach(s => counts[s] = (counts[s] || 0) + 1);
-            const tripleSymbolName = Object.keys(counts).find(k => counts[k] === 3);
-            
-            if (tripleSymbolName) {
-                const symbolData = SYMBOLS.find(s => s.name === tripleSymbolName);
-                const winAmount = symbolData.val * 10; 
-                balance += winAmount;
-                updateBalance();
-                messageBox.textContent = `Вы выиграли \${winAmount.toLocaleString()}!`;
-                messageBox.className = 'message-box message-success';
-            } else {
-                messageBox.textContent = 'Попробуйте еще раз!';
-            }
-        }
 
-        function applyPromo() {
-            const code = promoInput.value.trim().toUpperCase();
-            let bonus = 0;
-            
-            if (code === 'PASHA' || code === 'DIMA') {
-                bonus = 3000000;
-            }
 
-            if (bonus > 0) {
-                balance += bonus;
-                updateBalance();
-                if (messageBox) {
-                    messageBox.textContent = `Промокод активирован! Бонус: \${bonus.toLocaleString()}`;
-                    messageBox.className = 'message-box message-success';
-                }
-                setTimeout(goBack, 2000);
-            } else {
-                if (messageBox) {
-                    messageBox.textContent = 'Неверный промокод.';
-                    messageBox.className = 'message-box message-error';
-                }
-            }
-        }
 
-        updateBalance();
-    </script>
+
+Введите сумму ставки:
+Подтвердить
+
+
+Крутить
+Выйти
+Коэффициенты совпадений (3 в ряд)
+
+777: JACKPOT (1M)
+999: +5000
+🍇 Малина: +2000
+🍓 Клубника: +1500
+🍋 Лимон: +1000🍏 Слива: +500
+🍑 Персик: +100
+🍌 Банан: Пусто
+
+
+// Глобальное состояние игры
+let state = {
+balance: 5000,
+currentBet: 100,
+isBetConfirmed: true,
+isSpinning: false
+};
+// Пул символов с учетом редкости (чем выше награда, тем реже символ дублируется в массиве)
+const symbolsConfig = [
+{ char: '🍌', weight: 15, win: 0, name: 'банан' },
+{ char: '🍑', weight: 12, win: 100, name: 'персик' },
+{ char: '🍏', weight: 9, win: 500, name: 'слива' },
+{ char: '🍋', weight: 7, win: 1000, name: 'лимон' },
+{ char: '🍓', weight: 5, win: 1500, name: 'клубника' },
+{ char: '🍇', weight: 4, win: 2000, name: 'малина' },
+{ char: '9', weight: 2, win: 5000, name: 'девять' },
+{ char: '7', weight: 1, win: 3000, name: 'семь' }
+];
+// Генерируем плоский массив на основе весов для рандома
+let pool = [];
+symbolsConfig.forEach(s => {
+for(let i=0; i<s.weight; i++) pool.push(s.char);
+});
+// Инициализация при загрузке страницы
+window.onload = function() {
+updateBalanceDisplay();
+initReels();
+};
+function updateBalanceDisplay() {
+document.getElementById('balance-display').innerText = state.balance;
+}
+// Переключение между экранами (SPA)
+function showScreen(screenId) {
+if (state.isSpinning) return; // Запрет перехода во время крутки
+document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+document.getElementById(screenId).classList.add('active');
+// Сброс сообщений при смене экрана
+document.getElementById('promo-message').className = "message";
+document.getElementById('promo-message').innerText = "";
+document.getElementById('game-message').innerText = "";
+document.getElementById('promo-input').value = "";
+}
+// Промокоды
+function activatePromo() {
+const input = document.getElementById('promo-input').value.trim();
+const msg = document.getElementById('promo-message');
+if (input === 'Pasha' || input === 'Dima') {
+state.balance += 3000000;
+updateBalanceDisplay();
+msg.className = "message msg-success";
+msg.innerText = "Успешно! Начислено 3 000 000 валюты.";
+} else {
+msg.className = "message msg-error";
+msg.innerText = "Неверный промокод.";
+}
+}
+// Валидация и подтверждение ставки
+function confirmBet() {
+const betInput = document.getElementById('bet-input');
+const gameMsg = document.getElementById('game-message');
+const val = parseInt(betInput.value);
+if (isNaN(val) || val <= 0 || val > state.balance || state.balance === 0) {
+gameMsg.className = "message msg-error";
+gameMsg.innerText = "Сумма не допустима";
+state.isBetConfirmed = false;
+return false;
+}
+state.currentBet = val;
+gameMsg.className = "message msg-success";
+gameMsg.innerText = Ставка ${val} принята;
+state.isBetConfirmed = true;
+return true;
+}
+// Генерация начальных символов в барабанах
+function initReels() {
+for (let i = 1; i <= 3; i++) {
+const strip = document.getElementById(reel${i});
+strip.innerHTML = '';
+const randomSym = pool[Math.floor(Math.random() * pool.length)];
+const item = document.createElement('div');
+item.className = 'symbol-item';
+item.innerText = randomSym;
+strip.appendChild(item);
+}
+}
+// Логика вращения
+function startSpin() {
+if (state.isSpinning) return;
+const gameMsg = document.getElementById('game-message');
+// Принудительно проверяем ставку перед началом спина
+if (!confirmBet()) return;
+// Снимаем ставку с баланса
+state.balance -= state.currentBet;
+updateBalanceDisplay();
+state.isSpinning = true;
+document.getElementById('spin-button').disabled = true;
+document.getElementById('machine-status').innerText = "SPINNING...";
+gameMsg.innerText = "";
+// Выбираем итоговые выпадающие символы
+const res1 = pool[Math.floor(Math.random() * pool.length)];
+const res2 = pool[Math.floor(Math.random() * pool.length)];
+const res3 = pool[Math.floor(Math.random() * pool.length)];
+// Запуск анимации визуальной прокрутки
+animateReel('reel1', res1, 0);
+animateReel('reel2', res2, 150);
+animateReel('reel3', res3, 300, () => {
+// Вызывается по окончании анимации последнего барабана
+evaluateResult(res1, res2, res3);
+});
+}
+// Анимация барабанаfunction animateReel(reelId, finalSymbol, delay, callback) {
+setTimeout(() => {
+const strip = document.getElementById(reelId);
+let ticks = 0;
+let maxTicks = 12; // Длина крутки
+let interval = setInterval(() => {
+strip.innerHTML = '';
+const randomSym = pool[Math.floor(Math.random() * pool.length)];
+const item = document.createElement('div');
+item.className = 'symbol-item';
+item.innerText = randomSym;
+strip.appendChild(item);
+ticks++;
+if (ticks >= maxTicks) {
+clearInterval(interval);
+// Установка финального значения
+strip.innerHTML = <div class="symbol-item">${finalSymbol}</div>;
+if (callback) callback();
+}
+}, 80);
+}, delay);
+}
+// Расчет выигрыша
+function evaluateResult(s1, s2, s3) {
+state.isSpinning = false;
+document.getElementById('spin-button').disabled = false;
+const statusHeader = document.getElementById('machine-status');
+const gameMsg = document.getElementById('game-message');
+// Проверка на выпадение комбинации (3 одинаковых в ряд)
+if (s1 === s2 && s2 === s3) {
+const winSymbol = s1;
+if (winSymbol === '7') {
+// Особый случай для трех семерок
+statusHeader.innerText = "JACKPOT";
+state.balance += 1000000;
+gameMsg.className = "message msg-success";
+gameMsg.innerText = "JACKPOT! Вы выиграли 1 000 000 валюты!";
+} else {
+// Остальные символы
+const config = symbolsConfig.find(c => c.char === winSymbol);
+if (config && config.win > 0) {
+statusHeader.innerText = "WIN!";
+state.balance += config.win;
+gameMsg.className = "message msg-success";
+gameMsg.innerText = Три в ряд! Выигрыш: +${config.win} за символ [${winSymbol}];
+} else {
+// Для Банана выигрыш 0
+statusHeader.innerText = "BIG WIN";
+gameMsg.className = "message";
+gameMsg.innerText = "Три в ряд! Но этот символ ничего не приносит.";
+}
+}
+} else {
+// Нет совпадений
+statusHeader.innerText = "BIG WIN";
+gameMsg.className = "message msg-error";
+gameMsg.innerText = "Нет совпадений. Попробуйте еще раз!";
+}
+updateBalanceDisplay();
+}
+        </script>
 </body>
 </html>
