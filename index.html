@@ -36,14 +36,14 @@
         .machine-header h1 { color: #f1c40f; font-size: 28px; font-weight: 900; letter-spacing: 3px; }
         .reels-wrapper { background: #f39c12; border: 6px solid #d35400; border-radius: 10px; display: flex; justify-content: space-around; padding: 15px 10px; gap: 10px; }
         .reel-window { background: #fff; width: 30%; height: 120px; border: 4px solid #34495e; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        .symbol-item { font-size: 55px; }.controls-panel { background: var(--card); border: 1px solid #1a2642; border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 20px; }
-        .controls-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
-        .bet-group { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-        .bet-controls-inner { display: flex; gap: 10px; }
-        .confirm-btn { width: auto; background: #2980b9; color: #fff; }
-        .spin-btn { flex: 1; height: 50px; font-size: 20px; background: #27ae60; color: #fff; }
+        .symbol-item { font-size: 55px; }.controls-panel { background: var(--card); border: 1px solid #1a2642; border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
+        .controls-row { display: flex; justify-content: space-between; align-items: stretch; gap: 15px; }
+        .spin-btn { flex: 2; height: 80px; font-size: 22px; background: #27ae60; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
         .spin-btn:disabled { background: #7f8c8d; cursor: not-allowed; opacity: 0.6; }
-        .payout-table { margin-top: 25px; background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 15px; width: 100%; font-size: 13px; text-align: center; }
+        .bet-buttons-stack { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .small-bet-btn { flex: 1; background: #2980b9; color: #fff; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+        .small-bet-btn:hover { background: #3498db; }
+        .payout-table { margin-top: 15px; background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 15px; width: 100%; font-size: 13px; text-align: center; }
         .payout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .payout-item { background: var(--card); padding: 8px; border-radius: 4px; border: 1px solid #1a2642; }
     </style>
@@ -66,7 +66,7 @@
         <div class="slots-grid">
             <div class="slot-card" onclick="showScreen('game-screen')">
                 <div class="slot-title">Слот №1</div>
-                <div style="color:var(--muted);font-size:14px">Игра с множителями и бомбами</div>
+                <div style="color:var(--muted);font-size:14px">Игра с быстрыми ставками и бомбами</div>
             </div>
             <div class="slot-card disabled">
                 <div class="slot-title">Слот №2</div>
@@ -96,20 +96,22 @@
                 </div>
             </div>
             <div class="controls-panel">
+                <div id="current-bet-display" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold">Текущая ставка: <span style="color:var(--green)">100</span></div>
+                
                 <div class="controls-row">
-                    <div class="bet-group">
-                        <label style="color:var(--muted);font-size:14px">Введите сумму ставки:</label>
-                        <div class="bet-controls-inner">
-                            <input type="number" id="bet-input" class="input-field" value="100" min="1" style="margin:0;text-align:left;padding-left:15px">
-                            <button class="btn confirm-btn" onclick="confirmBet()">Подтвердить</button>
-                        </div>
+                    <button class="spin-btn" id="spin-button" onclick="startSpin()">Крутить</button>
+                    <div class="bet-buttons-stack">
+                        <button class="small-bet-btn" id="all-in-btn" onclick="setAllIn()">Ва-банк</button>
+                        <button class="small-bet-btn" id="half-btn" onclick="setHalf()">Половина</button>
                     </div>
                 </div>
+                
                 <div id="game-message" class="message" style="text-align:center"></div>
+                
                 <div class="controls-row">
-                    <button class="btn spin-btn" id="spin-button" onclick="startSpin()">Крутить</button>
-                    <button class="btn back-btn" style="margin:0;width:auto" onclick="showScreen('main-screen')">Выйти</button>
+                    <button class="btn back-btn" style="margin:0;width:100%" onclick="showScreen('main-screen')">Выйти в главное меню</button>
                 </div>
+                
                 <div class="payout-table">
                     <h4 style="color:var(--muted);margin-bottom:10px">Правила выплат и угроз</h4>
                     <div class="payout-grid">
@@ -117,14 +119,14 @@
                         <div class="payout-item">9️⃣: Ставка х7</div>
                         <div class="payout-item">🍇 Малина: Ставка х3</div>
                         <div class="payout-item">🍋 Лимон: Ставка х5</div>
-                        <div class="payout-item">🍏 Слива: Ставка х4</div>
-                        <div class="payout-item">🍑 Персик: Ставка х2</div><div class="payout-item" style="border-color:var(--red);grid-column:span 2">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>
+                        <div class="payout-item">🍏 Слива: Ставка х4</div><div class="payout-item">🍑 Персик: Ставка х2</div>
+                        <div class="payout-item" style="border-color:var(--red);grid-column:span 2">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>
                         <div class="payout-item" style="background:#2c1111;border-color:var(--red);grid-column:span 2">💣💣💣 3 шт: Ставка сгорает, Баланс = 2 валюты!</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div>\
     <script>
         let state = { balance: 5000, currentBet: 100, isSpinning: false };
         const symbolsConfig = [
@@ -134,13 +136,17 @@
             { char: '🍇', weight: 4, win: 3 },  
             { char: '7️⃣', weight: 5, win: 5 },  
             { char: '9️⃣', weight: 5, win: 7 },
-            { char: '💣', weight: 8, win: 0 }  // Опасная бомба
+            { char: '💣', weight: 8, win: 0 }  
         ];
         let pool = [];
         symbolsConfig.forEach(s => { for(let i=0; i<s.weight; i++) pool.push(s.char); });
 
         window.onload = function() { updateDisplay(); initReels(); };
-        function updateDisplay() { document.getElementById('balance-display').innerText = Math.floor(state.balance); }
+        
+        function updateDisplay() { 
+            document.getElementById('balance-display').innerText = Math.floor(state.balance); 
+            document.querySelector('#current-bet-display span').innerText = Math.floor(state.currentBet);
+        }
 
         function showScreen(id) {
             if (state.isSpinning) return;
@@ -149,6 +155,8 @@
             document.getElementById('promo-message').innerText = "";
             document.getElementById('game-message').innerText = "";
             document.getElementById('promo-input').value = "";
+            if(state.balance < state.currentBet) { state.currentBet = state.balance > 0 ? state.balance : 100; }
+            updateDisplay();
         }
 
         function activatePromo() {
@@ -160,17 +168,19 @@
             } else { msg.className = "message msg-error"; msg.innerText = "Неверный промокод."; }
         }
 
-        function confirmBet() {
-            const input = document.getElementById('bet-input');
-            const msg = document.getElementById('game-message');
-            const val = parseInt(input.value);
-            if (isNaN(val) || val <= 0 || val > state.balance || state.balance === 0) {
-                msg.className = "message msg-error"; msg.innerText = "сумма не допустима";
-                return false;
-            }
-            state.currentBet = val;
-            msg.className = "message msg-success"; msg.innerText = `Ставка ${val} принята`;
-            return true;
+        // Кнопка Ва-банк
+        function setAllIn() {
+            if (state.isSpinning || state.balance <= 0) return;
+            state.currentBet = state.balance;
+            updateDisplay();
+        }
+
+        // Кнопка Половина
+        function setHalf() {
+            if (state.isSpinning || state.balance <= 0) return;
+            state.currentBet = Math.floor(state.balance / 2);
+            if (state.currentBet < 1) state.currentBet = 1;
+            updateDisplay();
         }
 
         function initReels() {
@@ -181,11 +191,21 @@
 
         function startSpin() {
             if (state.isSpinning) return;
-            if (!confirmBet()) return;
+            const msg = document.getElementById('game-message');
+
+            // Автоматическая проверка ставки перед запуском
+            if (state.balance <= 0 || state.currentBet > state.balance || state.currentBet <= 0) {
+                msg.className = "message msg-error"; msg.innerText = "сумма не допустима";
+                return;
+            }
+
             state.balance -= state.currentBet; updateDisplay();
             state.isSpinning = true;
             document.getElementById('spin-button').disabled = true;
+            document.getElementById('all-in-btn').disabled = true;
+            document.getElementById('half-btn').disabled = true;
             document.getElementById('machine-status').innerText = "SPINNING...";
+            msg.innerText = "";
 
             const r1 = pool[Math.floor(Math.random() * pool.length)];
             const r2 = pool[Math.floor(Math.random() * pool.length)];
@@ -194,9 +214,7 @@
             animateReel('reel1', r1, 0);
             animateReel('reel2', r2, 150);
             animateReel('reel3', r3, 300, () => { evaluate(r1, r2, r3); });
-        }
-
-        function animateReel(id, sym, delay, cb) {
+        }function animateReel(id, sym, delay, cb) {
             setTimeout(() => {
                 let el = document.getElementById(id), ticks = 0;
                 let iv = setInterval(() => {
@@ -207,48 +225,39 @@
         }
 
         function evaluate(s1, s2, s3) {
-            state.isSpinning = false; document.getElementById('spin-button').disabled = false;const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
+            state.isSpinning = false; 
+            document.getElementById('spin-button').disabled = false;
+            document.getElementById('all-in-btn').disabled = false;
+            document.getElementById('half-btn').disabled = false;
             
-            // Считаем количество выпавших бомб
+            const h = document.getElementById('machine-status'), m = document.getElementById('game-message');
             let bombCount = 0;
             [s1, s2, s3].forEach(sym => { if(sym === '💣') bombCount++; });
 
-            // КРИТИЧЕСКИЙ СЛУЧАЙ: 3 бомбы в ряд
             if (bombCount === 3) {
-                h.innerText = "BOOM!!!";
-                state.balance = 2; // Баланс падает до 2 валют
-                m.className = "message msg-error"; 
-                m.innerText = "ВЗРЫВ! Ставка сгорела, баланс уменьшен до 2 валют!";
-                updateDisplay();
-                return;
+                h.innerText = "BOOM!!!"; state.balance = 2; state.currentBet = 1;
+                m.className = "message msg-error"; m.innerText = "ВЗРЫВ! Ставка сгорела, баланс равен 2 валюты!";
+                updateDisplay(); return;
             }
 
-            // КРИТИЧЕСКИЙ СЛУЧАЙ: 1 или 2 бомбы на экране
             if (bombCount > 0) {
-                h.innerText = "DANGER";
-                state.balance = state.balance / 2; // Делим оставшийся баланс на 2
-                m.className = "message msg-error";
-                m.innerText = `Бомба на экране! Баланс уменьшен в 2 раза!`;
-                updateDisplay();
-                return;
+                h.innerText = "DANGER"; state.balance = state.balance / 2; state.currentBet = Math.floor(state.currentBet / 2);
+                if (state.currentBet < 1) state.currentBet = 1;
+                m.className = "message msg-error"; m.innerText = `Бомба на экране! Баланс и Ставка уменьшены в 2 раза!`;
+                updateDisplay(); return;
             }
 
-            // ПРОВЕРКА НА ГЛАВНЫЙ ДЖЕКПОТ (Три семерки)
             if (s1 === '7️⃣' && s2 === '7️⃣' && s3 === '7️⃣') {
                 let jackpotWin = state.currentBet * 1000000;
                 h.innerText = "JACKPOT"; state.balance += jackpotWin;
                 m.className = "message msg-success"; m.innerText = `JACKPOT!!! +${jackpotWin}`;
-                updateDisplay();
-                return;
+                updateDisplay(); return;
             }
 
-            // Обычный поштучный подсчет фруктов
             let totalWin = 0;
             [s1, s2, s3].forEach(sym => {
                 const c = symbolsConfig.find(x => x.char === sym);
-                if (c && c.win > 0) {
-                    totalWin += (state.currentBet * c.win);
-                }
+                if (c && c.win > 0) { totalWin += (state.currentBet * c.win); }
             });
 
             if (totalWin > 0) {
