@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Казино</title>
+    <title>Казино X</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -19,7 +19,6 @@
             background-color: var(--bg-color);
             color: var(--text);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
         }
         .header {
             display: flex;
@@ -132,8 +131,8 @@
         }
 
         .message-box {
-            margin-top: 20px;min-height: 24px;
-            font-weight: bold;
+            margin-top: 20px;
+            min-height: 24px;font-weight: bold;
             text-align: center;
             font-size: 18px;
         }
@@ -223,7 +222,6 @@
     </div>
 
     <script>
-        // Инициализация переменных
         let balance = 100000;
         
         const SYMBOLS = [
@@ -236,23 +234,19 @@
             { name: '7', val: 3000, freq: 3 },
         ];
 
-        // Получение элементов DOM
         const balanceEl = document.getElementById('balance-display');
         const mainMenu = document.getElementById('main-menu');
         const slotPage = document.getElementById('slot-page');
         const promoPage = document.getElementById('promo-page');
         const betInput = document.getElementById('bet-amount');
-        const spinBtn = document.getElementById('spin-btn');const messageBox = document.getElementById('message-box');
-        const promoInput = document.getElementById('promo-code');
-
-        // Обновление баланса на экране
-        function updateBalance() {
+        const spinBtn = document.getElementById('spin-btn');
+        const messageBox = document.getElementById('message-box');
+        const promoInput = document.getElementById('promo-code');function updateBalance() {
             if (balanceEl) {
                 balanceEl.textContent = balance.toLocaleString();
             }
         }
 
-        // Открытие слота
         function openSlot(id) {
             if (mainMenu) mainMenu.style.display = 'none';
             if (slotPage) slotPage.style.display = 'block';
@@ -273,7 +267,6 @@
             });
         }
 
-        // Открытие страницы промокодов
         function openPromo() {
             if (mainMenu) mainMenu.style.display = 'none';
             if (slotPage) slotPage.style.display = 'none';
@@ -281,7 +274,6 @@
             if (messageBox) messageBox.textContent = '';
         }
 
-        // Возврат в меню
         function goBack() {
             if (mainMenu) mainMenu.style.display = 'grid';
             if (slotPage) slotPage.style.display = 'none';
@@ -289,13 +281,11 @@
             if (messageBox) messageBox.textContent = '';
         }
 
-        // Навешиваем обработчик на кнопку "+"
         const promoBtn = document.getElementById('open-promo-btn');
         if (promoBtn) {
             promoBtn.onclick = openPromo;
         }
 
-        // Подтверждение ставки
         function confirmBet() {
             const bet = parseInt(betInput.value);
             if (messageBox) {
@@ -325,7 +315,6 @@
             }
         }
 
-        // Вращение барабанов
         function spinReels() {
             const bet = parseInt(betInput.value);
             if (!bet || bet <= 0 || bet > balance) return;
@@ -339,20 +328,21 @@
                 document.getElementById('reel-3')
             ];
 
-            // Добавляем анимацию вращения
             reels.forEach(r => {
                 if (r) r.classList.add('spinning');
             });
 
-            // ИСПРАВЛЕНИЕ: теперь массив создается корректно
+            // ✅ ИСПРАВЛЕНО: массив теперь создается корректно
             const results = ;
+            
             reels.forEach(() => {
                 const totalWeight = SYMBOLS.reduce((sum, s) => sum + s.freq, 0);
                 let rand = Math.random() * totalWeight;
                 let current = 0;
                 for (const symbol of SYMBOLS) {
                     current += symbol.freq;
-                    if (rand <= current) {results.push(symbol);
+                    if (rand <= current) {
+                        results.push(symbol);
                         break;
                     }
                 }
@@ -364,12 +354,10 @@
                         r.classList.remove('spinning');
                         r.textContent = results[i].name;
                     }
-                });
-                checkWin(results);
+                });checkWin(results);
             }, 2000);
         }
 
-        // Проверка выигрыша
         function checkWin(results) {
             if (!messageBox) return;
             messageBox.textContent = '';
@@ -377,7 +365,6 @@
 
             const symbols = results.map(r => r.name);
 
-            // Джекпот (три семерки)
             if (symbols.every(s => s === '7')) {
                 const winAmount = 1000000;
                 balance += winAmount;
@@ -387,7 +374,6 @@
                 return;
             }
 
-            // Обычный выигрыш (три одинаковых символа)
             const counts = {};
             symbols.forEach(s => counts[s] = (counts[s] || 0) + 1);
             const tripleSymbolName = Object.keys(counts).find(k => counts[k] === 3);
@@ -404,7 +390,6 @@
             }
         }
 
-        // Активация промокода
         function applyPromo() {
             const code = promoInput.value.trim().toUpperCase();
             let bonus = 0;
@@ -429,7 +414,6 @@
             }
         }
 
-        // Первоначальная отрисовка баланса
         updateBalance();
     </script>
 </body>
