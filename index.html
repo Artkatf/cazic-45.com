@@ -112,15 +112,23 @@
     </div>
 
     <div id="wallet-screen" class="screen">
-        <div class="wallet-panel" style="max-width:400px">
-            <h2 style="margin-bottom:15px;color:var(--green)">Сохранить деньги</h2>
-            <p style="color:var(--muted);margin-bottom:15px;text-align:center">Введите сумму, чтобы перевести её с баланса на кошелёк. При бомбе в рулетке деньги в кошельке не сгорают.</p>
-            <input type="number" id="wallet-amount" class="input-field" placeholder="Сумма" autocomplete="off" min="1">
-            <button class="btn" onclick="transferToWallet()">Подтвердить перевод</button>
-            <div id="wallet-message" class="message" style="text-align:center"></div>
-            <button class="btn back-btn" onclick="showScreen('main-screen')">Назад</button>
+    <div class="wallet-panel" style="max-width:400px">
+        <h2 style="margin-bottom:15px;color:var(--green)">Кошелёк</h2>
+        <p style="color:var(--muted);margin-bottom:15px;text-align:center">
+            Здесь хранятся деньги, которые не сгорают при бомбе. Можно вернуть их на баланс.
+        </p>
+        <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:15px">
+            <input type="number" id="wallet-amount" class="input-field" placeholder="Сумма для перевода" autocomplete="off" min="1" style="width:70%">
+            <button class="btn" style="width:30%;padding:12px" onclick="transferToWallet()">Перевести в кошелёк</button>
         </div>
+        <div style="display:flex;gap:10px;align-items:stretch;margin-bottom:20px">
+            <input type="number" id="withdraw-amount" class="input-field" placeholder="Сколько вернуть на баланс" autocomplete="off" min="1" style="width:70%">
+            <button class="btn" style="width:30%;padding:12px;background:#f39c12" onclick="withdrawFromWallet()">Вернуть на баланс</button>
+        </div>
+        <div id="wallet-message" class="message" style="text-align:center"></div>
+        <button class="btn back-btn" onclick="showScreen('main-screen')">Назад</button>
     </div>
+</div>
 
     <div id="game-screen" class="screen">
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
@@ -222,10 +230,14 @@
         updateDisplay();
     }
 
+    // Перевод с баланса в кошелёк
     function transferToWallet() {
         const amountInput = document.getElementById('wallet-amount');
         const messageEl = document.getElementById('wallet-message');
         const amount = parseInt(amountInput.value, 10);
+
+        messageEl.textContent = '';
+        messageEl.className = 'message';
 
         if (!amount || amount <= 0) {
             messageEl.textContent = 'Введите корректную сумму.';
@@ -246,6 +258,35 @@
         updateDisplay();
     }
 
+    // Вывод из кошелька обратно на баланс
+    function withdrawFromWallet() {
+        const amountInput = document.getElementById('withdraw-amount');
+        const messageEl = document.getElementById('wallet-message');
+        const amount = parseInt(amountInput.value, 10);
+
+        messageEl.textContent = '';
+        messageEl.className = 'message';
+
+        if (!amount || amount <= 0) {
+            messageEl.textContent = 'Введите корректную сумму.';
+            messageEl.className = 'message msg-error';
+            return;
+        }
+        if (amount > state.wallet) {
+            messageEl.textContent = 'В кошельке недостаточно средств.';
+            messageEl.className = 'message msg-error';
+            return;
+        }
+
+        state.wallet -= amount;
+        state.balance += amount;
+        amountInput.value = '';
+        messageEl.textContent = `Возвращено ${amount} на баланс.`;
+        messageEl.className = 'message msg-success';
+        updateDisplay();
+    }
+
+    // Промокоды
     function activatePromo() {
         const input = document.getElementById('promo-input');
         const msgEl = document.getElementById('promo-message');
@@ -254,6 +295,17 @@
         msgEl.textContent = '';
         msgEl.className = 'message';
 
+        // Новые промокоды DIma и Pasha
+        if (code === 'DIMA' || code === 'PASHA') {
+            state.balance += 2000000;
+            msgEl.textContent = `Промокод ${code} активирован! Начислено 2 000 000.`;
+            msgEl.className = 'message msg-success';
+            updateDisplay();
+            input.value = '';
+            return;
+        }
+
+        // Старый промокод тоже остался
         if (code === 'BONUS1000') {
             state.balance += 1000;
             msgEl.textContent = 'Бонус 1000 успешно начислен!';
@@ -262,6 +314,7 @@
             input.value = '';
             return;
         }
+
         msgEl.textContent = 'Промокод не найден.';
         msgEl.className = 'message msg-error';
     }
@@ -354,9 +407,7 @@
         updateDisplay();
     }
 
-    // Инициализация при загрузке
-updateDisplay();
+    updateDisplay();
 </script>
-
 </body>
 </html>
