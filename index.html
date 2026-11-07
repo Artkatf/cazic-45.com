@@ -168,6 +168,17 @@
         .upg-box { background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 12px; min-width: 150px; text-align: center; }
         .upg-box .inv-emoji { font-size: 34px; }
         .upg-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+
+        /* Открытие кейсов на всю страницу */
+        .qty-btns { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
+        .qty-btn { background: #0d1726; border: 2px solid #1f3154; color: #fff; width: 48px; height: 48px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 17px; }
+        .qty-btn.active { border-color: var(--green); background: #0f2a24; }
+        .open-results { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 15px; }
+        .result-card { background: #0d1726; border: 2px solid #1a2642; border-radius: 10px; padding: 14px 10px; width: 155px; text-align: center; opacity: 0; transform: translateY(12px); transition: opacity 0.4s, transform 0.4s; }
+        .result-card.shown { opacity: 1; transform: none; }
+        .result-card .res-emoji { font-size: 42px; }
+        .result-card .res-name { font-size: 12px; font-weight: bold; margin-top: 5px; }
+        .result-card .res-price { font-size: 11px; color: var(--muted); margin-top: 3px; }
     </style>
 </head>
 <body>
@@ -375,10 +386,6 @@
 
             <!-- Вкладка: кейсы -->
             <div id="case-tab-cases" style="width:100%">
-                <div class="case-roulette" id="case-roulette" style="display:none">
-                    <div class="case-strip" id="case-strip"></div>
-                    <div class="case-marker"></div>
-                </div>
                 <div id="case-message" class="message"></div>
                 <div style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center" id="cases-list"></div>
             </div>
@@ -441,6 +448,36 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- Открытие кейса на всю страницу -->
+    <div id="case-open-screen" class="screen">
+        <button class="btn back-btn" style="margin:0 0 20px 0;width:100%;max-width:900px" onclick="showScreen('cases-screen')">← К кейсам</button>
+
+        <div class="panel" style="max-width:900px;width:100%">
+            <h2 id="case-open-title" style="color:var(--gold)">Кейс</h2>
+            <div style="color:var(--muted)">Баланс кейсов: <b id="caseopen-balance" style="color:var(--gold)">0</b></div>
+
+            <h4 style="color:var(--muted);margin-top:15px">Сколько кейсов открыть (1–5):</h4>
+            <div class="qty-btns">
+                <button class="qty-btn active" id="qty-btn-1" onclick="setOpenQty(1)">1</button>
+                <button class="qty-btn" id="qty-btn-2" onclick="setOpenQty(2)">2</button>
+                <button class="qty-btn" id="qty-btn-3" onclick="setOpenQty(3)">3</button>
+                <button class="qty-btn" id="qty-btn-4" onclick="setOpenQty(4)">4</button>
+                <button class="qty-btn" id="qty-btn-5" onclick="setOpenQty(5)">5</button>
+            </div>
+            <div id="caseopen-cost" style="font-size:16px;font-weight:bold"></div>
+
+            <button class="case-open-btn" style="width:auto;padding:14px 50px;margin-top:10px" onclick="startCaseOpen()">ОТКРЫТЬ</button>
+
+            <div class="case-roulette" id="caseopen-roulette" style="display:none">
+                <div class="case-strip" id="caseopen-strip"></div>
+                <div class="case-marker"></div>
+            </div>
+
+            <div id="caseopen-message" class="message"></div>
+            <div class="open-results" id="open-results"></div>
         </div>
     </div>
 
@@ -1565,15 +1602,132 @@
                         const total = c.contents.reduce((s, x) => s + x.weight, 0);
                         return `<div class="case-preview-row"><span>${it.emoji} <span class="rarity-${it.rarity}">${it.name}</span></span><span>${Math.round(cc.weight / total * 100)}%</span></div>`;
                     }).join('');
-                    return `<div class="case-card">
+                    return `<div class="case-card" style="cursor:pointer" onclick="enterCaseOpen('${c.id}')">
                         <h4>${c.name}</h4>
                         <div style="color:var(--muted)">Цена: <b style="color:var(--gold)">${c.price.toLocaleString('ru-RU')}</b></div>
                         <div class="case-preview">${preview}</div>
-                        <button class="case-open-btn" onclick="openCase('${c.id}')">Открыть</button>
+                        <button class="case-open-btn" onclick="event.stopPropagation(); enterCaseOpen('${c.id}')">Открыть</button>
                     </div>`;
                 }).join('');
                 list.dataset.built = '1';
             }
+        }
+
+        // ---------- Открытие кейса на всю страницу ----------
+        const RARITY_COLORS = { 'Мусор': '#8fa0be', 'Обычный': '#4b69ff', 'Редкий': '#8847ff', 'Легендарный': '#eb4b4b' };
+        let openCaseId = null;
+        let openQty = 1;
+
+        function enterCaseOpen(caseId) {
+            if (caseSpinning) return;
+            openCaseId = caseId;
+            openQty = 1;
+            const caseDef = CASES.find(c => c.id === caseId);
+            document.getElementById('case-open-title').textContent = caseDef.name;
+            [1, 2, 3, 4, 5].forEach(n => {
+                document.getElementById('qty-btn-' + n).classList.toggle('active', n === 1);
+            });
+            document.getElementById('caseopen-roulette').style.display = 'none';
+            document.getElementById('open-results').innerHTML = '';
+            setCaseOpenMessage('');
+            renderOpenCost();
+            showScreen('case-open-screen');
+        }
+
+        function setOpenQty(n) {
+            if (caseSpinning) return;
+            openQty = n;
+            [1, 2, 3, 4, 5].forEach(k => {
+                document.getElementById('qty-btn-' + k).classList.toggle('active', k === n);
+            });
+            renderOpenCost();
+        }
+
+        function renderOpenCost() {
+            const caseDef = CASES.find(c => c.id === openCaseId);
+            if (!caseDef) return;
+            const total = caseDef.price * openQty;
+            document.getElementById('caseopen-cost').innerHTML =
+                `Цена: <span style="color:var(--gold)">${total.toLocaleString('ru-RU')}</span> (${caseDef.price.toLocaleString('ru-RU')} × ${openQty})`;
+            document.getElementById('caseopen-balance').textContent = state.caseBalance.toLocaleString('ru-RU');
+        }
+
+        function setCaseOpenMessage(text, type) {
+            const el = document.getElementById('caseopen-message');
+            el.innerHTML = text;
+            el.className = 'message ' + (type || '');
+        }
+
+        function startCaseOpen() {
+            if (caseSpinning || !openCaseId) return;
+            const caseDef = CASES.find(c => c.id === openCaseId);
+            const totalCost = caseDef.price * openQty;
+            if (state.caseBalance < totalCost) {
+                setCaseOpenMessage('Недостаточно средств на балансе кейсов. Вернись и переведи деньги.', 'msg-error');
+                return;
+            }
+            state.caseBalance -= totalCost;
+            updateCaseBalance(); saveAll();
+
+            // Выбираем все выигрыши заранее
+            const wins = [];
+            for (let i = 0; i < openQty; i++) wins.push(pickItemFromCase(caseDef));
+
+            const rouletteEl = document.getElementById('caseopen-roulette');
+            const strip = document.getElementById('caseopen-strip');
+            rouletteEl.style.display = 'block';
+            document.getElementById('open-results').innerHTML = '';
+            setCaseOpenMessage('Крутим...', 'msg-info');
+            caseSpinning = true;
+
+            // Лента: случайные скины, под маркером — первый выигрыш
+            const totalCells = 40;
+            const winIndex = 35;
+            let html = '';
+            for (let i = 0; i < totalCells; i++) {
+                const it = (i === winIndex) ? wins[0] : ITEMS[Math.floor(Math.random() * ITEMS.length)];
+                html += `<div class="case-cell"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
+            }
+            strip.innerHTML = html;
+            strip.style.transition = 'none';
+            strip.style.transform = 'translateX(0px)';
+            void strip.offsetWidth;
+            const shift = (winIndex * 110 + 55) - (rouletteEl.offsetWidth / 2);
+            strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)';
+            strip.style.transform = `translateX(-${shift}px)`;
+
+            setTimeout(() => {
+                // Все выигрыши — в инвентарь
+                wins.forEach(w => {
+                    state.caseInventory.push({
+                        uid: state.nextUid++,
+                        itemId: w.id, name: w.name, emoji: w.emoji, price: w.price, rarity: w.rarity
+                    });
+                });
+
+                // Карточки результатов появляются по очереди
+                const grid = document.getElementById('open-results');
+                grid.innerHTML = wins.map(w =>
+                    `<div class="result-card" style="border-color:${RARITY_COLORS[w.rarity]}">
+                        <div class="res-emoji">${w.emoji}</div>
+                        <div class="res-name"><span class="rarity-${w.rarity}">${w.name}</span></div>
+                        <div class="res-price">${w.rarity} • ${w.price.toLocaleString('ru-RU')}</div>
+                    </div>`
+                ).join('');
+                const cards = grid.querySelectorAll('.result-card');
+                cards.forEach((card, i) => setTimeout(() => card.classList.add('shown'), i * 300));
+
+                const best = wins.reduce((a, b) => (b.price > a.price ? b : a));
+                const totalValue = wins.reduce((s, w) => s + w.price, 0);
+                setCaseOpenMessage(
+                    `🎉 Дроп: ${wins.map(w => `${w.emoji} <span class="rarity-${w.rarity}">${w.name}</span>`).join(', ')}<br>` +
+                    `Общая ценность: <b style="color:var(--gold)">${totalValue.toLocaleString('ru-RU')}</b> • Лучший: ${best.name}`,
+                    'msg-success'
+                );
+                caseSpinning = false;
+                renderOpenCost();
+                saveAll();
+            }, 3800);
         }
 
         // Эффективный вес скина с учётом удачи кейсов (только Редкие и Легендарные)
@@ -1591,56 +1745,6 @@
                 r -= effectiveItemWeight(caseDef, entry);
             }
             return ITEMS.find(i => i.id === caseDef.contents[0].item);
-        }
-
-        function openCase(caseId) {
-            if (caseSpinning) return;
-            const caseDef = CASES.find(c => c.id === caseId);
-            if (state.caseBalance < caseDef.price) {
-                setCaseMessage('Недостаточно средств на балансе кейсов. Переведи деньги сверху.', 'msg-error');
-                return;
-            }
-            state.caseBalance -= caseDef.price;
-            updateCaseBalance(); saveAll();
-
-            const won = pickItemFromCase(caseDef);
-
-            // Рулетка: длинная лента случайных скинов, выигрыш встаёт под маркером
-            const rouletteEl = document.getElementById('case-roulette');
-            const strip = document.getElementById('case-strip');
-            rouletteEl.style.display = 'block';
-            setCaseMessage('Крутим...', 'msg-info');
-            caseSpinning = true;
-
-            const totalCells = 40;
-            const winIndex = 35;
-            let html = '';
-            for (let i = 0; i < totalCells; i++) {
-                const it = (i === winIndex) ? won : ITEMS[Math.floor(Math.random() * ITEMS.length)];
-                html += `<div class="case-cell"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
-            }
-            strip.innerHTML = html;
-            // Перезапуск анимации: сброс transform, форс-рефлоу, плавный сдвиг
-            strip.style.transition = 'none';
-            strip.style.transform = 'translateX(0px)';
-            void strip.offsetWidth;
-            const shift = (winIndex * 110 + 55) - (rouletteEl.offsetWidth / 2);
-            strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)';
-            strip.style.transform = `translateX(-${shift}px)`;
-
-            setTimeout(() => {
-                state.caseInventory.push({
-                    uid: state.nextUid++,
-                    itemId: won.id,
-                    name: won.name,
-                    emoji: won.emoji,
-                    price: won.price,
-                    rarity: won.rarity
-                });
-                setCaseMessage(`🎉 Из кейса выпало: ${won.emoji} ${won.name} — <span class="rarity-${won.rarity}">${won.rarity}</span>! Забери в инвентаре.`, 'msg-success');
-                caseSpinning = false;
-                updateCaseBalance(); saveAll();
-            }, 3800);
         }
 
         function setCaseMessage(text, type) {
@@ -1679,6 +1783,7 @@
             if (idx === -1) { renderInventory(); return; }
             const it = state.caseInventory[idx];
             state.caseBalance += it.price;
+            state.caseInventory.splice(idx, 1); // предмет реально удаляется из инвентаря
             if (selectedUid === uid) selectedUid = null;
             renderInventory(); updateCaseBalance(); saveAll();
             setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')}.`, 'msg-success');
