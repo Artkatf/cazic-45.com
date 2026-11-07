@@ -366,7 +366,7 @@
             <div class="controls-panel" id="wheel-controls" style="display:none">
                 <div id="current-bet-display-wheel" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
                 <div class="controls-row">
-                    <button class="spin-btn" id="wheel-button" onclick="spinWheel()">Вращать колесo</button>
+                    <button class="spin-btn" id="wheel-button" onclick="spinWheel()">Вращать колесо</button>
                     <div class="bet-buttons-stack">
                         <button class="small-bet-btn" onclick="setAllIn()">Ва-банк</button>
                         <button class="small-bet-btn" onclick="setHalf()">Половина</button>
@@ -624,9 +624,11 @@
         const SYMBOL_CHARS = symbolsConfig.map(s => s.char);
 
         // Результат спина: судьба > подсказка > случайность (с учётом удачи)
+        // Судьба сгорает в момент использования (в слоте 2 её расходует runFreeSpinRound на весь раунд)
         function takeSpinResult(slot) {
             if (state.fate && state.fate.slot === slot) {
                 const chars = state.fate.symbols;
+                if (slot !== 2) state.fate = null;
                 return chars.map(c => symbolsConfig.find(s => s.char === c) || symbolsConfig[0]);
             }
             if (state.hintQueues[slot] && state.hintQueues[slot].length > 0) {
@@ -682,6 +684,7 @@
             updateDisplay(); saveAll();
             // Сброс выбора при новом входе
             fateSelection = { slot: null, symbols: [null, null, null] };
+            [1, 2, 3].forEach(s => { document.getElementById('fate-slot-btn-' + s).style.border = 'none'; });
             document.getElementById('fate-pickers').style.display = 'none';
             document.getElementById('fate-message').textContent = '';
             document.getElementById('fate-message').className = 'message';
@@ -694,7 +697,6 @@
         function pickFateSlot(slot) {
             fateSelection.slot = slot;
             fateSelection.symbols = [null, null, null];
-            // Подсветим выбранный слот
             [1, 2, 3].forEach(s => {
                 document.getElementById('fate-slot-btn-' + s).style.border = (s === slot) ? '2px solid var(--green)' : 'none';
             });
@@ -991,7 +993,7 @@
             updateDisplay(); updateFreeSpinsBadge();
             setGameMessage('🎁 Раунд фриспинов начался! Ставка списана 1 раз.', 'msg-info');
 
-            // Судьба на слот 2 действует на все 3 фриспина
+            // Судьба на слот 2 действует на все 3 фриспина и сгорает в конце раунда
             const fateChars = (state.fate && state.fate.slot === 2) ? state.fate.symbols : null;
             if (state.fate && state.fate.slot === 2) state.fate = null;
 
@@ -1286,11 +1288,6 @@
             state.isSpinning = true;
             spinBtn.disabled = true;
             reels.forEach(r => r.innerHTML = '<span class="symbol-item">⏳</span>');
-
-            // Судьба сгорает после одного применения (в слоте 2 она обрабатывается отдельно на весь раунд)
-            if (state.fate && state.fate.slot === state.currentSlot && state.currentSlot !== 2) {
-                state.fate = null;
-            }
 
             if (state.currentSlot === 2) {
                 statusEl.textContent = 'FREE SPINS';
