@@ -133,7 +133,7 @@
         .case-tab-btn { flex: 1; background: #0d1726; color: var(--muted); border: 1px solid #1f3154; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .case-tab-btn.active { color: #fff; border-color: var(--green); }
 
-        .case-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 20px; width: 220px; text-align: center; }
+        .case-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 20px; width: 230px; text-align: center; }
         .case-card h4 { color: var(--gold); margin: 5px 0; }
         .case-preview { font-size: 12px; color: var(--muted); text-align: left; margin: 10px 0; border-top: 1px solid #1a2642; padding-top: 8px; }
         .case-preview-row { display: flex; justify-content: space-between; padding: 2px 0; }
@@ -144,7 +144,7 @@
         .case-strip { display: flex; height: 100%; will-change: transform; }
         .case-cell { width: 110px; flex: 0 0 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #1a2642; background: #111a2e; }
         .case-cell-emoji { font-size: 36px; }
-        .case-cell-name { font-size: 10px; color: var(--muted); margin-top: 3px; }
+        .case-cell-name { font-size: 9px; color: var(--muted); margin-top: 3px; text-align: center; padding: 0 4px; }
         .case-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: var(--gold); transform: translateX(-50%); z-index: 5; box-shadow: 0 0 10px var(--gold); }
 
         .inv-item { display: flex; align-items: center; gap: 10px; background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 10px; margin-bottom: 8px; text-align: left; cursor: pointer; }
@@ -152,12 +152,21 @@
         .inv-emoji { font-size: 28px; }
         .inv-name { flex: 1; font-weight: bold; }
 
-        .up-container { position: relative; width: 100%; height: 60px; background: #0d1726; border: 1px solid #1f3154; border-radius: 10px; overflow: hidden; margin: 15px 0; }
-        .up-strip { display: flex; height: 100%; will-change: transform; }
-        .up-zone { height: 100%; flex: 0 0 auto; }
-        .up-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #fff; transform: translateX(-50%); z-index: 5; box-shadow: 0 0 10px #fff; }
-        .upg-target { background: #0d1726; border: 1px solid #1f3154; color: #fff; border-radius: 8px; padding: 10px; cursor: pointer; min-width: 130px; font-weight: bold; font-size: 13px; }
-        .upg-target:hover { border-color: var(--gold); }
+        .rarity-Мусор { color: #8fa0be; }
+        .rarity-Обычный { color: #4b69ff; }
+        .rarity-Редкий { color: #8847ff; }
+        .rarity-Легендарный { color: #eb4b4b; }
+
+        /* Апгрейд: круг со стрелкой */
+        .up-circle-wrap { position: relative; width: 240px; height: 240px; margin: 15px auto; }
+        .up-ring { position: absolute; inset: 0; border-radius: 50%; border: 10px solid #5e1919; background: conic-gradient(from 0deg, #2ecc71 0deg, #2ecc71 var(--up-green, 36deg), transparent var(--up-green, 36deg), transparent 360deg); box-shadow: 0 0 25px rgba(0,0,0,0.6); }
+        .up-arrow { position: absolute; left: 50%; top: -8px; transform-origin: 50% 128px; font-size: 42px; z-index: 5; filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); will-change: transform; }
+        .up-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 110px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--green); z-index: 4; }
+        .up-center b { font-size: 26px; }
+        .up-center small { color: var(--muted); font-size: 10px; }
+        .upg-layout { display: flex; align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .upg-box { background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 12px; min-width: 150px; text-align: center; }
+        .upg-box .inv-emoji { font-size: 34px; }
         .upg-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
     </style>
 </head>
@@ -344,7 +353,7 @@
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
 
             <div class="panel" style="max-width:700px;margin-bottom:20px">
-                <h2 style="color:var(--gold);margin-bottom:10px">📦 Кейсы</h2>
+                <h2 style="color:var(--gold);margin-bottom:10px">📦 Кейсы: скины из CS</h2>
                 <div style="color:var(--muted)">
                     Баланс кейсов: <b style="color:var(--gold)" id="case-balance-display">0</b> •
                     Удача кейсов: <b id="case-luck-display" style="color:var(--gold)">5%</b>
@@ -378,7 +387,7 @@
             <div id="case-tab-inventory" style="width:100%;display:none">
                 <div class="panel" style="max-width:700px">
                     <h3 style="color:var(--green);margin-bottom:15px">🎒 Инвентарь кейсов</h3>
-                    <p style="color:var(--muted);font-size:13px;margin-bottom:15px">Клик по предмету — выбрать его для апгрейда (вкладка «⚡ Апгрейд»). «Продать» — обменять предмет на баланс кейсов.</p>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:15px">Клик по предмету — выбрать его для апгрейда (вкладка «⚡ Апгрейд»). «Продать» — обменять скин на баланс кейсов.</p>
                     <div id="inventory-list"></div>
                 </div>
             </div>
@@ -386,17 +395,29 @@
             <!-- Вкладка: апгрейд -->
             <div id="case-tab-upgrade" style="width:100%;display:none">
                 <div class="panel" style="max-width:700px">
-                    <h3 style="color:var(--green);margin-bottom:10px">⚡ Апгрейд предмета</h3>
-                    <p style="color:var(--muted);font-size:13px">Выбери предмет в инвентаре, затем цель. Шанс = цена предмета ÷ цена цели × 90. Чем ближе цены — тем выше шанс.</p>
+                    <h3 style="color:var(--green);margin-bottom:5px">⚡ Апгрейд скина</h3>
+                    <p style="color:var(--muted);font-size:13px">Слева твой скин, справа цель. Шанс = цена скина ÷ цена цели × 90. Стрелка крутится: попала в зелёную зону — апгрейд удался, мимо — скин сгорает.</p>
 
-                    <div class="inv-item" style="margin-top:15px;cursor:default">
-                        <span style="color:var(--muted);font-size:13px">Твой предмет:</span>
-                        <b id="upg-selected" style="color:var(--gold)">— сначала выбери предмет в инвентаре —</b>
-                    </div>
+                    <div class="upg-layout" style="margin-top:10px">
+                        <div class="upg-box">
+                            <small style="color:var(--muted)">ТВОЙ ПРЕДМЕТ</small>
+                            <div id="upg-sel-emoji" class="inv-emoji">❔</div>
+                            <b id="upg-sel-name" style="font-size:13px">—</b>
+                            <div id="upg-sel-price" style="color:var(--muted);font-size:12px">—</div>
+                        </div>
 
-                    <div class="up-container" id="upgrade-container" style="display:none">
-                        <div class="up-strip" id="upgrade-strip"></div>
-                        <div class="up-marker"></div>
+                        <div class="up-circle-wrap" id="upgrade-circle" style="display:none">
+                            <div class="up-ring" id="up-ring"></div>
+                            <div class="up-arrow" id="up-arrow">🔻</div>
+                            <div class="up-center"><b id="up-chance">0%</b><small>шанс апгрейда</small></div>
+                        </div>
+
+                        <div class="upg-box">
+                            <small style="color:var(--muted)">ЦЕЛЕВОЙ ПРЕДМЕТ</small>
+                            <div id="upg-target-emoji" class="inv-emoji">❔</div>
+                            <b id="upg-target-name" style="font-size:13px">—</b>
+                            <div id="upg-target-price" style="color:var(--muted);font-size:12px">—</div>
+                        </div>
                     </div>
 
                     <div id="upg-targets" class="upg-grid"></div>
@@ -412,7 +433,7 @@
 
                     <div class="shop-item">
                         <h4>🍀 Удача кейсов +1% — 50 ₿</h4>
-                        <p>Повышает шанс редких предметов (Редких и Легендарных) при открытии кейсов. На слоты НЕ действует. Сейчас: <b id="caseluck-shop-value">5%</b>. Максимум — 100%.</p>
+                        <p>Повышает шанс Редких и Легендарных скинов при открытии кейсов. На слоты НЕ действует. Сейчас: <b id="caseluck-shop-value">5%</b>. Максимум — 100%.</p>
                         <button class="shop-buy" id="buy-case-luck-btn" onclick="buyCaseLuck()">Купить за 50 ₿</button>
                     </div>
 
@@ -572,6 +593,10 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
+            // Миграция старых сохранений: выделяем uid предметам без него
+            if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
+            if (!state.nextUid) state.nextUid = 1;
+            state.caseInventory.forEach(it => { if (!it.uid) it.uid = state.nextUid++; });
             localStorage.setItem('casinox_active', phone);
             afterProfileLoad();
             return true;
@@ -730,7 +755,7 @@
             btn.textContent = taken ? '🎁 Бонус получен' : '🎁 Ежедневный бонус';
         }
 
-        // ================== СИМВОЛЫ ==================
+        // ================== СИМВОЛЫ СЛОТОВ ==================
         const symbolsConfig = [
             { char: '🍑', weight: 12, win: 2 },
             { char: '🍏', weight: 9,  win: 4 },
@@ -1269,7 +1294,6 @@
             wheelRotation = wheelRotation % 360;
             wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
             void wheelEl.offsetWidth;
-            // Целевой угол: центр сектора под указателем + 6 полных оборотов
             const offset = ((360 - sectorCenter) - (wheelRotation % 360) + 360) % 360;
             wheelRotation += 360 * 6 + offset;
             wheelEl.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.25, 1)';
@@ -1416,7 +1440,7 @@
                 await runFreeSpinRound(reels);
             } else {
                 statusEl.textContent = 'КРУЧУ...';
-                                const results = takeSpinResult(state.currentSlot);
+                const results = takeSpinResult(state.currentSlot);
                 await Promise.all([
                     spinReelAnimation(reels[0], results[0], 1000),
                     spinReelAnimation(reels[1], results[1], 1400),
@@ -1457,53 +1481,57 @@
             updateDisplay(); updateCaseBalance(); saveAll();
         }
 
-        // ================== ПРЕДМЕТЫ КЕЙСОВ ==================
+        // ================== СКИНЫ ОРУЖИЯ ИЗ CS ==================
         const ITEMS = [
-            { id: 'paper',   name: 'Газета',        emoji: '📰', price: 50,      rarity: 'Мусорный' },
-            { id: 'can',     name: 'Жестянка',      emoji: '🥫', price: 120,     rarity: 'Мусорный' },
-            { id: 'sock',    name: 'Носок',         emoji: '🧦', price: 200,     rarity: 'Мусорный' },
-            { id: 'brick',   name: 'Кирпич',        emoji: '🧱', price: 400,     rarity: 'Мусорный' },
-            { id: 'radio',   name: 'Радио',         emoji: '📻', price: 900,     rarity: 'Обычный' },
-            { id: 'watch',   name: 'Часы',          emoji: '⌚', price: 2000,    rarity: 'Обычный' },
-            { id: 'phone',   name: 'Смартфон',      emoji: '📱', price: 5000,    rarity: 'Редкий' },
-            { id: 'console', name: 'Консоль',       emoji: '🎮', price: 15000,   rarity: 'Редкий' },
-            { id: 'laptop',  name: 'Ноутбук',       emoji: '💻', price: 40000,   rarity: 'Легендарный' },
-            { id: 'rocket',  name: 'Гоночный болид',emoji: '🏎️', price: 150000,  rarity: 'Легендарный' }
+            { id: 'p250',   name: 'P250 | Песчаная дюна',      emoji: '🔫', price: 50,      rarity: 'Мусор' },
+            { id: 'nova',   name: 'Nova | Орех',               emoji: '🔫', price: 90,      rarity: 'Мусор' },
+            { id: 'mac10',  name: 'MAC-10 | Ультрафиолет',     emoji: '🔫', price: 150,     rarity: 'Мусор' },
+            { id: 'glock',  name: 'Glock-18 | Песок',          emoji: '🔫', price: 250,     rarity: 'Мусор' },
+            { id: 'usp',    name: 'USP-S | Корт',              emoji: '🔫', price: 400,     rarity: 'Обычный' },
+            { id: 'fivesn', name: 'Five-SeveN | Вишнёвый марш',emoji: '🔫', price: 700,     rarity: 'Обычный' },
+            { id: 'galil',  name: 'Galil AR | Оранжевый круг', emoji: '🔫', price: 1500,    rarity: 'Обычный' },
+            { id: 'p90',    name: 'P90 | Асимов',              emoji: '🔫', price: 4000,    rarity: 'Редкий' },
+            { id: 'm4a1s',  name: 'M4A1-S | Пустотный элитный',emoji: '🔫', price: 10000,   rarity: 'Редкий' },
+            { id: 'akred',  name: 'AK-47 | Красная линия',     emoji: '🔫', price: 25000,   rarity: 'Редкий' },
+            { id: 'awp',    name: 'AWP | Азимов',              emoji: '🎯', price: 60000,   rarity: 'Легендарный' },
+            { id: 'howl',   name: 'M4A4 | Howl',               emoji: '🔫', price: 150000,  rarity: 'Легендарный' },
+            { id: 'kara',   name: '★ Karambit | Доплер',       emoji: '🔪', price: 400000,  rarity: 'Легендарный' }
         ];
         const isRareItem = (item) => item.rarity === 'Редкий' || item.rarity === 'Легендарный';
 
         // ================== КЕЙСЫ ==================
         const CASES = [
             {
-                id: 'trash', name: '🗑 Мусорный кейс', price: 500,
+                id: 'trash', name: '🗑 Мусорный дроп', price: 500,
                 contents: [
-                    { item: 'paper',   weight: 30 },
-                    { item: 'can',     weight: 30 },
-                    { item: 'sock',    weight: 20 },
-                    { item: 'brick',   weight: 12 },
-                    { item: 'radio',   weight: 6 },
-                    { item: 'watch',   weight: 2 }
+                    { item: 'p250',   weight: 28 },
+                    { item: 'nova',   weight: 26 },
+                    { item: 'mac10',  weight: 22 },
+                    { item: 'glock',  weight: 14 },
+                    { item: 'usp',    weight: 8 },
+                    { item: 'fivesn', weight: 2 }
                 ]
             },
             {
-                id: 'tech', name: '📼 Техно-кейс', price: 3000,
+                id: 'tech', name: '🧰 Армейский склад', price: 4000,
                 contents: [
-                    { item: 'brick',   weight: 15 },
-                    { item: 'radio',   weight: 35 },
-                    { item: 'watch',   weight: 28 },
-                    { item: 'phone',   weight: 16 },
-                    { item: 'console', weight: 5 },
-                    { item: 'laptop',  weight: 1 }
+                    { item: 'fivesn', weight: 10 },
+                    { item: 'galil',  weight: 30 },
+                    { item: 'p90',    weight: 35 },
+                    { item: 'm4a1s',  weight: 20 },
+                    { item: 'akred',  weight: 4 },
+                    { item: 'awp',    weight: 1 }
                 ]
             },
             {
-                id: 'gold', name: '🏆 Элитный кейс', price: 30000,
+                id: 'elite', name: '🎖 Элитный арсенал', price: 35000,
                 contents: [
-                    { item: 'watch',   weight: 30 },
-                    { item: 'phone',   weight: 35 },
-                    { item: 'console', weight: 22 },
-                    { item: 'laptop',  weight: 10 },
-                    { item: 'rocket',  weight: 3 }
+                    { item: 'p90',    weight: 15 },
+                    { item: 'm4a1s',  weight: 28 },
+                    { item: 'akred',  weight: 32 },
+                    { item: 'awp',    weight: 18 },
+                    { item: 'howl',   weight: 6 },
+                    { item: 'kara',   weight: 1 }
                 ]
             }
         ];
@@ -1535,7 +1563,7 @@
                     const preview = c.contents.map(cc => {
                         const it = ITEMS.find(i => i.id === cc.item);
                         const total = c.contents.reduce((s, x) => s + x.weight, 0);
-                        return `<div class="case-preview-row"><span>${it.emoji} ${it.name}</span><span>${Math.round(cc.weight / total * 100)}%</span></div>`;
+                        return `<div class="case-preview-row"><span>${it.emoji} <span class="rarity-${it.rarity}">${it.name}</span></span><span>${Math.round(cc.weight / total * 100)}%</span></div>`;
                     }).join('');
                     return `<div class="case-card">
                         <h4>${c.name}</h4>
@@ -1548,7 +1576,7 @@
             }
         }
 
-        // Эффективный вес предмета с учётом удачи кейсов (только редкие и легендарные)
+        // Эффективный вес скина с учётом удачи кейсов (только Редкие и Легендарные)
         function effectiveItemWeight(caseDef, entry) {
             const it = ITEMS.find(i => i.id === entry.item);
             if (!isRareItem(it)) return entry.weight;
@@ -1577,7 +1605,7 @@
 
             const won = pickItemFromCase(caseDef);
 
-            // Рулетка: собираем длинную ленту из случайных предметов, в центр ставим выигрыш
+            // Рулетка: длинная лента случайных скинов, выигрыш встаёт под маркером
             const rouletteEl = document.getElementById('case-roulette');
             const strip = document.getElementById('case-strip');
             rouletteEl.style.display = 'block';
@@ -1592,11 +1620,10 @@
                 html += `<div class="case-cell"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
             }
             strip.innerHTML = html;
-            // Перезапуск анимации: сброс transform, форс-рефлоу, потом плавный сдвиг
+            // Перезапуск анимации: сброс transform, форс-рефлоу, плавный сдвиг
             strip.style.transition = 'none';
             strip.style.transform = 'translateX(0px)';
             void strip.offsetWidth;
-            // Сдвигаем ленту так, чтобы выигравшая ячейка встала под золотым маркером (центр)
             const shift = (winIndex * 110 + 55) - (rouletteEl.offsetWidth / 2);
             strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)';
             strip.style.transform = `translateX(-${shift}px)`;
@@ -1610,7 +1637,7 @@
                     price: won.price,
                     rarity: won.rarity
                 });
-                setCaseMessage(`🎉 Из кейса выпало: ${won.emoji} ${won.name} (${won.rarity})! Забери в инвентаре.`, 'msg-success');
+                setCaseMessage(`🎉 Из кейса выпало: ${won.emoji} ${won.name} — <span class="rarity-${won.rarity}">${won.rarity}</span>! Забери в инвентаре.`, 'msg-success');
                 caseSpinning = false;
                 updateCaseBalance(); saveAll();
             }, 3800);
@@ -1618,7 +1645,7 @@
 
         function setCaseMessage(text, type) {
             const el = document.getElementById('case-message');
-            el.textContent = text;
+            el.innerHTML = text;
             el.className = 'message ' + (type || '');
         }
 
@@ -1632,12 +1659,12 @@
                 return;
             }
             list.innerHTML = state.caseInventory.map(it => `
-                <div class="inv-item ${selectedUid === it.uid ? 'selected' : ''}">
-                    <span class="inv-emoji" onclick="toggleSelect(${it.uid})">${it.emoji}</span>
-                    <span class="inv-name" onclick="toggleSelect(${it.uid})">${it.name}<br>
-                        <small style="color:var(--muted);font-weight:normal">${it.rarity} • ${it.price.toLocaleString('ru-RU')}</small>
+                <div class="inv-item ${selectedUid === it.uid ? 'selected' : ''}" onclick="toggleSelect(${it.uid})">
+                    <span class="inv-emoji">${it.emoji}</span>
+                    <span class="inv-name">${it.name}<br>
+                        <small style="font-weight:normal"><span class="rarity-${it.rarity}">${it.rarity}</span> • ${it.price.toLocaleString('ru-RU')}</small>
                     </span>
-                    <button class="shop-buy" style="width:auto;padding:6px 12px;font-size:12px" onclick="sellItem(${it.uid})">Продать</button>
+                    <button class="shop-buy" style="width:auto;padding:6px 12px;font-size:12px" onclick="event.stopPropagation(); sellItem(${it.uid})">Продать</button>
                 </div>
             `).join('');
         }
@@ -1649,36 +1676,37 @@
 
         function sellItem(uid) {
             const idx = state.caseInventory.findIndex(i => i.uid === uid);
-            if (idx === -1) return;
+            if (idx === -1) { renderInventory(); return; }
             const it = state.caseInventory[idx];
             state.caseBalance += it.price;
             if (selectedUid === uid) selectedUid = null;
-            setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')}.`, 'msg-success');
             renderInventory(); updateCaseBalance(); saveAll();
+            setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')}.`, 'msg-success');
         }
 
-        // ================== АПГРЕЙД ==================
+        // ================== АПГРЕЙД: КРУГ СО СТРЕЛКОЙ ==================
         function renderUpgradeTargets() {
-            const box = document.getElementById('upg-selected');
             const sel = state.caseInventory.find(i => i.uid === selectedUid);
-            box.textContent = sel ? `${sel.emoji} ${sel.name} (${sel.price.toLocaleString('ru-RU')})` : '— сначала выбери предмет в инвентаре —';
+            document.getElementById('upg-sel-emoji').textContent = sel ? sel.emoji : '❔';
+            document.getElementById('upg-sel-name').textContent = sel ? sel.name : '— выбери предмет в инвентаре —';
+            document.getElementById('upg-sel-price').textContent = sel ? sel.price.toLocaleString('ru-RU') : '—';
 
             const grid = document.getElementById('upg-targets');
-            const container = document.getElementById('upgrade-container');
+            const circle = document.getElementById('upgrade-circle');
             if (!sel) {
                 grid.innerHTML = '<div style="color:var(--muted)">Выбери предмет на вкладке «🎒 Инвентарь» — кликни по нему.</div>';
-                container.style.display = 'none';
+                circle.style.display = 'none';
                 return;
             }
             const targets = ITEMS.filter(i => i.price > sel.price);
             if (!targets.length) {
-                grid.innerHTML = '<div style="color:var(--muted)">Это уже самый дорогой предмет в игре!</div>';
-                container.style.display = 'none';
+                grid.innerHTML = '<div style="color:var(--muted)">Это уже самый дорогой скин в игре!</div>';
+                circle.style.display = 'none';
                 return;
             }
             grid.innerHTML = targets.map(t => {
-                const chance = Math.min(90, Math.floor(sel.price / t.price * 90));
-                return `<button class="upg-target" onclick="startUpgrade('${t.id}')">${t.emoji} ${t.name}<br><small>Цена: ${t.price.toLocaleString('ru-RU')} • Шанс: ${chance}%</small></button>`;
+                const chance = Math.max(1, Math.min(90, Math.floor(sel.price / t.price * 90)));
+                return `<button class="upg-target" onclick="startUpgrade('${t.id}')">${t.emoji} <span class="rarity-${t.rarity}">${t.name}</span><br><small>Цена: ${t.price.toLocaleString('ru-RU')} • Шанс: ${chance}%</small></button>`;
             }).join('');
         }
 
@@ -1688,65 +1716,61 @@
             const target = ITEMS.find(i => i.id === targetId);
             if (!sel || !target) return;
 
-            const chance = Math.min(90, Math.floor(sel.price / target.price * 90));
-
+            const chance = Math.max(1, Math.min(90, Math.floor(sel.price / target.price * 90)));
             upgradeBusy = true;
-            // Лента: зелёная зона = шанс, остальное — красное
-            const container = document.getElementById('upgrade-container');
-            const strip = document.getElementById('upgrade-strip');
-            container.style.display = 'block';
 
-            const winWidthPct = chance; // % ширины зелёной зоны
-            const totalCells = 20;
-            const winIndex = 17;
-            let html = '';
-            for (let i = 0; i < totalCells; i++) {
-                const isWin = i === winIndex;
-                const width = isWin ? winWidthPct : (100 - winWidthPct) / (totalCells - 1);
-                const color = isWin ? 'linear-gradient(90deg,#27ae60,#2ecc71)' : 'linear-gradient(90deg,#5e1919,#c0392b)';
-                html += `<div class="up-zone" style="flex:0 0 ${width}%;background:${color}"></div>`;
-            }
-            strip.innerHTML = html;
+            // Показываем цель и круг
+            document.getElementById('upg-target-emoji').textContent = target.emoji;
+            document.getElementById('upg-target-name').textContent = target.name;
+            document.getElementById('upg-target-price').textContent = target.price.toLocaleString('ru-RU');
+            const circle = document.getElementById('upgrade-circle');
+            circle.style.display = 'block';
+            document.getElementById('up-chance').textContent = chance + '%';
 
-            // Перезапуск анимации
-            strip.style.transition = 'none';
-            strip.style.transform = 'translateX(0px)';
-            void strip.offsetWidth;
-            const containerW = container.offsetWidth;
-            const shift = (winWidthPct / 100) * (totalCells * containerW / totalCells) * (totalCells) / totalCells * totalCells; // упрощённо ниже
-            // Сдвиг: центр зелёной зоны под маркером
-            const stripW = totalCells * (containerW); // длинная лента
-            const winCenterInStrip = (winIndex * (containerW) + (winWidthPct / 100) * containerW / 2);
-            const finalShift = winCenterInStrip - containerW / 2;
-            strip.style.transition = 'transform 2.8s cubic-bezier(0.15, 0.9, 0.25, 1)';
-            strip.style.transform = `translateX(-${finalShift}px)`;
+            const ring = document.getElementById('up-ring');
+            const arrow = document.getElementById('up-arrow');
+            const greenDeg = chance * 3.6; // зелёная зона от вершины круга
+            ring.style.setProperty('--up-green', greenDeg + 'deg');
 
-            document.getElementById('upg-message').textContent = 'Крутим...';
-            document.getElementById('upg-message').className = 'message msg-info';
-
+            // Случай решается заранее, стрелка честно летит в соответствующую зону
             const success = Math.random() * 100 < chance;
+            const margin = Math.min(6, greenDeg / 4);
+            let finalTheta;
+            if (success) {
+                finalTheta = margin + Math.random() * (greenDeg - 2 * margin);
+            } else {
+                finalTheta = greenDeg + margin + Math.random() * (360 - greenDeg - 2 * margin);
+            }
+
+            // Перезапуск анимации и вращение стрелки: 5 оборотов + попадание в зону
+            arrow.style.transition = 'none';
+            arrow.style.transform = 'rotate(0deg)';
+            void arrow.offsetWidth;
+            arrow.style.transition = 'transform 3s cubic-bezier(0.15, 0.9, 0.25, 1)';
+            arrow.style.transform = `rotate(${5 * 360 + finalTheta}deg)`;
+
+            const msg = document.getElementById('upg-message');
+            msg.textContent = 'Крутим...';
+            msg.className = 'message msg-info';
 
             setTimeout(() => {
-                const msg = document.getElementById('upg-message');
                 if (success) {
-                    // Предмет заменяется на целевой
                     const idx = state.caseInventory.findIndex(i => i.uid === sel.uid);
                     state.caseInventory[idx] = {
                         uid: sel.uid, itemId: target.id, name: target.name, emoji: target.emoji,
                         price: target.price, rarity: target.rarity
                     };
-                    msg.textContent = `🎉 УСПЕХ! ${sel.name} превратился в ${target.name}!`;
+                    msg.innerHTML = `🎉 УСПЕХ! ${sel.name} превратился в ${target.emoji} <span class="rarity-${target.rarity}">${target.name}</span>!`;
                     msg.className = 'message msg-success';
                 } else {
-                    // Предмет сгорает
                     state.caseInventory = state.caseInventory.filter(i => i.uid !== sel.uid);
                     selectedUid = null;
-                    msg.textContent = `💥 НЕУДАЧА! ${sel.name} сгорел. Шанс был ${chance}%.`;
+                    msg.innerHTML = `💥 НЕУДАЧА! ${sel.name} сгорел. Шанс был ${chance}%.`;
                     msg.className = 'message msg-error';
                 }
                 upgradeBusy = false;
                 renderInventory(); renderUpgradeTargets(); saveAll();
-            }, 3000);
+            }, 3300);
         }
 
         // ================== МАГАЗИН КЕЙСОВ ==================
@@ -1763,7 +1787,7 @@
             state.excoins -= 50;
             state.caseLuck = Math.min(100, state.caseLuck + 1);
             renderCaseShop(); updateCaseBalance(); saveAll();
-            caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие предметы теперь выпадают чаще.`, 'msg-success');
+            caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие скины теперь выпадают чаще.`, 'msg-success');
         }
 
         function caseShopMsg(text, type) {
