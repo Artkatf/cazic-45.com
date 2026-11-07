@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CASINO X — Учебный проект</title>
-
     <style>
         :root { --bg: #0b111e; --card: #111a2e; --green: #00ffcc; --text: #fff; --muted: #8fa0be; --red: #ff4a4a; --gold: #f1c40f; --btc: #f7931a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; }
@@ -105,7 +104,7 @@
         .wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 0 auto 25px auto; }
         .wheel-pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 34px; z-index: 5; }
         .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #c0392b; box-shadow: 0 0 25px rgba(0,0,0,0.6); transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1); will-change: transform; }
-        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
+                .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
 
         /* Краш */
         .crash-container { background: #0d1726; border: 2px solid #1f3154; border-radius: 16px; padding: 30px; width: 100%; max-width: 500px; margin-bottom: 25px; text-align: center; }
@@ -506,8 +505,9 @@
         }
 
         // ================== ЭКС-ВАЛЮТА ==================
-        // 1 ₿ за каждую полную 1000 ставки — только слоты 1-3, после того как ставка сыграла
-        function earnExcoins(bet) {
+        // 1 ₿ за каждую полную 1000 ставки — только слоты 1-3 и только если раунд принёс ПРИБЫЛЬ (delta > 0)
+        function earnExcoins(bet, delta) {
+            if (delta <= 0) return; // прибыли нет — экс-валюты нет
             const earned = Math.floor(bet / 1000);
             if (earned > 0) {
                 state.excoins += earned;
@@ -735,14 +735,14 @@
                 '🎰 Пара символов: Ставка х1.2',
                 '<div class="payout-item full" style="border-color:var(--red)">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>',
                 '<div class="payout-item full" style="background:#2c1111;border-color:var(--red)">💣💣💣 3 шт: Ставка сгорает, Баланс = 2 валюты!</div>',
-                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки — 1 экс-валюта!</div>'
+                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки, ПРИНЁСШЕЙ ПРИБЫЛЬ — 1 экс-валюта!</div>'
             ],
             2: [
                 '🎁 Правила выплат как в Слоте №1, но: 1 ставка = 3 фриспина.',
                 '🎁 Выигрыши копятся в пот и падают в конце раунда.',
                 '<div class="payout-item full" style="border-color:var(--red)">💣 1-2 шт: Пот режется вдвое, фриспинов остаётся максимум 1.</div>',
                 '<div class="payout-item full" style="background:#2c1111;border-color:var(--red)">💣💣💣 3 шт: Раунд сгорает, пот обнуляется!</div>',
-                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки — 1 экс-валюта!</div>'
+                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки, ПРИНЁСШЕЙ ПРИБЫЛЬ — 1 экс-валюта!</div>'
             ],
             3: [
                 '🍑 Персик: Ставка х2', '🍏 Слива: Ставка х4', '🍇 Малина: Ставка х3', '🍋 Лимон: Ставка х5',
@@ -750,7 +750,7 @@
                 '🎰 Пара символов: Ставка х1.2',
                 '10% каждой ставки идут в общий джекпот.',
                 '<div class="payout-item full" style="background:#1a0d1a;border-color:#ff6ec7">💎💎💎 ТРИ АЛМАЗА: забираешь весь джекпот! Он сбрасывается до 10 000.</div>',
-                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки — 1 экс-валюта!</div>'
+                '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки, ПРИНЁСШЕЙ ПРИБЫЛЬ — 1 экс-валюта!</div>'
             ]
         };
 
@@ -913,7 +913,7 @@
                     setGameMessage('😢 Не повезло. Попробуй ещё раз.', 'msg-error');
                 }
             }
-            earnExcoins(bet);
+            earnExcoins(bet, state.balance - before);
             addHistory(results.map(r => r.char).join(' '), state.balance - before);
             addXP(xpForBet(bet));
             updateDisplay(); saveAll();
@@ -937,6 +937,7 @@
 
             // Судьба на слот 2 действует на все 3 фриспина
             const fateChars = (state.fate && state.fate.slot === 2) ? state.fate.symbols : null;
+            if (state.fate && state.fate.slot === 2) state.fate = null;
 
             let results = [];
             for (let i = 0; i < 3; i++) {
@@ -954,7 +955,7 @@
                     updateFreeSpinsBadge();
                     setGameMessage('💣💣💣 ТРИ БОМБЫ! Раунд фриспинов сгорел, пот обнулился.', 'msg-error');
                     addHistory('Фриспины: сгорели', state.balance - before);
-                    earnExcoins(startBet);
+                    earnExcoins(startBet, state.balance - before);
                     addXP(xpForBet(startBet));
                     updateDisplay(); saveAll();
                     return;
@@ -984,7 +985,7 @@
                 setGameMessage('Раунд завершён. Пот пуст — выигрыша нет.', 'msg-error');
             }
             addHistory('Фриспины: ' + results.map(r => r.char).join(' '), state.balance - before);
-            earnExcoins(startBet);
+            earnExcoins(startBet, state.balance - before);
             addXP(xpForBet(startBet));
             updateDisplay(); saveAll();
         }
@@ -1005,7 +1006,7 @@
                 state.jackpot = 10000;
                 setGameMessage(`💎💎💎 ДЖЕКПОТ! Ты забрал ${jackpotWin.toLocaleString('ru-RU')} валюты!`, 'msg-success');
                 addHistory('💎💎💎 ДЖЕКПОТ!', jackpotWin - bet);
-                earnExcoins(bet);
+                earnExcoins(bet, state.balance - before);
                 addXP(xpForBet(bet));
                 updateDisplay(); saveAll();
                 return;
@@ -1024,7 +1025,7 @@
                 state.balance -= bet;
                 setGameMessage('😢 Не повезло. Попробуй ещё раз.', 'msg-error');
             }
-            earnExcoins(bet);
+            earnExcoins(bet, state.balance - before);
             addHistory(results.map(r => r.char).join(' '), state.balance - before);
             addXP(xpForBet(bet));
             updateDisplay(); saveAll();
@@ -1085,9 +1086,10 @@
             const index = pickWheelIndex();
 
             // Центр выбранного сектора (секторы разного размера — считаем по весам)
+            const total = wheelSectors.reduce((s, x) => s + x.weight, 0);
             let cum = 0;
             for (let i = 0; i < index; i++) cum += wheelSectors[i].weight;
-            const sectorCenter = ((cum + wheelSectors[index].weight / 2) / wheelSectors.reduce((s, x) => s + x.weight, 0)) * 360;
+            const sectorCenter = ((cum + wheelSectors[index].weight / 2) / total) * 360;
 
             const target = (360 - sectorCenter) % 360;
             const currentTurn = Math.ceil(wheelRotation / 360) * 360;
@@ -1229,7 +1231,7 @@
             spinBtn.disabled = true;
             reels.forEach(r => r.innerHTML = '<span class="symbol-item">⏳</span>');
 
-            // Судьба сгорает после одного применения (кроме фриспинов — там она обрабатывается отдельно)
+            // Судьба сгорает после одного применения (в слоте 2 она обрабатывается отдельно на весь раунд)
             if (state.fate && state.fate.slot === state.currentSlot && state.currentSlot !== 2) {
                 state.fate = null;
             }
