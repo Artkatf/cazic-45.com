@@ -262,8 +262,18 @@
             <!-- Управление слотом 5 -->
             <div class="controls-panel" id="crash-controls" style="display:none">
                 <div id="current-bet-display-crash" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
+
+                <div style="display:flex;gap:10px;align-items:stretch">
+                    <input type="number" id="crash-bet-input" class="input-field" placeholder="Своя ставка" autocomplete="off" min="1" style="flex:1;margin:0">
+                    <button class="btn" style="width:140px;margin:0" onclick="setCustomBetCrash()">Установить</button>
+                </div>
+
                 <div class="controls-row">
                     <button class="spin-btn" id="crash-start-btn" onclick="startCrash()">🚀 Запустить</button>
+                    <div class="bet-buttons-stack">
+                        <button class="small-bet-btn" onclick="setAllIn()">Ва-банк</button>
+                        <button class="small-bet-btn" onclick="setHalf()">Половина</button>
+                    </div>
                 </div>
                 <div id="game-message-crash" class="message" style="text-align:center"></div>
                 <div class="payout-table">
@@ -407,8 +417,7 @@
         }
 
         function setGameMessage(text, type) {
-            const map = { 1: 'game-message', 2: 'game-message', 3: 'game-message' };
-            const el = document.getElementById(map[state.currentSlot] || 'game-message');
+            const el = document.getElementById('game-message');
             el.textContent = text;
             el.className = 'message ' + (type || '');
         }
@@ -702,7 +711,7 @@
             updateDisplay(); save();
         }
 
-        // ============ СЛОТ 4: КОЛЕСО ФОРТУНЫ (исправлено) ============
+        // ============ СЛОТ 4: КОЛЕСО ФОРТУНЫ ============
         const wheelSectors = [
             { label: 'x10',  mult: 10,  weight: 2,  color: '#8e44ad' },
             { label: 'x0',   mult: 0,   weight: 26, color: '#2c3e50' },
@@ -715,7 +724,6 @@
         ];
         let wheelRotation = 0;
 
-        // Рисуем цветные секторы колеса (размер сектора = его вес)
         function buildWheel() {
             const total = wheelSectors.reduce((s, x) => s + x.weight, 0);
             const stops = [];
@@ -745,7 +753,6 @@
             state.balance -= bet;
             updateDisplay();
 
-            // Выбор сектора по весам (вероятности)
             const total = wheelSectors.reduce((s, x) => s + x.weight, 0);
             let r = Math.random() * total, index = 0;
             for (let i = 0; i < wheelSectors.length; i++) {
@@ -753,12 +760,10 @@
                 r -= wheelSectors[i].weight;
             }
 
-            // Центр выбранного сектора (секторы разного размера — считаем по весам)
             let cum = 0;
             for (let i = 0; i < index; i++) cum += wheelSectors[i].weight;
             const sectorCenter = ((cum + wheelSectors[index].weight / 2) / total) * 360;
 
-            // Крутой поворот: минимум 6 оборотов, сектор останавливается под указателем
             const target = (360 - sectorCenter) % 360;
             const currentTurn = Math.ceil(wheelRotation / 360) * 360;
             wheelRotation = currentTurn + 6 * 360 + target;
@@ -797,6 +802,26 @@
         // ============ СЛОТ 5: КРАШ ============
         let crashTimer = null, crashBet = 0, crashMult = 1.0, crashPoint = 0, crashStart = 0;
         let crashHistory = [];
+
+        function setCustomBetCrash() {
+            if (crashActive) return;
+            const input = document.getElementById('crash-bet-input');
+            const amount = parseInt(input.value, 10);
+
+            if (!amount || amount < 1) {
+                setGameMessageCrash('Введите корректную сумму.', 'msg-error');
+                return;
+            }
+            if (amount > state.balance) {
+                setGameMessageCrash('Недостаточно средств на балансе.', 'msg-error');
+                return;
+            }
+
+            state.currentBet = amount;
+            input.value = '';
+            updateDisplay();
+            setGameMessageCrash(`Ставка установлена: ${amount}.`, 'msg-info');
+        }
 
         function startCrash() {
             if (crashActive || wheelSpinning || state.balance < state.currentBet || state.currentBet < 1) return;
@@ -914,6 +939,10 @@
         }
 
         // ---------- Старт ----------
+        document.getElementById('crash-bet-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') setCustomBetCrash();
+        });
+
         load();
         renderLevel();
         renderDailyBtn();
