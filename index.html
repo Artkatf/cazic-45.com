@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CASINO X — Учебный проект</title>
+
     <style>
         :root { --bg: #0b111e; --card: #111a2e; --green: #00ffcc; --text: #fff; --muted: #8fa0be; --red: #ff4a4a; --gold: #f1c40f; --btc: #f7931a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; }
@@ -100,11 +101,20 @@
 
         .hint-box { background: #0d1726; border: 1px solid #5a1f4a; border-radius: 8px; padding: 12px; font-size: 14px; text-align: left; margin-top: 10px; }
 
+        /* Выбор судьбы кликами */
+        .fate-symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
+        .symbol-choice { font-size: 24px; background: #0d1726; border: 2px solid #1f3154; border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: border-color 0.15s; }
+        .symbol-choice:hover { border-color: var(--muted); }
+        .symbol-choice.selected { border-color: var(--green); background: #0f2a24; }
+        .fate-reel-label { color: var(--muted); font-size: 13px; margin-bottom: 5px; display: block; }
+        .fate-slot-btns { display: flex; gap: 10px; margin-bottom: 15px; }
+        .fate-slot-btns .btn { padding: 10px; font-size: 14px; }
+
         /* Колесо фортуны */
         .wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 0 auto 25px auto; }
         .wheel-pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 34px; z-index: 5; }
         .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #c0392b; box-shadow: 0 0 25px rgba(0,0,0,0.6); transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1); will-change: transform; }
-                .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
 
         /* Краш */
         .crash-container { background: #0d1726; border: 2px solid #1f3154; border-radius: 16px; padding: 30px; width: 100%; max-width: 500px; margin-bottom: 25px; text-align: center; }
@@ -227,7 +237,7 @@
 
             <div class="shop-item">
                 <h4>✨ Изменить судьбу — 500 ₿</h4>
-                <p>Сам выбираешь символы для следующего спина в любом слоте (№1–№3). В слоте №2 судьба действует на все 3 фриспина раунда.</p>
+                <p>Выбираешь слот и символы кликами — следующий спин в этом слоте выпадет как задал. В слоте №2 судьба действует на все 3 фриспина раунда.</p>
                 <button class="shop-buy" onclick="buyFate()">Купить за 500 ₿</button>
             </div>
 
@@ -250,16 +260,29 @@
     <div id="fate-form-screen" class="screen">
         <div class="panel">
             <h2 style="margin-bottom:15px;color:var(--green)">✨ Изменить судьбу</h2>
-            <select id="fate-slot" class="input-field">
-                <option value="1">Слот №1 — BIG WIN</option>
-                <option value="2">Слот №2 — FREE SPINS</option>
-                <option value="3">Слот №3 — JACKPOT</option>
-            </select>
-            <p style="color:var(--muted);font-size:13px;margin-bottom:10px">Введите три символа (можно из списка: 🍑 🍏 🍋 🍇 🍒 💎 7️⃣ 9️⃣ 💣)</p>
-            <input type="text" id="fate-s1" class="input-field" placeholder="Барабан 1" maxlength="4">
-            <input type="text" id="fate-s2" class="input-field" placeholder="Барабан 2" maxlength="4">
-            <input type="text" id="fate-s3" class="input-field" placeholder="Барабан 3" maxlength="4">
-            <button class="btn" onclick="applyFate()">Задать судьбу</button>
+
+            <h4 style="color:var(--muted);margin-bottom:8px">Шаг 1: выберите слот</h4>
+            <div class="fate-slot-btns">
+                <button class="btn" id="fate-slot-btn-1" onclick="pickFateSlot(1)">Слот №1<br><small>BIG WIN</small></button>
+                <button class="btn" id="fate-slot-btn-2" onclick="pickFateSlot(2)">Слот №2<br><small>FREE SPINS</small></button>
+                <button class="btn" id="fate-slot-btn-3" onclick="pickFateSlot(3)">Слот №3<br><small>JACKPOT</small></button>
+            </div>
+
+            <div id="fate-pickers" style="display:none">
+                <h4 style="color:var(--muted);margin-bottom:10px">Шаг 2: выберите символы (нажимай на кнопку)</h4>
+
+                <span class="fate-reel-label">Барабан 1: <b id="fate-picked-1">— не выбран —</b></span>
+                <div class="fate-symbol-grid" id="fate-reel-1"></div>
+
+                <span class="fate-reel-label">Барабан 2: <b id="fate-picked-2">— не выбран —</b></span>
+                <div class="fate-symbol-grid" id="fate-reel-2"></div>
+
+                <span class="fate-reel-label">Барабан 3: <b id="fate-picked-3">— не выбран —</b></span>
+                <div class="fate-symbol-grid" id="fate-reel-3"></div>
+
+                <button class="btn" id="fate-apply-btn" onclick="applyFate()" disabled>Задать судьбу</button>
+            </div>
+
             <div id="fate-message" class="message"></div>
             <button class="btn back-btn" onclick="showScreen('shop-screen')">В магазин</button>
         </div>
@@ -343,7 +366,7 @@
             <div class="controls-panel" id="wheel-controls" style="display:none">
                 <div id="current-bet-display-wheel" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
                 <div class="controls-row">
-                    <button class="spin-btn" id="wheel-button" onclick="spinWheel()">Вращать колесо</button>
+                    <button class="spin-btn" id="wheel-button" onclick="spinWheel()">Вращать колесo</button>
                     <div class="bet-buttons-stack">
                         <button class="small-bet-btn" onclick="setAllIn()">Ва-банк</button>
                         <button class="small-bet-btn" onclick="setHalf()">Половина</button>
@@ -657,28 +680,61 @@
             if (state.excoins < 500) { shopMsg('Недостаточно экс-валюты. Нужно 500 ₿.', 'msg-error'); return; }
             state.excoins -= 500;
             updateDisplay(); saveAll();
+            // Сброс выбора при новом входе
+            fateSelection = { slot: null, symbols: [null, null, null] };
+            document.getElementById('fate-pickers').style.display = 'none';
+            document.getElementById('fate-message').textContent = '';
+            document.getElementById('fate-message').className = 'message';
             showScreen('fate-form-screen');
         }
 
+        // ---------- Судьба: выбор кликами ----------
+        let fateSelection = { slot: null, symbols: [null, null, null] };
+
+        function pickFateSlot(slot) {
+            fateSelection.slot = slot;
+            fateSelection.symbols = [null, null, null];
+            // Подсветим выбранный слот
+            [1, 2, 3].forEach(s => {
+                document.getElementById('fate-slot-btn-' + s).style.border = (s === slot) ? '2px solid var(--green)' : 'none';
+            });
+            document.getElementById('fate-pickers').style.display = 'block';
+            const msg = document.getElementById('fate-message');
+            msg.textContent = ''; msg.className = 'message';
+            renderFatePickers();
+        }
+
+        function renderFatePickers() {
+            for (let r = 0; r < 3; r++) {
+                const grid = document.getElementById('fate-reel-' + (r + 1));
+                grid.innerHTML = SYMBOL_CHARS.map(ch =>
+                    `<button class="symbol-choice ${fateSelection.symbols[r] === ch ? 'selected' : ''}" onclick="pickSymbol(${r}, '${ch}')">${ch}</button>`
+                ).join('');
+                const label = document.getElementById('fate-picked-' + (r + 1));
+                label.textContent = fateSelection.symbols[r] || '— не выбран —';
+            }
+            const allPicked = fateSelection.symbols.every(s => s);
+            document.getElementById('fate-apply-btn').disabled = !allPicked;
+        }
+
+        function pickSymbol(reelIndex, char) {
+            fateSelection.symbols[reelIndex] = char;
+            renderFatePickers();
+        }
+
         function applyFate() {
-            const slot = parseInt(document.getElementById('fate-slot').value, 10);
-            const s1 = document.getElementById('fate-s1').value.trim();
-            const s2 = document.getElementById('fate-s2').value.trim();
-            const s3 = document.getElementById('fate-s3').value.trim();
             const msg = document.getElementById('fate-message');
             msg.textContent = ''; msg.className = 'message';
 
-            for (const [i, s] of [[1, s1], [2, s2], [3, s3]]) {
-                if (!SYMBOL_CHARS.includes(s)) {
-                    msg.textContent = `Символ №${i} не распознан. Используйте: 🍑 🍏 🍋 🍇 🍒 💎 7️⃣ 9️⃣ 💣`;
-                    msg.className = 'message msg-error';
-                    return;
-                }
+            if (!fateSelection.slot || fateSelection.symbols.some(s => !s)) {
+                msg.textContent = 'Выберите слот и по символу на каждый барабан.';
+                msg.className = 'message msg-error';
+                return;
             }
 
-            state.fate = { slot: slot, symbols: [s1, s2, s3] };
+            state.fate = { slot: fateSelection.slot, symbols: [...fateSelection.symbols] };
             saveAll();
-            msg.textContent = `✨ Судьба задана! Следующий спин слота №${slot} выпадет: ${s1} ${s2} ${s3}`;
+            msg.textContent = `✨ Судьба задана! Следующий спин слота №${fateSelection.slot} выпадет: ${fateSelection.symbols.join(' ')}`;
             msg.className = 'message msg-success';
         }
 
