@@ -9,30 +9,35 @@
         :root { --bg: #0b111e; --card: #111a2e; --green: #00ffcc; --text: #fff; --muted: #8fa0be; --red: #ff4a4a; --gold: #f1c40f; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: var(--card); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2642; }
+        header { background: var(--card); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2642; flex-wrap: wrap; gap: 10px; }
         .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; }
         .user-icon { width: 40px; height: 40px; background: #7f8c8d; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .user-icon svg { width: 24px; height: 24px; fill: #fff; }
         .brand-name { font-size: 24px; font-weight: bold; color: #2980b9; }
 
+        .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .level-badge { background: #0d1726; border: 1px solid #1f3154; padding: 8px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); }
+        .level-badge b { color: var(--gold); }
+        .jackpot-ticker { background: #1a0d1a; border: 1px solid #5a1f4a; padding: 8px 14px; border-radius: 6px; color: #ff6ec7; font-weight: bold; font-size: 14px; }
+        .daily-btn { background: #8e44ad; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .daily-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.6; }
+
         .balance-container { background: #0d1726; border: 1px solid #1f3154; padding: 8px 16px; border-radius: 6px; display: flex; align-items: center; gap: 12px; font-weight: bold; }
         .wallet-part { display: flex; align-items: center; gap: 8px; color: var(--muted); }
         .wallet-value { color: var(--gold); font-size: 18px; }
         .wallet-btn { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; padding: 4px; }
-        .wallet-btn:hover { opacity: 0.8; }
         .balance-part { display: flex; align-items: center; gap: 10px; }
-        .balance-label { color:var(--muted); font-size:14px; }
+        .balance-label { color: var(--muted); font-size: 14px; }
         .balance-value { color: var(--green); font-size: 18px; }
         .plus-btn { background: #27ae60; color: #fff; border: none; width: 24px; height: 24px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .screen { display: none; padding: 40px 20px; flex-direction: column; align-items: center; flex-grow: 1; }
         .screen.active { display: flex; }
-        .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; max-width: 900px; margin-top: 20px; }
-        .slot-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 40px 20px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .slots-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; width: 100%; max-width: 1100px; margin-top: 20px; }
+        .slot-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 35px 20px; text-align: center; cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
         .slot-card:hover { border-color: var(--green); transform: translateY(-4px); }
-        .slot-card.disabled { opacity: 0.6; cursor: not-allowed; }
         .slot-title { color: var(--green); font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-        .slot-desc { color: var(--muted); margin-top: 4px; line-height: 1.3; }
+        .slot-desc { color: var(--muted); margin-top: 4px; line-height: 1.35; font-size: 14px; }
 
         .promo-panel, .wallet-panel { background: var(--card); padding: 40px; border-radius: 12px; border: 1px solid #1a2642; width: 100%; max-width: 450px; text-align: center; }
         .input-field { width: 100%; padding: 12px; background: #0d1726; border: 1px solid #1f3154; border-radius: 6px; color: #fff; font-size: 16px; text-align: center; margin-bottom: 15px; outline: none; }
@@ -44,15 +49,13 @@
         .msg-success { color: #2ecc71; }
         .msg-info { color: var(--gold); }
 
-        .slot-machine-container { background: linear-gradient(135deg, #bdc3c7, #2c3e50); border: 12px solid #c0392b; border-radius: 20px; padding: 25px; width: 100%; max-width: 500px; margin-bottom: 30px; position: relative; overflow: hidden; }
+        .slot-machine-container { background: linear-gradient(135deg, #bdc3c7, #2c3e50); border: 12px solid #c0392b; border-radius: 20px; padding: 25px; width: 100%; max-width: 500px; margin-bottom: 30px; }
         .machine-header { background: #111; border: 4px solid var(--gold); border-radius: 8px; padding: 10px; text-align: center; margin-bottom: 20px; }
         .machine-header h1 { color: var(--gold); font-size: 28px; font-weight: 900; letter-spacing: 3px; }
         .reels-wrapper { background: #f39c12; border: 6px solid #d35400; border-radius: 10px; display: flex; justify-content: space-around; padding: 15px 10px; gap: 10px; }
-        .reel-window { background: #fff; width: 30%; height: 120px; border: 4px solid #34495e; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; }
-        /* Анимация вращения */
-        .spinning { animation: spinReel 0.4s linear infinite; }
-        @keyframes spinReel { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .symbol-item { font-size: 55px; transition: opacity 0.3s ease; }
+        .reel-window { background: #fff; width: 30%; height: 120px; border: 4px solid #34495e; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .symbol-item { font-size: 55px; }
+        .free-spins-badge { margin-top: 12px; background: #111; border: 2px solid var(--gold); border-radius: 8px; padding: 8px; color: var(--gold); font-weight: bold; font-size: 14px; }
 
         .controls-panel { background: var(--card); border: 1px solid #1a2642; border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
         .controls-row { display: flex; justify-content: space-between; align-items: stretch; gap: 15px; }
@@ -65,19 +68,35 @@
         .payout-table { margin-top: 15px; background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 15px; width: 100%; font-size: 13px; text-align: center; }
         .payout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
         .payout-item { background: var(--card); padding: 8px; border-radius: 4px; border: 1px solid #1a2642; }
+        .payout-item.full { grid-column: span 2; }
 
-        /* История раундов */
-        .history-panel { background: var(--card); border: 1px solid #1a2642; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; }
+        .history-panel { background: var(--card); border: 1px solid #1a2642; border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; margin-top: 20px; }
         .history-title { font-weight: bold; color: var(--green); margin-bottom: 10px; }
         .round-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1a2642; font-size: 14px; }
         .round-win { color: #2ecc71; font-weight: bold; }
         .round-loss { color: var(--red); font-weight: bold; }
 
-        /* Уровень удачи */
-        .luck-bar-container { margin-top: 15px; text-align: center; }
+        .luck-bar-container { margin-top: 5px; text-align: center; }
         .luck-label { font-size: 13px; color: var(--muted); margin-bottom: 4px; display: block; }
-        .luck-bar { background: #333; border-radius: 8px; height: 12px; width: 100%; overflow: hidden; position: relative; }
+        .luck-bar { background: #333; border-radius: 8px; height: 12px; width: 100%; overflow: hidden; }
         .luck-fill { height: 100%; background: var(--gold); width: 50%; transition: width 0.5s ease; }
+
+        /* Колесо фортуны */
+        .wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 0 auto 25px auto; }
+        .wheel-pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 34px; z-index: 5; }
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #c0392b; box-shadow: 0 0 25px rgba(0,0,0,0.6); transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1); }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
+
+        /* Краш */
+        .crash-container { background: #0d1726; border: 2px solid #1f3154; border-radius: 16px; padding: 30px; width: 100%; max-width: 500px; margin-bottom: 25px; text-align: center; }
+        .crash-mult { font-size: 72px; font-weight: 900; color: var(--green); min-height: 90px; }
+        .crash-mult.crashed { color: var(--red); }
+        .crash-cashout-btn { height: 70px; font-size: 20px; background: #f39c12; color: #111; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; }
+        .crash-cashout-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+        .crash-history { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 15px; font-size: 14px; }
+        .crash-chip { padding: 4px 10px; border-radius: 12px; font-weight: bold; }
+        .chip-win { background: #112c1a; color: #2ecc71; }
+        .chip-lose { background: #2c1111; color: var(--red); }
     </style>
 </head>
 <body>
@@ -90,30 +109,47 @@
             <div class="brand-name">CASINO X</div>
         </div>
 
-        <div class="balance-container">
-            <div class="wallet-part">
-                <span class="wallet-value" id="wallet-display">0</span>
-                <button class="wallet-btn" onclick="showScreen('wallet-screen')" title="Кошелёк">💰</button>
-            </div>
+        <div class="header-right">
+            <div class="level-badge" id="level-badge">Уровень: <b>1</b> • XP: 0</div>
+            <div class="jackpot-ticker">🏆 Джекпот: <span id="jackpot-display">10 000</span></div>
+            <button class="daily-btn" id="daily-btn" onclick="claimDailyBonus()">🎁 Ежедневный бонус</button>
 
-            <div class="balance-part">
-                <span class="balance-label">Баланс:</span>
-                <span class="balance-value" id="balance-display">5000</span>
-                <button class="plus-btn" onclick="showScreen('promo-screen')">$</button>
+            <div class="balance-container">
+                <div class="wallet-part">
+                    <span class="wallet-value" id="wallet-display">0</span>
+                    <button class="wallet-btn" onclick="showScreen('wallet-screen')" title="Кошелёк">💰</button>
+                </div>
+                <div class="balance-part">
+                    <span class="balance-label">Баланс:</span>
+                    <span class="balance-value" id="balance-display">5000</span>
+                    <button class="plus-btn" onclick="showScreen('promo-screen')">$</button>
+                </div>
             </div>
         </div>
     </header>
 
     <div id="main-screen" class="screen active">
-        <h2 style="margin-bottom:20px">Выберите слот</h2>
+        <h2>Выберите игру</h2>
         <div class="slots-grid">
-            <div class="slot-card" onclick="startSlot1()">
-                <div class="slot-title">Слот №1</div>
+            <div class="slot-card" onclick="startSlot(1)">
+                <div class="slot-title">Слот №1 — BIG WIN</div>
                 <div class="slot-desc">Классика: бомбы, множители и большие выигрыши.</div>
             </div>
-            <div class="slot-card" onclick="startSlot2()">
-                <div class="slot-title">Слот №2</div>
-                <div class="slot-desc">Фриспины: 3 бесплатных вращения подряд. Если выпадет 3 бомбы — раунд сгорает.</div>
+            <div class="slot-card" onclick="startSlot(2)">
+                <div class="slot-title">Слот №2 — FREE SPINS</div>
+                <div class="slot-desc">Одна ставка — три бесплатных вращения, выигрыши копятся в пот.</div>
+            </div>
+            <div class="slot-card" onclick="startSlot(3)">
+                <div class="slot-title">Слот №3 — JACKPOT</div>
+                <div class="slot-desc">Каждый спин наполняет общий джекпот. Три 💎 — забираешь весь!</div>
+            </div>
+            <div class="slot-card" onclick="startSlot(4)">
+                <div class="slot-title">Слот №4 — КОЛЕСО</div>
+                <div class="slot-desc">Колесо фортуны: множители от x0 до x10. Судьба в одном вращении.</div>
+            </div>
+            <div class="slot-card" onclick="startSlot(5)">
+                <div class="slot-title">Слот №5 — КРАШ</div>
+                <div class="slot-desc">Умножитель растёт, но в любой момент всё сгорит. Успей забрать!</div>
             </div>
         </div>
     </div>
@@ -147,22 +183,42 @@
         </div>
     </div>
 
-    <!-- Экран игры (общий контейнер) -->
     <div id="game-screen" class="screen">
         <button class="btn back-btn" style="margin:0 0 20px 0;width:100%" onclick="showScreen('main-screen')">В главное меню</button>
 
-                <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
-            <div class="slot-machine-container">
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
+
+            <!-- Слоты 1-3: барабаны -->
+            <div class="slot-machine-container" id="reels-block">
                 <div class="machine-header"><h1 id="machine-status">BIG WIN</h1></div>
                 <div class="reels-wrapper">
                     <div class="reel-window" id="reel1">❔</div>
                     <div class="reel-window" id="reel2">❔</div>
                     <div class="reel-window" id="reel3">❔</div>
                 </div>
-                <div id="free-spins-badge" style="display:none;margin-top:12px;background:#111;border:2px solid var(--gold);border-radius:8px;padding:8px;color:var(--gold);font-weight:bold;font-size:14px"></div>
+                <div class="free-spins-badge" id="free-spins-badge" style="display:none"></div>
             </div>
 
-            <div class="controls-panel">
+            <!-- Слот 4: колесо -->
+            <div class="wheel-wrapper" id="wheel-block" style="display:none">
+                <div class="wheel-pointer">🔻</div>
+                <div class="wheel" id="wheel"></div>
+                <div class="wheel-center">SPIN</div>
+            </div>
+
+            <!-- Слот 5: краш -->
+            <div class="crash-container" id="crash-block" style="display:none">
+                <div style="color:var(--muted);margin-bottom:5px">Ракета летит 🚀 — забери деньги до взрыва!</div>
+                <div class="crash-mult" id="crash-mult">x1.00</div>
+                <button class="crash-cashout-btn" id="cashout-btn" onclick="cashoutCrash()" disabled>Забрать</button>
+                <div style="color:var(--muted);font-size:13px;margin-top:12px">
+                    Авто-забрать при: <input type="number" id="auto-cashout" value="2" min="1.1" step="0.1" class="input-field" style="width:90px;display:inline-block;padding:6px;margin:0">
+                </div>
+                <div class="crash-history" id="crash-history"></div>
+            </div>
+
+            <!-- Управление ставкой (слоты 1-3) -->
+            <div class="controls-panel" id="reels-controls">
                 <div id="current-bet-display" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold">Текущая ставка: <span style="color:var(--green)">100</span></div>
 
                 <div class="controls-row">
@@ -175,10 +231,6 @@
 
                 <div id="game-message" class="message" style="text-align:center"></div>
 
-                <div class="controls-row">
-                    <button class="btn back-btn" style="margin:0;width:100%" onclick="showScreen('main-screen')">Выйти в главное меню</button>
-                </div>
-
                 <div class="luck-bar-container">
                     <span class="luck-label">Уровень удачи</span>
                     <div class="luck-bar"><div class="luck-fill" id="luck-fill"></div></div>
@@ -186,38 +238,76 @@
 
                 <div class="payout-table">
                     <h4 style="color:var(--muted);margin-bottom:10px">Правила выплат и угроз</h4>
+                    <div class="payout-grid" id="payout-grid"></div>
+                </div>
+            </div>
+
+            <!-- Управление слотом 4 -->
+            <div class="controls-panel" id="wheel-controls" style="display:none">
+                <div id="current-bet-display-wheel" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
+                <div class="controls-row">
+                    <button class="spin-btn" id="wheel-button" onclick="spinWheel()">Вращать колесо</button>
+                    <div class="bet-buttons-stack">
+                        <button class="small-bet-btn" id="all-in-btn-w" onclick="setAllIn()">Ва-банк</button>
+                        <button class="small-bet-btn" id="half-btn-w" onclick="setHalf()">Половина</button>
+                    </div>
+                </div>
+                <div id="game-message-wheel" class="message" style="text-align:center"></div>
+                <div class="payout-table">
+                    <h4 style="color:var(--muted);margin-bottom:10px">Секторы колеса</h4>
+                    <div class="payout-grid" id="wheel-payout-grid"></div>
+                </div>
+            </div>
+
+            <!-- Управление слотом 5 -->
+            <div class="controls-panel" id="crash-controls" style="display:none">
+                <div id="current-bet-display-crash" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
+                <div class="controls-row">
+                    <button class="spin-btn" id="crash-start-btn" onclick="startCrash()">🚀 Запустить</button>
+                </div>
+                <div id="game-message-crash" class="message" style="text-align:center"></div>
+                <div class="payout-table">
+                    <h4 style="color:var(--muted);margin-bottom:10px">Как играть в Краш</h4>
                     <div class="payout-grid">
-                        <div class="payout-item">7️⃣7️⃣7️⃣: СТАВКА х1 000 000</div>
-                        <div class="payout-item">9️⃣: Ставка х7</div>
-                        <div class="payout-item">7️⃣: Ставка x6</div>
-                        <div class="payout-item">🍇 Малина: Ставка х3</div>
-                        <div class="payout-item">🍋 Лимон: Ставка х5</div>
-                        <div class="payout-item">🍏 Слива: Ставка х4</div>
-                        <div class="payout-item">🍑 Персик: Ставка х2</div>
-                        <div class="payout-item">🍒 Вишня: Ставка х8</div>
-                        <div class="payout-item">💎 Алмаз: Ставка х15</div>
-                        <div class="payout-item">🎰 Пара символов: Ставка х1.2</div>
-                        <div class="payout-item" style="border-color:var(--red);grid-column:span 2">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>
-                        <div class="payout-item" style="background:#2c1111;border-color:var(--red);grid-column:span 2">💣💣💣 3 шт: Ставка сгорает, Баланс = 2 валюты!</div>
-                        <div class="payout-item" style="background:#112c1a;border-color:#2ecc71;grid-column:span 2">🎁 Слот №2: 1 спин = 3 фриспина, выигрыши копятся в пот и падают в конце раунда. Три бомбы — раунд сгорает!</div>
+                        <div class="payout-item full">Ставка списывается при запуске. Умножитель растёт с каждой секундой.</div>
+                        <div class="payout-item full">Нажми «Забрать», чтобы получить ставка × текущий множитель.</div>
+                        <div class="payout-item full" style="border-color:var(--red);background:#2c1111">Не успел до взрыва — ставка сгорает целиком!</div>
+                        <div class="payout-item full">Авто-забрать: если множитель дойдёт до указанного — забрать автоматически.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="history-panel" style="margin-top:20px">
+            <div class="history-panel">
                 <div class="history-title">📜 История раундов (последние 10)</div>
                 <div id="history-list" style="color:var(--muted)">Пока пусто</div>
             </div>
         </div>
     </div>
 
-    <!-- ЧАСТЬ 3: ЛОГИКА (JS) -->
     <script>
+        const DEFAULTS = { balance: 5000, wallet: 0, currentBet: 100, luck: 50, xp: 0, jackpot: 10000, lastBonusDate: null };
+
         let state = {
             balance: 5000, wallet: 0, currentBet: 100, isSpinning: false,
-            currentSlot: 1, luck: 50, history: [], freeSpinsLeft: 0, roundPot: 0
+            currentSlot: 1, luck: 50, history: [], freeSpinsLeft: 0, roundPot: 0,
+            xp: 0, jackpot: 10000, lastBonusDate: null
         };
 
+        // ---------- Сохранение ----------
+        function save() {
+            localStorage.setItem('casinox_save', JSON.stringify({
+                balance: state.balance, wallet: state.wallet, luck: state.luck,
+                xp: state.xp, jackpot: state.jackpot, lastBonusDate: state.lastBonusDate
+            }));
+        }
+        function load() {
+            try {
+                const data = JSON.parse(localStorage.getItem('casinox_save'));
+                if (data) Object.assign(state, data);
+            } catch (e) { /* первый запуск */ }
+        }
+
+        // ---------- Символы ----------
         const symbolsConfig = [
             { char: '🍑', weight: 12, win: 2 },
             { char: '🍏', weight: 9, win: 4 },
@@ -229,24 +319,69 @@
             { char: '9️⃣', weight: 2, win: 7 },
             { char: '💣', weight: 3, win: -1 }
         ];
+        const noBombPool = symbolsConfig.filter(s => s.char !== '💣');
 
-        function getRandomSymbol() {
-            const totalWeight = symbolsConfig.reduce((sum, item) => sum + item.weight, 0);
+        function getRandomSymbol(pool) {
+            const totalWeight = pool.reduce((sum, item) => sum + item.weight, 0);
             let r = Math.random() * totalWeight;
-            for (const item of symbolsConfig) {
+            for (const item of pool) {
                 if (r < item.weight) return item;
                 r -= item.weight;
             }
-            return symbolsConfig[0];
+            return pool[0];
         }
 
+        // ---------- Уровни ----------
+        const RANKS = ['Новичок', 'Игрок', 'Профи', 'Хайроллер', 'VIP', 'Легенда'];
+        function getLevel() { return Math.floor(Math.sqrt(state.xp / 500)) + 1; }
+        function addXP(amount) {
+            const before = getLevel();
+            state.xp += amount;
+            const after = getLevel();
+            if (after > before) {
+                state.balance += 1000;
+                setGameMessage(`🎉 Новый уровень: ${after} (${RANKS[Math.min(after - 1, RANKS.length - 1)]})! Бонус +1000.`, 'msg-success');
+            }
+            renderLevel();
+        }
+        function renderLevel() {
+            const lvl = getLevel();
+            const rank = RANKS[Math.min(lvl - 1, RANKS.length - 1)];
+            document.getElementById('level-badge').innerHTML = `Уровень: <b>${lvl}</b> (${rank}) • XP: ${state.xp}`;
+        }
+
+        // ---------- Ежедневный бонус ----------
+        function claimDailyBonus() {
+            const today = new Date().toDateString();
+            if (state.lastBonusDate === today) {
+                setGameMessage('Бонус уже получен. Заходи завтра!', 'msg-error');
+                return;
+            }
+            state.lastBonusDate = today;
+            const bonus = 1000 + getLevel() * 100;
+            state.balance += bonus;
+            setGameMessage(`🎁 Ежедневный бонус: +${bonus} валюты!`, 'msg-success');
+            renderDailyBtn();
+            updateDisplay();
+            save();
+        }
+        function renderDailyBtn() {
+            const btn = document.getElementById('daily-btn');
+            const taken = state.lastBonusDate === new Date().toDateString();
+            btn.disabled = taken;
+            btn.textContent = taken ? '🎁 Бонус получен' : '🎁 Ежедневный бонус';
+        }
+
+        // ---------- Отображение ----------
         function updateDisplay() {
-            const balanceEl = document.getElementById('balance-display');
-            const walletEl = document.getElementById('wallet-display');
-            const betEl = document.getElementById('current-bet-display');
-            if (balanceEl) balanceEl.textContent = state.balance;
-            if (walletEl) walletEl.textContent = state.wallet;
-            if (betEl) betEl.innerHTML = `Текущая ставка: <span style="color:var(--green)">${state.currentBet}</span>`;
+            document.getElementById('balance-display').textContent = state.balance;
+            document.getElementById('wallet-display').textContent = state.wallet;
+            document.getElementById('jackpot-display').textContent = state.jackpot.toLocaleString('ru-RU');
+            const betText = `Текущая ставка: <span style="color:var(--green)">${state.currentBet}</span>`;
+            ['current-bet-display', 'current-bet-display-wheel', 'current-bet-display-crash'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = betText;
+            });
         }
 
         function showScreen(screenId) {
@@ -259,68 +394,85 @@
             if (state.balance > 0) state.currentBet = state.balance;
             updateDisplay();
         }
-
         function setHalf() {
             state.currentBet = Math.max(1, Math.floor(state.balance / 2));
             updateDisplay();
         }
 
-        // Выбор слота
-        function startSlot1() {
-            state.currentSlot = 1;
-            document.getElementById('machine-status').textContent = 'BIG WIN';
-            document.getElementById('game-message').textContent = '';
-            showScreen('game-screen');
+        function setGameMessage(text, type) {
+            const map = { 1: 'game-message', 2: 'game-message', 3: 'game-message', 4: 'game-message-wheel', 5: 'game-message-crash' };
+            const el = document.getElementById(map[state.currentSlot]);
+            el.textContent = text;
+            el.className = 'message ' + (type || '');
         }
 
-        function startSlot2() {
-            state.currentSlot = 2;
-            document.getElementById('machine-status').textContent = 'FREE SPINS';
-            document.getElementById('game-message').textContent = '';
+        // ---------- Выбор слота ----------
+        const SLOT_RULES = {
+            1: [
+                '🍑 Персик: Ставка х2', '🍏 Слива: Ставка х4', '🍇 Малина: Ставка х3', '🍋 Лимон: Ставка х5',
+                '🍒 Вишня: Ставка х8', '💎 Алмаз: Ставка х15', '7️⃣: Ставка х6', '9️⃣: Ставка х7',
+                '🎰 Пара символов: Ставка х1.2',
+                '<div class="payout-item full" style="border-color:var(--red)">💣 1 или 2 шт: Баланс и Ставка делятся на 2!</div>',
+                '<div class="payout-item full" style="background:#2c1111;border-color:var(--red)">💣💣💣 3 шт: Ставка сгорает, Баланс = 2 валюты!</div>'
+            ],
+            2: [
+                '🎁 Правила как в Слоте №1, но: 1 ставка = 3 фриспина.',
+                '🎁 Выигрыши копятся в пот и падают в конце раунда.',
+                '<div class="payout-item full" style="border-color:var(--red)">💣 1-2 шт: Пот режется вдвое, фриспинов остаётся максимум 1.</div>',
+                '<div class="payout-item full" style="background:#2c1111;border-color:var(--red)">💣💣💣 3 шт: Раунд сгорает, пот обнуляется!</div>'
+            ],
+            3: [
+                '🍑 Персик: Ставка х2', '🍏 Слива: Ставка х4', '🍇 Малина: Ставка х3', '🍋 Лимон: Ставка х5',
+                '🍒 Вишня: Ставка х8', '7️⃣: Ставка х6', '9️⃣: Ставка х7', '🎰 Пара символов: Ставка х1.2',
+                '10% каждой ставки идут в общий джекпот.',
+                '<div class="payout-item full" style="background:#1a0d1a;border-color:#ff6ec7">💎💎💎 ТРИ АЛМАЗА: забираешь весь джекпот! Он сбрасывается до 10 000.</div>',
+                '<div class="payout-item full">В этом слоте нет бомб — только выплаты.</div>'
+            ]
+        };
+
+        function startSlot(n) {
+            if (state.isSpinning || crashActive) return;
+            state.currentSlot = n;
+            showScreen('game-screen');
+            document.getElementById('reels-block').style.display = (n <= 3) ? 'block' : 'none';
+            document.getElementById('reels-controls').style.display = (n <= 3) ? 'flex' : 'none';
+            document.getElementById('wheel-block').style.display = (n === 4) ? 'block' : 'none';
+            document.getElementById('wheel-controls').style.display = (n === 4) ? 'flex' : 'none';
+            document.getElementById('crash-block').style.display = (n === 5) ? 'block' : 'none';
+            document.getElementById('crash-controls').style.display = (n === 5) ? 'flex' : 'none';
             document.getElementById('free-spins-badge').style.display = 'none';
-            showScreen('game-screen');
+
+            const status = { 1: 'BIG WIN', 2: 'FREE SPINS', 3: 'JACKPOT', 4: 'КОЛЕСО ФОРТУНЫ', 5: 'КРАШ' }[n];
+            document.getElementById('machine-status').textContent = status;
+
+            const grid = document.getElementById('payout-grid');
+            if (n <= 3) grid.innerHTML = SLOT_RULES[n].map(r => r.startsWith('<') ? r : `<div class="payout-item">${r}</div>`).join('');
+            renderWheelGrid();
+            setGameMessage('');
+            updateDisplay();
         }
 
-        function updateFreeSpinsBadge() {
-            const badge = document.getElementById('free-spins-badge');
-            if (state.currentSlot !== 2 || state.freeSpinsLeft <= 0) {
-                badge.style.display = 'none';
-                return;
-            }
-            badge.style.display = 'block';
-            badge.textContent = `🎁 Фриспинов осталось: ${state.freeSpinsLeft} • Накоплено в поте: ${state.roundPot}`;
-        }
-
-        // История раундов
-        function addHistory(results, delta) {
-            state.history.unshift({
-                symbols: results.map(r => r.char).join(' '),
-                delta: delta
-            });
+        // ---------- История и удача ----------
+        function addHistory(text, delta) {
+            state.history.unshift({ text, delta });
             if (state.history.length > 10) state.history.pop();
             renderHistory();
         }
-
         function renderHistory() {
             const el = document.getElementById('history-list');
-            if (!state.history.length) {
-                el.innerHTML = '<div style="color:var(--muted)">Пока пусто</div>';
-                return;
-            }
+            if (!state.history.length) { el.innerHTML = '<div style="color:var(--muted)">Пока пусто</div>'; return; }
             el.innerHTML = state.history.map(h => {
                 const cls = h.delta > 0 ? 'round-win' : (h.delta < 0 ? 'round-loss' : '');
                 const sign = h.delta > 0 ? '+' : '';
-                return `<div class="round-row"><span>${h.symbols}</span><span class="${cls}">${sign}${h.delta}</span></div>`;
+                return `<div class="round-row"><span>${h.text}</span><span class="${cls}">${sign}${h.delta}</span></div>`;
             }).join('');
         }
-
-        // Уровень удачи
         function updateLuck(delta) {
             state.luck = Math.max(0, Math.min(100, state.luck + delta));
             document.getElementById('luck-fill').style.width = state.luck + '%';
         }
 
-        // Анимация барабана: быстро мелькают символы, потом фиксируется результат
+        // ---------- Анимация барабана ----------
         function spinReelAnimation(reel, finalSymbol, delay) {
             return new Promise(resolve => {
                 const flick = setInterval(() => {
@@ -334,104 +486,58 @@
             });
         }
 
-        // Перевод с баланса в кошелёк
+        // ---------- Кошелёк ----------
         function transferToWallet() {
-            const amountInput = document.getElementById('wallet-amount');
-            const messageEl = document.getElementById('wallet-message');
-            const amount = parseInt(amountInput.value, 10);
-
-            messageEl.textContent = '';
-            messageEl.className = 'message';
-
-            if (!amount || amount <= 0) {
-                messageEl.textContent = 'Введите корректную сумму.';
-                messageEl.className = 'message msg-error';
-                return;
-            }
-            if (amount > state.balance) {
-                messageEl.textContent = 'Недостаточно средств на балансе.';
-                messageEl.className = 'message msg-error';
-                return;
-            }
-
-            state.balance -= amount;
-            state.wallet += amount;
-            amountInput.value = '';
-            messageEl.textContent = `Переведено ${amount} в кошелёк.`;
-            messageEl.className = 'message msg-success';
-            updateDisplay();
+            const input = document.getElementById('wallet-amount');
+            const msgEl = document.getElementById('wallet-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите корректную сумму.'; msgEl.className = 'message msg-error'; return; }
+            if (amount > state.balance) { msgEl.textContent = 'Недостаточно средств на балансе.'; msgEl.className = 'message msg-error'; return; }
+            state.balance -= amount; state.wallet += amount;
+            input.value = '';
+            msgEl.textContent = `Переведено ${amount} в кошелёк.`; msgEl.className = 'message msg-success';
+            updateDisplay(); save();
         }
-
-        // Вывод из кошелька обратно на баланс
         function withdrawFromWallet() {
-            const amountInput = document.getElementById('withdraw-amount');
-            const messageEl = document.getElementById('wallet-message');
-            const amount = parseInt(amountInput.value, 10);
-
-            messageEl.textContent = '';
-            messageEl.className = 'message';
-
-            if (!amount || amount <= 0) {
-                messageEl.textContent = 'Введите корректную сумму.';
-                messageEl.className = 'message msg-error';
-                return;
-            }
-            if (amount > state.wallet) {
-                messageEl.textContent = 'В кошельке недостаточно средств.';
-                messageEl.className = 'message msg-error';
-                return;
-            }
-
-            state.wallet -= amount;
-            state.balance += amount;
-            amountInput.value = '';
-            messageEl.textContent = `Возвращено ${amount} на баланс.`;
-            messageEl.className = 'message msg-success';
-            updateDisplay();
+            const input = document.getElementById('withdraw-amount');
+            const msgEl = document.getElementById('wallet-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите корректную сумму.'; msgEl.className = 'message msg-error'; return; }
+            if (amount > state.wallet) { msgEl.textContent = 'В кошельке недостаточно средств.'; msgEl.className = 'message msg-error'; return; }
+            state.wallet -= amount; state.balance += amount;
+            input.value = '';
+            msgEl.textContent = `Возвращено ${amount} на баланс.`; msgEl.className = 'message msg-success';
+            updateDisplay(); save();
         }
 
-        // Промокоды
+        // ---------- Промокоды ----------
         function activatePromo() {
             const input = document.getElementById('promo-input');
             const msgEl = document.getElementById('promo-message');
             const code = (input.value || '').trim().toUpperCase();
-
-            msgEl.textContent = '';
-            msgEl.className = 'message';
-
+            msgEl.textContent = ''; msgEl.className = 'message';
             if (code === 'DIMA' || code === 'PASHA') {
                 state.balance += 2000000;
                 msgEl.textContent = `Промокод ${code} активирован! Начислено 2 000 000.`;
                 msgEl.className = 'message msg-success';
-                updateDisplay();
-                input.value = '';
+                updateDisplay(); save(); input.value = '';
                 return;
             }
-
             if (code === 'BONUS1000') {
                 state.balance += 1000;
                 msgEl.textContent = 'Бонус 1000 успешно начислен!';
                 msgEl.className = 'message msg-success';
-                updateDisplay();
-                input.value = '';
+                updateDisplay(); save(); input.value = '';
                 return;
             }
-
             msgEl.textContent = 'Промокод не найден.';
             msgEl.className = 'message msg-error';
         }
 
-        function setGameMessage(text, type) {
-            const gameMsg = document.getElementById('game-message');
-            gameMsg.textContent = text;
-            gameMsg.className = 'message ' + (type || '');
-        }
-
-        // ============ СЛОТ №1 ============
-        async function calculatePayout(results) {
-            const c1 = results[0].char;
-            const c2 = results[1].char;
-            const c3 = results[2].char;
+        // ============ СЛОТ 1 ============
+        async function calculatePayoutSlot1(results) {
             const before = state.balance;
             const bombCount = results.filter(r => r.char === '💣').length;
 
@@ -445,21 +551,19 @@
                 setGameMessage(`💣 ${bombCount} бомба(ы). Баланс и ставка поделены на 2!`, 'msg-error');
                 updateLuck(-10);
             } else {
-                let payoutMultiplier = 0;
-                let message = '';
-                if (c1 === c2 && c2 === c3) {
-                    const winConfig = symbolsConfig.find(cfg => cfg.char === c1);
-                    payoutMultiplier = winConfig ? winConfig.win : 0;
-                    message = `🎉 Три одинаковых: ${c1}! Выигрыш: ставка ×${payoutMultiplier}`;
-                } else if (c1 === c2 || c2 === c3 || c1 === c3) {
-                    payoutMultiplier = 1.2;
+                let mult = 0, message = '';
+                const [a, b, c] = [results[0].char, results[1].char, results[2].char];
+                if (a === b && b === c) {
+                    mult = symbolsConfig.find(s => s.char === a).win;
+                    message = `🎉 Три одинаковых: ${a}! Выигрыш: ставка ×${mult}`;
+                } else if (a === b || b === c || a === c) {
+                    mult = 1.2;
                     message = '🎰 Пара символов! Небольшой бонус.';
                 } else {
                     message = '😢 Не повезло. Попробуй ещё раз.';
                     updateLuck(-6);
                 }
-
-                const payout = Math.floor(state.currentBet * payoutMultiplier);
+                const payout = Math.floor(state.currentBet * mult);
                 if (payout > 0) {
                     state.balance += payout;
                     message += ` +${payout} валюты.`;
@@ -470,49 +574,46 @@
                     setGameMessage(message, 'msg-error');
                 }
             }
-
-            addHistory(results, state.balance - before);
-            updateDisplay();
+            addHistory(results.map(r => r.char).join(' '), state.balance - before);
+            addXP(state.currentBet);
+            updateDisplay(); save();
         }
 
-        // ============ СЛОТ №2: ФРИСПИНЫ ============
+        // ============ СЛОТ 2 ============
+        function updateFreeSpinsBadge() {
+            const badge = document.getElementById('free-spins-badge');
+            if (state.currentSlot !== 2 || state.freeSpinsLeft <= 0) { badge.style.display = 'none'; return; }
+            badge.style.display = 'block';
+            badge.textContent = `🎁 Фриспинов осталось: ${state.freeSpinsLeft} • Накоплено в поте: ${state.roundPot}`;
+        }
         async function runFreeSpinRound(reels) {
             const before = state.balance;
             const startBet = state.currentBet;
-
-            // Ставка списывается один раз, дальше 3 бесплатных вращения
             state.balance -= startBet;
             state.freeSpinsLeft = 3;
             state.roundPot = 0;
-            updateDisplay();
-            updateFreeSpinsBadge();
+            updateDisplay(); updateFreeSpinsBadge();
             setGameMessage('🎁 Раунд фриспинов начался! Ставка списана 1 раз.', 'msg-info');
 
             let results = [];
             for (let i = 0; i < 3; i++) {
-                results = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
+                results = [getRandomSymbol(symbolsConfig), getRandomSymbol(symbolsConfig), getRandomSymbol(symbolsConfig)];
                 await Promise.all([
                     spinReelAnimation(reels[0], results[0], 800),
                     spinReelAnimation(reels[1], results[1], 1100),
                     spinReelAnimation(reels[2], results[2], 1400)
                 ]);
-
                 const bombCount = results.filter(r => r.char === '💣').length;
-
                 if (bombCount === 3) {
-                    // Три бомбы — весь пот сгорает, раунд заканчивается
-                    state.roundPot = 0;
-                    state.freeSpinsLeft = 0;
+                    state.roundPot = 0; state.freeSpinsLeft = 0;
                     updateFreeSpinsBadge();
                     setGameMessage('💣💣💣 ТРИ БОМБЫ! Раунд фриспинов сгорел, пот обнулился.', 'msg-error');
                     updateLuck(-15);
-                    addHistory(results, state.balance - before);
-                    updateDisplay();
+                    addHistory('Фриспины: сгорели', state.balance - before);
+                    updateDisplay(); save();
                     return;
                 }
-
                 if (bombCount >= 1) {
-                    // 1-2 бомбы: пот режется вдвое, остаётся максимум 1 фриспин
                     state.roundPot = Math.floor(state.roundPot / 2);
                     if (i < 2) state.freeSpinsLeft = 1;
                     updateFreeSpinsBadge();
@@ -521,48 +622,246 @@
                     await new Promise(r => setTimeout(r, 800));
                     continue;
                 }
-
-                // Честный спин: считаем выплату
                 let mult = 0;
                 const [a, b, c] = [results[0].char, results[1].char, results[2].char];
-                if (a === b && b === c) {
-                    const winConfig = symbolsConfig.find(cfg => cfg.char === a);
-                    mult = winConfig ? winConfig.win : 0;
-                } else if (a === b || b === c || a === c) {
-                    mult = 1.2;
-                }
+                if (a === b && b === c) mult = symbolsConfig.find(s => s.char === a).win;
+                else if (a === b || b === c || a === c) mult = 1.2;
                 state.roundPot += Math.floor(startBet * mult);
                 if (mult >= 3) updateLuck(+10); else if (mult > 0) updateLuck(+5);
-
                 if (i < 2) {
                     state.freeSpinsLeft--;
                     updateFreeSpinsBadge();
                     await new Promise(r => setTimeout(r, 600));
                 }
             }
-
             state.freeSpinsLeft = 0;
             updateFreeSpinsBadge();
-
             if (state.roundPot > 0) {
                 state.balance += state.roundPot;
                 setGameMessage(`🎁 Раунд завершён! Выигрыш из пота: +${state.roundPot} валюты.`, 'msg-success');
             } else {
                 setGameMessage('Раунд завершён. Пот пуст — выигрыша нет.', 'msg-error');
             }
-            addHistory(results, state.balance - before);
-            updateDisplay();
+            addHistory('Фриспины: ' + results.map(r => r.char).join(' '), state.balance - before);
+            addXP(startBet);
+            updateDisplay(); save();
         }
 
-        // ============ ЗАПУСК ВРАЩЕНИЯ ============
+        // ============ СЛОТ 3: ДЖЕКПОТ ============
+        async function calculatePayoutSlot3(results) {
+            const before = state.balance;
+            const bet = state.currentBet;
+            state.jackpot += Math.floor(bet * 0.1);
+
+            let mult = 0, message = '';
+            const [a, b, c] = [results[0].char, results[1].char, results[2].char];
+            if (a === '💎' && b === '💎' && c === '💎') {
+                const jackpotWin = state.jackpot;
+                state.balance += jackpotWin;
+                state.jackpot = 10000;
+                setGameMessage(`💎💎💎 ДЖЕКПОТ! Ты забрал ${jackpotWin.toLocaleString('ru-RU')} валюты!`, 'msg-success');
+                updateLuck(+20);
+                addHistory('💎💎💎 ДЖЕКПОТ!', jackpotWin);
+                addXP(bet);
+                updateDisplay(); save();
+                return;
+            }
+            if (a === b && b === c) {
+                mult = symbolsConfig.find(s => s.char === a).win;
+                message = `🎉 Три одинаковых: ${a}!`;
+            } else if (a === b || b === c || a === c) {
+                mult = 1.2;
+                message = '🎰 Пара символов!';
+            } else {
+                message = '😢 Не повезло. Попробуй ещё раз.';
+                updateLuck(-6);
+            }
+            const payout = Math.floor(bet * mult);
+            if (payout > 0) {
+                state.balance += payout;
+                message += ` Выигрыш: +${payout} валюты.`;
+                setGameMessage(message, 'msg-success');
+                updateLuck(+8);
+            } else {
+                state.balance -= bet;
+                setGameMessage(message, 'msg-error');
+            }
+            addHistory(results.map(r => r.char).join(' '), state.balance - before);
+            addXP(bet);
+            updateDisplay(); save();
+        }
+
+        // ============ СЛОТ 4: КОЛЕСО ФОРТУНЫ ============
+        const wheelSectors = [
+            { label: 'x10', mult: 10, weight: 2,  color: '#8e44ad' },
+            { label: 'x0',  mult: 0,  weight: 26, color: '#2c3e50' },
+            { label: 'x1.5',mult: 1.5,weight: 14, color: '#2980b9' },
+            { label: 'x0.5',mult: 0.5,weight: 20, color: '#16a085' },
+            { label: 'x3',  mult: 3,  weight: 6,  color: '#e67e22' },
+            { label: 'x0',  mult: 0,  weight: 14, color: '#2c3e50' },
+            { label: 'x2',  mult: 2,  weight: 10, color: '#27ae60' },
+            { label: 'x1',  mult: 1,  weight: 8,  color: '#f1c40f' }
+        ];
+        let wheelRotation = 0;
+
+        function renderWheelGrid() {
+            const grid = document.getElementById('wheel-payout-grid');
+            if (!grid) return;
+            grid.innerHTML = wheelSectors.map(s =>
+                `<div class="payout-item"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${s.color};margin-right:6px"></span>${s.label} — шанс ${s.weight}%</div>`
+            ).join('');
+            // Градиент колеса (сектор 0 начинается сверху, по часовой)
+            const stops = [];
+            let acc = 0;
+            wheelSectors.forEach(s => {
+                const start = (acc / 100) * 360;
+                acc += s.weight;
+                const end = (acc / 100) * 360;
+                stops.push(`${s.color} ${start}deg ${end}deg`);
+            });
+            document.getElementById('wheel').style.background = `conic-gradient(${stops.join(',')})`;
+        }
+
+        function spinWheel() {
+            if (wheelSpinning || state.balance < state.currentBet || state.currentBet < 1) return;
+            wheelSpinning = true;
+            document.getElementById('wheel-button').disabled = true;
+            const bet = state.currentBet;
+            state.balance -= bet;
+            updateDisplay();
+
+            // Выбор сектора по весам
+            const total = wheelSectors.reduce((s, x) => s + x.weight, 0);
+            let r = Math.random() * total, index = 0;
+            for (let i = 0; i < wheelSectors.length; i++) {
+                if (r < wheelSectors[i].weight) { index = i; break; }
+                r -= wheelSectors[i].weight;
+            }
+
+            const sectorCenter = index * 45 + 22.5;
+            wheelRotation += 5 * 360 + (360 - (sectorCenter % 360) - (wheelRotation % 360));
+            wheelRotation = Math.round(wheelRotation);
+            const wheelEl = document.getElementById('wheel');
+            wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
+
+            setGameMessageWheel('Колесо вращается...', 'msg-info');
+            setTimeout(() => {
+                const sector = wheelSectors[index];
+                const win = Math.floor(bet * sector.mult);
+                if (win > 0) {
+                    state.balance += win;
+                    setGameMessageWheel(`🎯 Сектор ${sector.label}! Выигрыш: +${win} валюты.`, 'msg-success');
+                    updateLuck(sector.mult >= 2 ? +10 : +4);
+                } else {
+                    setGameMessageWheel(`🎯 Сектор ${sector.label}. Ставка потеряна.`, 'msg-error');
+                    updateLuck(-8);
+                }
+                addHistory('Колесо: ' + sector.label, state.balance - (state.balance - win > 0 ? state.balance - win : 0) - 0 || win - bet);
+                // для истории проще записать дельту от ставки:
+                state.history[0] = { text: 'Колесо: ' + sector.label, delta: win - bet };
+                renderHistory();
+                addXP(bet);
+                wheelSpinning = false;
+                document.getElementById('wheel-button').disabled = false;
+                updateDisplay(); save();
+            }, 4200);
+        }
+        function setGameMessageWheel(text, type) {
+            const el = document.getElementById('game-message-wheel');
+            el.textContent = text;
+            el.className = 'message ' + (type || '');
+        }
+
+        // ============ СЛОТ 5: КРАШ ============
+        let crashActive = false, crashTimer = null, crashBet = 0, crashMult = 1.0, crashPoint = 0, crashStart = 0;
+        let crashHistory = [];
+
+        function startCrash() {
+            if (crashActive || state.balance < state.currentBet || state.currentBet < 1) return;
+            crashActive = true;
+            crashBet = state.currentBet;
+            state.balance -= crashBet;
+            updateDisplay();
+
+            const r = Math.random();
+            crashPoint = (r < 0.04) ? 1.00 : Math.min(50, Math.floor((0.98 / (1 - Math.random())) * 100) / 100);
+            crashMult = 1.0;
+            crashStart = performance.now();
+
+            document.getElementById('crash-start-btn').disabled = true;
+            const cashBtn = document.getElementById('cashout-btn');
+            cashBtn.disabled = false;
+            cashBtn.textContent = 'Забрать x1.00';
+            setGameMessageCrash('Ракета взлетела! Следи за множителем.', 'msg-info');
+
+            crashTimer = setInterval(() => {
+                const elapsed = (performance.now() - crashStart) / 1000;
+                crashMult = Math.exp(0.28 * elapsed);
+                const autoTarget = parseFloat(document.getElementById('auto-cashout').value);
+
+                if (crashMult >= crashPoint) {
+                    crashMult = crashPoint;
+                    crashOver(false);
+                    return;
+                }
+                if (autoTarget && autoTarget >= 1.1 && crashMult >= autoTarget) {
+                    crashOver(true);
+                    return;
+                }
+                document.getElementById('crash-mult').textContent = 'x' + crashMult.toFixed(2);
+                cashBtn.textContent = `Забрать x${crashMult.toFixed(2)}`;
+            }, 50);
+        }
+
+        function cashoutCrash() {
+            if (!crashActive) return;
+            crashOver(true);
+        }
+
+        function crashOver(cashedOut) {
+            clearInterval(crashTimer);
+            crashActive = false;
+            const multEl = document.getElementById('crash-mult');
+            const cashBtn = document.getElementById('cashout-btn');
+            document.getElementById('crash-start-btn').disabled = false;
+            cashBtn.disabled = true;
+
+            if (cashedOut) {
+                const win = Math.floor(crashBet * crashMult);
+                state.balance += win;
+                multEl.textContent = 'x' + crashMult.toFixed(2);
+                setGameMessageCrash(`✅ Забрал на x${crashMult.toFixed(2)}! Выигрыш: +${win} валюты.`, 'msg-success');
+                updateLuck(+10);
+                crashHistory.unshift({ mult: crashMult, win: true });
+                addHistory(`Краш: забрал x${crashMult.toFixed(2)}`, win - crashBet);
+            } else {
+                multEl.textContent = '💥 x' + crashMult.toFixed(2);
+                multEl.classList.add('crashed');
+                setGameMessageCrash(`💥 ВЗРЫВ на x${crashMult.toFixed(2)}! Ставка ${crashBet} сгорела.`, 'msg-error');
+                updateLuck(-12);
+                crashHistory.unshift({ mult: crashMult, win: false });
+                addHistory(`Краш: взрыв x${crashMult.toFixed(2)}`, -crashBet);
+            }
+            if (crashHistory.length > 8) crashHistory.pop();
+            document.getElementById('crash-history').innerHTML = crashHistory.map(h =>
+                `<span class="crash-chip ${h.win ? 'chip-win' : 'chip-lose'}">${h.win ? '✔' : '💥'} x${h.mult.toFixed(2)}</span>`
+            ).join('');
+            setTimeout(() => multEl.classList.remove('crashed'), 1500);
+            addXP(crashBet);
+            updateDisplay(); save();
+        }
+
+        function setGameMessageCrash(text, type) {
+            const el = document.getElementById('game-message-crash');
+            el.textContent = text;
+            el.className = 'message ' + (type || '');
+        }
+
+        // ============ ЗАПУСК ВРАЩЕНИЯ (слоты 1-3) ============
         async function startSpin() {
             if (state.isSpinning || state.balance < state.currentBet || state.currentBet < 1) return;
 
-            const reels = [
-                document.getElementById('reel1'),
-                document.getElementById('reel2'),
-                document.getElementById('reel3')
-            ];
+            const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
             const statusEl = document.getElementById('machine-status');
             const spinBtn = document.getElementById('spin-button');
 
@@ -571,28 +870,36 @@
             spinBtn.disabled = true;
             reels.forEach(r => r.innerHTML = '<span class="symbol-item">⏳</span>');
 
-            if (state.currentSlot === 1) {
+            if (state.currentSlot === 2) {
+                statusEl.textContent = 'FREE SPINS';
+                await runFreeSpinRound(reels);
+            } else {
                 statusEl.textContent = 'КРУЧУ...';
-                const results = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
+                const pool = state.currentSlot === 3 ? noBombPool : symbolsConfig;
+                const results = [getRandomSymbol(pool), getRandomSymbol(pool), getRandomSymbol(pool)];
                 await Promise.all([
                     spinReelAnimation(reels[0], results[0], 1000),
                     spinReelAnimation(reels[1], results[1], 1400),
                     spinReelAnimation(reels[2], results[2], 1800)
                 ]);
-                await calculatePayout(results);
-            } else {
-                statusEl.textContent = 'FREE SPINS';
-                await runFreeSpinRound(reels);
+                if (state.currentSlot === 3) await calculatePayoutSlot3(results);
+                else await calculatePayoutSlot1(results);
             }
 
-            statusEl.textContent = state.currentSlot === 1 ? 'BIG WIN' : 'FREE SPINS';
+            statusEl.textContent = { 1: 'BIG WIN', 2: 'FREE SPINS', 3: 'JACKPOT' }[state.currentSlot];
             state.isSpinning = false;
             spinBtn.disabled = false;
         }
 
+        // ---------- Старт ----------
+        load();
+        renderLevel();
+        renderDailyBtn();
         renderHistory();
+        renderWheelGrid();
         updateLuck(0);
         updateDisplay();
+        save();
     </script>
 </body>
 </html>
