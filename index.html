@@ -23,6 +23,7 @@
         .jackpot-ticker { background: #1a0d1a; border: 1px solid #5a1f4a; padding: 8px 14px; border-radius: 6px; color: #ff6ec7; font-weight: bold; font-size: 14px; }
         .daily-btn { background: #8e44ad; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .daily-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.6; }
+        .cases-btn { background: #c0392b; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .shop-btn { background: var(--btc); color: #111; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .reset-btn { background: #c0392b; color: #fff; border: none; padding: 12px 30px; font-size: 15px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; }
 
@@ -126,6 +127,38 @@
         .crash-chip { padding: 4px 10px; border-radius: 12px; font-weight: bold; }
         .chip-win { background: #112c1a; color: #2ecc71; }
         .chip-lose { background: #2c1111; color: var(--red); }
+
+        /* ===== КЕЙСЫ ===== */
+        .case-tabs { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; }
+        .case-tab-btn { flex: 1; background: #0d1726; color: var(--muted); border: 1px solid #1f3154; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .case-tab-btn.active { color: #fff; border-color: var(--green); }
+
+        .case-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 20px; width: 220px; text-align: center; }
+        .case-card h4 { color: var(--gold); margin: 5px 0; }
+        .case-preview { font-size: 12px; color: var(--muted); text-align: left; margin: 10px 0; border-top: 1px solid #1a2642; padding-top: 8px; }
+        .case-preview-row { display: flex; justify-content: space-between; padding: 2px 0; }
+        .case-open-btn { background: #f39c12; border: none; color: #111; font-weight: bold; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; }
+        .case-open-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+
+        .case-roulette { position: relative; width: 100%; height: 110px; background: #0d1726; border: 1px solid #1f3154; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .case-strip { display: flex; height: 100%; will-change: transform; }
+        .case-cell { width: 110px; flex: 0 0 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid #1a2642; background: #111a2e; }
+        .case-cell-emoji { font-size: 36px; }
+        .case-cell-name { font-size: 10px; color: var(--muted); margin-top: 3px; }
+        .case-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: var(--gold); transform: translateX(-50%); z-index: 5; box-shadow: 0 0 10px var(--gold); }
+
+        .inv-item { display: flex; align-items: center; gap: 10px; background: #0d1726; border: 1px solid #1f3154; border-radius: 8px; padding: 10px; margin-bottom: 8px; text-align: left; cursor: pointer; }
+        .inv-item.selected { border-color: var(--green); background: #0f2a24; }
+        .inv-emoji { font-size: 28px; }
+        .inv-name { flex: 1; font-weight: bold; }
+
+        .up-container { position: relative; width: 100%; height: 60px; background: #0d1726; border: 1px solid #1f3154; border-radius: 10px; overflow: hidden; margin: 15px 0; }
+        .up-strip { display: flex; height: 100%; will-change: transform; }
+        .up-zone { height: 100%; flex: 0 0 auto; }
+        .up-marker { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #fff; transform: translateX(-50%); z-index: 5; box-shadow: 0 0 10px #fff; }
+        .upg-target { background: #0d1726; border: 1px solid #1f3154; color: #fff; border-radius: 8px; padding: 10px; cursor: pointer; min-width: 130px; font-weight: bold; font-size: 13px; }
+        .upg-target:hover { border-color: var(--gold); }
+        .upg-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -149,6 +182,7 @@
                     <span class="excoins-icon">₿</span>
                     <span class="excoins-value" id="excoins-display">0</span>
                 </div>
+                <button class="cases-btn" onclick="showScreen('cases-screen')">📦 Кейсы</button>
                 <button class="shop-btn" onclick="showScreen('shop-screen')">🛒 Магазин</button>
                 <div class="wallet-part">
                     <span class="wallet-value" id="wallet-display">0</span>
@@ -220,12 +254,12 @@
 
     <div id="shop-screen" class="screen">
         <div class="panel">
-            <h2 style="margin-bottom:10px;color:var(--btc)">🛒 Магазин</h2>
+            <h2 style="margin-bottom:10px;color:var(--btc)">🛒 Магазин слотов</h2>
             <div style="margin-bottom:20px;color:var(--muted)">Ваш баланс экс-валюты: <b style="color:var(--btc)" id="shop-excoins">0 ₿</b></div>
 
             <div class="shop-item">
-                <h4>🍀 Удача +1% — 50 ₿</h4>
-                <p>Повышает шанс выпадения редких символов (💎, 7️⃣, 9️⃣, 🍒, 🍋). Сейчас у вас: <b id="shop-luck-value">5%</b>. Максимум — 100%.</p>
+                <h4>🍀 Удача слотов +1% — 50 ₿</h4>
+                <p>Повышает шанс редких символов (💎, 7️⃣, 9️⃣, 🍒, 🍋) в слотах №1–№3. На кейсы НЕ действует. Сейчас: <b id="shop-luck-value">5%</b>. Максимум — 100%.</p>
                 <button class="shop-buy" id="buy-luck-btn" onclick="buyLuck()">Купить за 50 ₿</button>
             </div>
 
@@ -303,6 +337,92 @@
         </div>
     </div>
 
+    <!-- ===== КЕЙСЫ ===== -->
+    <div id="cases-screen" class="screen">
+        <button class="btn back-btn" style="margin:0 0 20px 0;width:100%;max-width:700px" onclick="showScreen('main-screen')">В главное меню</button>
+
+        <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
+
+            <div class="panel" style="max-width:700px;margin-bottom:20px">
+                <h2 style="color:var(--gold);margin-bottom:10px">📦 Кейсы</h2>
+                <div style="color:var(--muted)">
+                    Баланс кейсов: <b style="color:var(--gold)" id="case-balance-display">0</b> •
+                    Удача кейсов: <b id="case-luck-display" style="color:var(--gold)">5%</b>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+                    <input type="number" id="case-fund-input" class="input-field" placeholder="Сумма" min="1" style="flex:1;margin:0">
+                    <button class="btn" style="width:auto;padding:10px 14px;font-size:13px" onclick="transferToCases()">С баланса → кейсы</button>
+                    <button class="btn" style="width:auto;padding:10px 14px;font-size:13px;background:#f39c12" onclick="withdrawFromCases()">Кейсы → баланс</button>
+                </div>
+                <div id="case-fund-message" class="message" style="font-size:14px"></div>
+            </div>
+
+            <div class="case-tabs" style="width:100%">
+                <button class="case-tab-btn active" id="tab-btn-cases" onclick="showCaseTab('cases')">Кейсы</button>
+                <button class="case-tab-btn" id="tab-btn-inventory" onclick="showCaseTab('inventory')">🎒 Инвентарь</button>
+                <button class="case-tab-btn" id="tab-btn-upgrade" onclick="showCaseTab('upgrade')">⚡ Апгрейд</button>
+                <button class="case-tab-btn" id="tab-btn-shop" onclick="showCaseTab('shop')">🛒 Магазин</button>
+            </div>
+
+            <!-- Вкладка: кейсы -->
+            <div id="case-tab-cases" style="width:100%">
+                <div class="case-roulette" id="case-roulette" style="display:none">
+                    <div class="case-strip" id="case-strip"></div>
+                    <div class="case-marker"></div>
+                </div>
+                <div id="case-message" class="message"></div>
+                <div style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center" id="cases-list"></div>
+            </div>
+
+            <!-- Вкладка: инвентарь -->
+            <div id="case-tab-inventory" style="width:100%;display:none">
+                <div class="panel" style="max-width:700px">
+                    <h3 style="color:var(--green);margin-bottom:15px">🎒 Инвентарь кейсов</h3>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:15px">Клик по предмету — выбрать его для апгрейда (вкладка «⚡ Апгрейд»). «Продать» — обменять предмет на баланс кейсов.</p>
+                    <div id="inventory-list"></div>
+                </div>
+            </div>
+
+            <!-- Вкладка: апгрейд -->
+            <div id="case-tab-upgrade" style="width:100%;display:none">
+                <div class="panel" style="max-width:700px">
+                    <h3 style="color:var(--green);margin-bottom:10px">⚡ Апгрейд предмета</h3>
+                    <p style="color:var(--muted);font-size:13px">Выбери предмет в инвентаре, затем цель. Шанс = цена предмета ÷ цена цели × 90. Чем ближе цены — тем выше шанс.</p>
+
+                    <div class="inv-item" style="margin-top:15px;cursor:default">
+                        <span style="color:var(--muted);font-size:13px">Твой предмет:</span>
+                        <b id="upg-selected" style="color:var(--gold)">— сначала выбери предмет в инвентаре —</b>
+                    </div>
+
+                    <div class="up-container" id="upgrade-container" style="display:none">
+                        <div class="up-strip" id="upgrade-strip"></div>
+                        <div class="up-marker"></div>
+                    </div>
+
+                    <div id="upg-targets" class="upg-grid"></div>
+                    <div id="upg-message" class="message" style="font-size:15px"></div>
+                </div>
+            </div>
+
+            <!-- Вкладка: магазин кейсов -->
+            <div id="case-tab-shop" style="width:100%;display:none">
+                <div class="panel">
+                    <h3 style="color:var(--btc);margin-bottom:10px">🛒 Магазин кейсов</h3>
+                    <div style="margin-bottom:20px;color:var(--muted)">Экс-валюта: <b style="color:var(--btc)" id="caseshop-excoins">0 ₿</b></div>
+
+                    <div class="shop-item">
+                        <h4>🍀 Удача кейсов +1% — 50 ₿</h4>
+                        <p>Повышает шанс редких предметов (Редких и Легендарных) при открытии кейсов. На слоты НЕ действует. Сейчас: <b id="caseluck-shop-value">5%</b>. Максимум — 100%.</p>
+                        <button class="shop-buy" id="buy-case-luck-btn" onclick="buyCaseLuck()">Купить за 50 ₿</button>
+                    </div>
+
+                    <div id="caseshop-message" class="message"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div id="game-screen" class="screen">
         <button class="btn back-btn" style="margin:0 0 20px 0;width:100%" onclick="showScreen('main-screen')">В главное меню</button>
 
@@ -352,7 +472,7 @@
                 <div id="game-message" class="message" style="text-align:center"></div>
 
                 <div class="luck-bar-container">
-                    <span class="luck-label" id="luck-label">Удача: 5%</span>
+                    <span class="luck-label" id="luck-label">Удача слотов: 5%</span>
                     <div class="luck-bar"><div class="luck-fill" id="luck-fill"></div></div>
                 </div>
 
@@ -423,13 +543,16 @@
                 xp: 0, jackpot: 10000, lastBonusDate: null,
                 excoins: 0, luck: 5, usedPromos: [],
                 hintQueues: { 1: [], 2: [], 3: [] },
-                fate: null
+                fate: null,
+                caseBalance: 0, caseLuck: 5, caseInventory: [], nextUid: 1
             };
         }
 
         let state = freshState();
         let crashActive = false;
         let wheelSpinning = false;
+        let caseSpinning = false;
+        let upgradeBusy = false;
 
         // ================== ПРОФИЛИ ==================
         function getProfiles() {
@@ -467,7 +590,8 @@
         function afterProfileLoad() {
             document.getElementById('profile-phone-display').textContent = state.activePhone;
             renderLevel(); renderDailyBtn(); renderHistory();
-            updateLuckUI(); updateDisplay(); saveAll();
+            updateLuckUI(); updateDisplay(); updateCaseBalance();
+            saveAll();
             showScreen('main-screen');
         }
 
@@ -517,7 +641,7 @@
         }
 
         function resetProgress() {
-            if (!confirm('Точно сбросить прогресс текущего профиля? Баланс, кошелёк, экс-валюта, уровень и удача обнулятся.')) return;
+            if (!confirm('Точно сбросить прогресс текущего профиля? Баланс, кошелёк, экс-валюта, уровень, удача, кейсы и инвентарь обнулятся.')) return;
             const phone = state.activePhone;
             state = freshState();
             state.activePhone = phone;
@@ -530,7 +654,7 @@
         // ================== ЭКС-ВАЛЮТА ==================
         // 1 ₿ за каждую полную 1000 ставки — только слоты 1-3 и только если раунд принёс ПРИБЫЛЬ (delta > 0)
         function earnExcoins(bet, delta) {
-            if (delta <= 0) return; // прибыли нет — экс-валюты нет
+            if (delta <= 0) return;
             const earned = Math.floor(bet / 1000);
             if (earned > 0) {
                 state.excoins += earned;
@@ -539,11 +663,10 @@
             }
         }
 
-        // ================== УДАЧА ==================
-        // Удача повышает вес редких символов: 💎, 7️⃣, 9️⃣, 🍒, 🍋
+        // ================== УДАЧА (слоты) ==================
         function updateLuckUI() {
             document.getElementById('luck-fill').style.width = state.luck + '%';
-            document.getElementById('luck-label').textContent = `Удача: ${state.luck}%`;
+            document.getElementById('luck-label').textContent = `Удача слотов: ${state.luck}%`;
         }
 
         function isRareSymbol(item) {
@@ -552,7 +675,6 @@
 
         function effectiveWeight(item) {
             if (!isRareSymbol(item)) return item.weight;
-            // 5% удачи -> редкие символы на 15% вероятнее; 50% -> в 2.5 раза; 100% -> в 4 раза
             return item.weight * (1 + (state.luck / 100) * 3);
         }
 
@@ -624,7 +746,6 @@
         const SYMBOL_CHARS = symbolsConfig.map(s => s.char);
 
         // Результат спина: судьба > подсказка > случайность (с учётом удачи)
-        // Судьба сгорает в момент использования (в слоте 2 её расходует runFreeSpinRound на весь раунд)
         function takeSpinResult(slot) {
             if (state.fate && state.fate.slot === slot) {
                 const chars = state.fate.symbols;
@@ -639,7 +760,7 @@
             return [getRandomSymbol(pool), getRandomSymbol(pool), getRandomSymbol(pool)];
         }
 
-        // ================== МАГАЗИН ==================
+        // ================== МАГАЗИН СЛОТОВ ==================
         function renderShop() {
             document.getElementById('shop-excoins').textContent = state.excoins.toLocaleString('ru-RU') + ' ₿';
             document.getElementById('shop-luck-value').textContent = state.luck + '%';
@@ -649,11 +770,11 @@
 
         function buyLuck() {
             if (state.excoins < 50) { shopMsg('Недостаточно экс-валюты. Нужно 50 ₿.', 'msg-error'); return; }
-            if (state.luck >= 100) { shopMsg('Удача уже максимальна (100%).', 'msg-info'); return; }
+            if (state.luck >= 100) { shopMsg('Удача слотов уже максимальна (100%).', 'msg-info'); return; }
             state.excoins -= 50;
             state.luck = Math.min(100, state.luck + 1);
             updateLuckUI(); renderShop(); updateDisplay(); saveAll();
-            shopMsg(`🍀 Удача повышена до ${state.luck}%! Редкие символы теперь выпадают чаще.`, 'msg-success');
+            shopMsg(`🍀 Удача слотов повышена до ${state.luck}%!`, 'msg-success');
         }
 
         function buyHint() {
@@ -682,7 +803,6 @@
             if (state.excoins < 500) { shopMsg('Недостаточно экс-валюты. Нужно 500 ₿.', 'msg-error'); return; }
             state.excoins -= 500;
             updateDisplay(); saveAll();
-            // Сброс выбора при новом входе
             fateSelection = { slot: null, symbols: [null, null, null] };
             [1, 2, 3].forEach(s => { document.getElementById('fate-slot-btn-' + s).style.border = 'none'; });
             document.getElementById('fate-pickers').style.display = 'none';
@@ -748,11 +868,11 @@
 
         // ================== ОТОБРАЖЕНИЕ ==================
         function updateDisplay() {
-            document.getElementById('balance-display').textContent = state.balance;
-            document.getElementById('wallet-display').textContent = state.wallet;
+            document.getElementById('balance-display').textContent = state.balance.toLocaleString('ru-RU');
+            document.getElementById('wallet-display').textContent = state.wallet.toLocaleString('ru-RU');
             document.getElementById('excoins-display').textContent = state.excoins.toLocaleString('ru-RU');
             document.getElementById('jackpot-display').textContent = state.jackpot.toLocaleString('ru-RU');
-            const betText = `Текущая ставка: <span style="color:var(--green)">${state.currentBet}</span>`;
+            const betText = `Текущая ставка: <span style="color:var(--green)">${state.currentBet.toLocaleString('ru-RU')}</span>`;
             ['current-bet-display', 'current-bet-display-wheel', 'current-bet-display-crash'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = betText;
@@ -765,6 +885,7 @@
             if (target) target.classList.add('active');
             if (screenId === 'shop-screen') renderShop();
             if (screenId === 'profiles-screen') renderProfilesList();
+            if (screenId === 'cases-screen') { renderCasesScreen(); showCaseTab('cases'); }
         }
 
         function setAllIn() {
@@ -807,7 +928,7 @@
                 '🍒 Вишня: Ставка х8', '💎 Алмаз: Ставка х15', '7️⃣: Ставка х6', '9️⃣: Ставка х7',
                 '🎰 Пара символов: Ставка х1.2',
                 '10% каждой ставки идут в общий джекпот.',
-                '<div class="payout-item full" style="background:#1a0d1a;border-color:#ff6ec7">💎💎💎 ТРИ АЛМАЗА: забираешь весь джекпот! Он сбрасывается до 10 000.</div>',
+                '<div class="payout-item full" style="background:#1a0d1a;border-color:#ff6ec7">💎💎💎 ТРИ АЛМАЗА: забираешь весь джекпот + ставка возвращается! Джекпот сбрасывается до 10 000.</div>',
                 '<div class="payout-item full" style="border-color:var(--btc)">₿ За каждую полную 1000 ставки, ПРИНЁСШЕЙ ПРИБЫЛЬ — 1 экс-валюта!</div>'
             ]
         };
@@ -841,7 +962,7 @@
             el.innerHTML = state.history.map(h => {
                 const cls = h.delta > 0 ? 'round-win' : (h.delta < 0 ? 'round-loss' : '');
                 const sign = h.delta > 0 ? '+' : '';
-                return `<div class="round-row"><span>${h.text}</span><span class="${cls}">${sign}${h.delta}</span></div>`;
+                return `<div class="round-row"><span>${h.text}</span><span class="${cls}">${sign}${h.delta.toLocaleString('ru-RU')}</span></div>`;
             }).join('');
         }
 
@@ -869,7 +990,7 @@
             if (amount > state.balance) { msgEl.textContent = 'Недостаточно средств на балансе.'; msgEl.className = 'message msg-error'; return; }
             state.balance -= amount; state.wallet += amount;
             input.value = '';
-            msgEl.textContent = `Переведено ${amount} в кошелёк.`; msgEl.className = 'message msg-success';
+            msgEl.textContent = `Переведено ${amount.toLocaleString('ru-RU')} в кошелёк.`; msgEl.className = 'message msg-success';
             updateDisplay(); saveAll();
         }
         function withdrawFromWallet() {
@@ -881,7 +1002,7 @@
             if (amount > state.wallet) { msgEl.textContent = 'В кошельке недостаточно средств.'; msgEl.className = 'message msg-error'; return; }
             state.wallet -= amount; state.balance += amount;
             input.value = '';
-            msgEl.textContent = `Возвращено ${amount} на баланс.`; msgEl.className = 'message msg-success';
+            msgEl.textContent = `Возвращено ${amount.toLocaleString('ru-RU')} на баланс.`; msgEl.className = 'message msg-success';
             updateDisplay(); saveAll();
         }
 
@@ -892,7 +1013,6 @@
             const code = (input.value || '').trim().toUpperCase();
             msgEl.textContent = ''; msgEl.className = 'message';
 
-            // CREATE — бессрочный: 10 млрд валюты + 1 млн экс-валюты
             if (code === 'CREATE') {
                 state.balance += 10000000000;
                 state.excoins += 1000000;
@@ -902,7 +1022,6 @@
                 return;
             }
 
-            // DIMA и PASHA — только один раз на профиль
             if (code === 'DIMA' || code === 'PASHA') {
                 if (state.usedPromos.includes(code)) {
                     msgEl.textContent = `Промокод ${code} уже был использован в этом профиле.`;
@@ -942,7 +1061,7 @@
         // ================== СЛОТ 1 ==================
         async function calculatePayoutSlot1(results) {
             const before = state.balance;
-            const bet = state.currentBet; // запоминаем ставку до возможного деления бомбами
+            const bet = state.currentBet;
             const bombCount = results.filter(r => r.char === '💣').length;
 
             if (bombCount === 3) {
@@ -964,10 +1083,9 @@
                 const payout = Math.floor(bet * mult);
                 if (payout > 0) {
                     state.balance += payout;
-                    message += ` +${payout} валюты.`;
+                    message += ` Выигрыш: ${payout.toLocaleString('ru-RU')} (ставка уже списана).`;
                     setGameMessage(message, 'msg-success');
                 } else {
-                    state.balance -= bet;
                     setGameMessage('😢 Не повезло. Попробуй ещё раз.', 'msg-error');
                 }
             }
@@ -982,18 +1100,16 @@
             const badge = document.getElementById('free-spins-badge');
             if (state.currentSlot !== 2 || state.freeSpinsLeft <= 0) { badge.style.display = 'none'; return; }
             badge.style.display = 'block';
-            badge.textContent = `🎁 Фриспинов осталось: ${state.freeSpinsLeft} • Накоплено в поте: ${state.roundPot}`;
+            badge.textContent = `🎁 Фриспинов осталось: ${state.freeSpinsLeft} • Накоплено в поте: ${state.roundPot.toLocaleString('ru-RU')}`;
         }
         async function runFreeSpinRound(reels) {
             const before = state.balance;
             const startBet = state.currentBet;
-            state.balance -= startBet;
             state.freeSpinsLeft = 3;
             state.roundPot = 0;
             updateDisplay(); updateFreeSpinsBadge();
             setGameMessage('🎁 Раунд фриспинов начался! Ставка списана 1 раз.', 'msg-info');
 
-            // Судьба на слот 2 действует на все 3 фриспина и сгорает в конце раунда
             const fateChars = (state.fate && state.fate.slot === 2) ? state.fate.symbols : null;
             if (state.fate && state.fate.slot === 2) state.fate = null;
 
@@ -1022,7 +1138,7 @@
                     state.roundPot = Math.floor(state.roundPot / 2);
                     if (i < 2) state.freeSpinsLeft = 1;
                     updateFreeSpinsBadge();
-                    setGameMessage(`💣 Бомбы! Пот урезан вдвое (${state.roundPot}). Фриспинов осталось: ${state.freeSpinsLeft}`, 'msg-error');
+                    setGameMessage(`💣 Бомбы! Пот урезан вдвое (${state.roundPot.toLocaleString('ru-RU')}). Фриспинов осталось: ${state.freeSpinsLeft}`, 'msg-error');
                     await new Promise(r => setTimeout(r, 800));
                     continue;
                 }
@@ -1038,7 +1154,7 @@
             updateFreeSpinsBadge();
             if (state.roundPot > 0) {
                 state.balance += state.roundPot;
-                setGameMessage(`🎁 Раунд завершён! Выигрыш из пота: +${state.roundPot} валюты.`, 'msg-success');
+                setGameMessage(`🎁 Раунд завершён! Выигрыш из пота: ${state.roundPot.toLocaleString('ru-RU')} валюты.`, 'msg-success');
             } else {
                 setGameMessage('Раунд завершён. Пот пуст — выигрыша нет.', 'msg-error');
             }
@@ -1060,11 +1176,11 @@
 
             if (a === '💎' && b === '💎' && c === '💎') {
                 const jackpotWin = state.jackpot;
-                state.balance += jackpotWin;
+                state.balance += jackpotWin + bet; // джекпот + возврат ставки
                 state.jackpot = 10000;
-                setGameMessage(`💎💎💎 ДЖЕКПОТ! Ты забрал ${jackpotWin.toLocaleString('ru-RU')} валюты!`, 'msg-success');
-                addHistory('💎💎💎 ДЖЕКПОТ!', jackpotWin - bet);
-                earnExcoins(bet, state.balance - before);
+                setGameMessage(`💎💎💎 ДЖЕКПОТ! Ты забрал ${jackpotWin.toLocaleString('ru-RU')} валюты, ставка возвращена!`, 'msg-success');
+                addHistory('💎💎💎 ДЖЕКПОТ!', jackpotWin);
+                earnExcoins(bet, jackpotWin);
                 addXP(xpForBet(bet));
                 updateDisplay(); saveAll();
                 return;
@@ -1077,10 +1193,9 @@
             const payout = Math.floor(bet * mult);
             if (payout > 0) {
                 state.balance += payout;
-                message += ` Выигрыш: +${payout} валюты.`;
+                message += ` Выигрыш: ${payout.toLocaleString('ru-RU')} (ставка уже списана).`;
                 setGameMessage(message, 'msg-success');
             } else {
-                state.balance -= bet;
                 setGameMessage('😢 Не повезло. Попробуй ещё раз.', 'msg-error');
             }
             earnExcoins(bet, state.balance - before);
@@ -1143,17 +1258,22 @@
 
             const index = pickWheelIndex();
 
-            // Центр выбранного сектора (секторы разного размера — считаем по весам)
             const total = wheelSectors.reduce((s, x) => s + x.weight, 0);
             let cum = 0;
             for (let i = 0; i < index; i++) cum += wheelSectors[i].weight;
             const sectorCenter = ((cum + wheelSectors[index].weight / 2) / total) * 360;
 
-            const target = (360 - sectorCenter) % 360;
-            const currentTurn = Math.ceil(wheelRotation / 360) * 360;
-            wheelRotation = currentTurn + 6 * 360 + target;
-
-            document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
+            const wheelEl = document.getElementById('wheel');
+            // Перезапуск анимации: сбрасываем transition, ставим базовый угол, форсируем reflow
+            wheelEl.style.transition = 'none';
+            wheelRotation = wheelRotation % 360;
+            wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
+            void wheelEl.offsetWidth;
+            // Целевой угол: центр сектора под указателем + 6 полных оборотов
+            const offset = ((360 - sectorCenter) - (wheelRotation % 360) + 360) % 360;
+            wheelRotation += 360 * 6 + offset;
+            wheelEl.style.transition = 'transform 4s cubic-bezier(0.15, 0.9, 0.25, 1)';
+            wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
 
             setGameMessageWheel('Колесо вращается...', 'msg-info');
             setTimeout(() => {
@@ -1161,7 +1281,7 @@
                 const win = Math.floor(bet * sector.mult);
                 if (win > bet) {
                     state.balance += win;
-                    setGameMessageWheel(`🎯 Сектор ${sector.label}! Выигрыш: +${win} валюты.`, 'msg-success');
+                    setGameMessageWheel(`🎯 Сектор ${sector.label}! Выигрыш: +${win.toLocaleString('ru-RU')} валюты.`, 'msg-success');
                 } else if (win === bet) {
                     state.balance += win;
                     setGameMessageWheel(`🎯 Сектор ${sector.label}. Ставка возвращена.`, 'msg-info');
@@ -1194,7 +1314,7 @@
             state.currentBet = amount;
             input.value = '';
             updateDisplay();
-            setGameMessageCrash(`Ставка установлена: ${amount}.`, 'msg-info');
+            setGameMessageCrash(`Ставка установлена: ${amount.toLocaleString('ru-RU')}.`, 'msg-info');
         }
 
         function startCrash() {
@@ -1251,13 +1371,13 @@
                 const win = Math.floor(crashBet * crashMult);
                 state.balance += win;
                 multEl.textContent = 'x' + crashMult.toFixed(2);
-                setGameMessageCrash(`✅ Забрал на x${crashMult.toFixed(2)}! Выигрыш: +${win} валюты.`, 'msg-success');
+                setGameMessageCrash(`✅ Забрал на x${crashMult.toFixed(2)}! Выигрыш: +${win.toLocaleString('ru-RU')} валюты.`, 'msg-success');
                 crashHistory.unshift({ mult: crashMult, win: true });
                 addHistory(`Краш: забрал x${crashMult.toFixed(2)}`, win - crashBet);
             } else {
                 multEl.textContent = '💥 x' + crashMult.toFixed(2);
                 multEl.classList.add('crashed');
-                setGameMessageCrash(`💥 ВЗРЫВ на x${crashMult.toFixed(2)}! Ставка ${crashBet} сгорела.`, 'msg-error');
+                setGameMessageCrash(`💥 ВЗРЫВ на x${crashMult.toFixed(2)}! Ставка ${crashBet.toLocaleString('ru-RU')} сгорела.`, 'msg-error');
                 crashHistory.unshift({ mult: crashMult, win: false });
                 addHistory(`Краш: взрыв x${crashMult.toFixed(2)}`, -crashBet);
             }
@@ -1287,6 +1407,8 @@
             setGameMessage('');
             state.isSpinning = true;
             spinBtn.disabled = true;
+            state.balance -= state.currentBet; // ставка списывается один раз в начале
+            updateDisplay();
             reels.forEach(r => r.innerHTML = '<span class="symbol-item">⏳</span>');
 
             if (state.currentSlot === 2) {
@@ -1294,7 +1416,7 @@
                 await runFreeSpinRound(reels);
             } else {
                 statusEl.textContent = 'КРУЧУ...';
-                const results = takeSpinResult(state.currentSlot);
+                                const results = takeSpinResult(state.currentSlot);
                 await Promise.all([
                     spinReelAnimation(reels[0], results[0], 1000),
                     spinReelAnimation(reels[1], results[1], 1400),
@@ -1309,11 +1431,354 @@
             spinBtn.disabled = false;
         }
 
+        // ================== ПЕРЕВОД ДЕНЕГ НА БАЛАНС КЕЙСОВ ==================
+        function transferToCases() {
+            const input = document.getElementById('case-fund-input');
+            const msgEl = document.getElementById('case-fund-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите корректную сумму.'; msgEl.className = 'message msg-error'; return; }
+            if (amount > state.balance) { msgEl.textContent = 'Недостаточно средств на балансе.'; msgEl.className = 'message msg-error'; return; }
+            state.balance -= amount; state.caseBalance += amount;
+            input.value = '';
+            msgEl.textContent = `Переведено ${amount.toLocaleString('ru-RU')} на баланс кейсов.`; msgEl.className = 'message msg-success';
+            updateDisplay(); updateCaseBalance(); saveAll();
+        }
+        function withdrawFromCases() {
+            const input = document.getElementById('case-fund-input');
+            const msgEl = document.getElementById('case-fund-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите корректную сумму.'; msgEl.className = 'message msg-error'; return; }
+            if (amount > state.caseBalance) { msgEl.textContent = 'На балансе кейсов недостаточно средств.'; msgEl.className = 'message msg-error'; return; }
+            state.caseBalance -= amount; state.balance += amount;
+            input.value = '';
+            msgEl.textContent = `Возвращено ${amount.toLocaleString('ru-RU')} на основной баланс.`; msgEl.className = 'message msg-success';
+            updateDisplay(); updateCaseBalance(); saveAll();
+        }
+
+        // ================== ПРЕДМЕТЫ КЕЙСОВ ==================
+        const ITEMS = [
+            { id: 'paper',   name: 'Газета',        emoji: '📰', price: 50,      rarity: 'Мусорный' },
+            { id: 'can',     name: 'Жестянка',      emoji: '🥫', price: 120,     rarity: 'Мусорный' },
+            { id: 'sock',    name: 'Носок',         emoji: '🧦', price: 200,     rarity: 'Мусорный' },
+            { id: 'brick',   name: 'Кирпич',        emoji: '🧱', price: 400,     rarity: 'Мусорный' },
+            { id: 'radio',   name: 'Радио',         emoji: '📻', price: 900,     rarity: 'Обычный' },
+            { id: 'watch',   name: 'Часы',          emoji: '⌚', price: 2000,    rarity: 'Обычный' },
+            { id: 'phone',   name: 'Смартфон',      emoji: '📱', price: 5000,    rarity: 'Редкий' },
+            { id: 'console', name: 'Консоль',       emoji: '🎮', price: 15000,   rarity: 'Редкий' },
+            { id: 'laptop',  name: 'Ноутбук',       emoji: '💻', price: 40000,   rarity: 'Легендарный' },
+            { id: 'rocket',  name: 'Гоночный болид',emoji: '🏎️', price: 150000,  rarity: 'Легендарный' }
+        ];
+        const isRareItem = (item) => item.rarity === 'Редкий' || item.rarity === 'Легендарный';
+
+        // ================== КЕЙСЫ ==================
+        const CASES = [
+            {
+                id: 'trash', name: '🗑 Мусорный кейс', price: 500,
+                contents: [
+                    { item: 'paper',   weight: 30 },
+                    { item: 'can',     weight: 30 },
+                    { item: 'sock',    weight: 20 },
+                    { item: 'brick',   weight: 12 },
+                    { item: 'radio',   weight: 6 },
+                    { item: 'watch',   weight: 2 }
+                ]
+            },
+            {
+                id: 'tech', name: '📼 Техно-кейс', price: 3000,
+                contents: [
+                    { item: 'brick',   weight: 15 },
+                    { item: 'radio',   weight: 35 },
+                    { item: 'watch',   weight: 28 },
+                    { item: 'phone',   weight: 16 },
+                    { item: 'console', weight: 5 },
+                    { item: 'laptop',  weight: 1 }
+                ]
+            },
+            {
+                id: 'gold', name: '🏆 Элитный кейс', price: 30000,
+                contents: [
+                    { item: 'watch',   weight: 30 },
+                    { item: 'phone',   weight: 35 },
+                    { item: 'console', weight: 22 },
+                    { item: 'laptop',  weight: 10 },
+                    { item: 'rocket',  weight: 3 }
+                ]
+            }
+        ];
+
+        function updateCaseBalance() {
+            const bal = document.getElementById('case-balance-display');
+            if (bal) bal.textContent = state.caseBalance.toLocaleString('ru-RU');
+            const luck = document.getElementById('case-luck-display');
+            if (luck) luck.textContent = state.caseLuck + '%';
+        }
+
+        function showCaseTab(tab) {
+            ['cases', 'inventory', 'upgrade', 'shop'].forEach(t => {
+                const block = document.getElementById('case-tab-' + t);
+                if (block) block.style.display = (t === tab) ? 'block' : 'none';
+                const btn = document.getElementById('tab-btn-' + t);
+                if (btn) btn.classList.toggle('active', t === tab);
+            });
+            if (tab === 'inventory') renderInventory();
+            if (tab === 'upgrade') renderUpgradeTargets();
+            if (tab === 'shop') renderCaseShop();
+        }
+
+        function renderCasesScreen() {
+            updateCaseBalance();
+            const list = document.getElementById('cases-list');
+            if (!list.dataset.built) {
+                list.innerHTML = CASES.map(c => {
+                    const preview = c.contents.map(cc => {
+                        const it = ITEMS.find(i => i.id === cc.item);
+                        const total = c.contents.reduce((s, x) => s + x.weight, 0);
+                        return `<div class="case-preview-row"><span>${it.emoji} ${it.name}</span><span>${Math.round(cc.weight / total * 100)}%</span></div>`;
+                    }).join('');
+                    return `<div class="case-card">
+                        <h4>${c.name}</h4>
+                        <div style="color:var(--muted)">Цена: <b style="color:var(--gold)">${c.price.toLocaleString('ru-RU')}</b></div>
+                        <div class="case-preview">${preview}</div>
+                        <button class="case-open-btn" onclick="openCase('${c.id}')">Открыть</button>
+                    </div>`;
+                }).join('');
+                list.dataset.built = '1';
+            }
+        }
+
+        // Эффективный вес предмета с учётом удачи кейсов (только редкие и легендарные)
+        function effectiveItemWeight(caseDef, entry) {
+            const it = ITEMS.find(i => i.id === entry.item);
+            if (!isRareItem(it)) return entry.weight;
+            return entry.weight * (1 + (state.caseLuck / 100) * 3);
+        }
+
+        function pickItemFromCase(caseDef) {
+            const total = caseDef.contents.reduce((s, e) => s + effectiveItemWeight(caseDef, e), 0);
+            let r = Math.random() * total;
+            for (const entry of caseDef.contents) {
+                if (r < effectiveItemWeight(caseDef, entry)) return ITEMS.find(i => i.id === entry.item);
+                r -= effectiveItemWeight(caseDef, entry);
+            }
+            return ITEMS.find(i => i.id === caseDef.contents[0].item);
+        }
+
+        function openCase(caseId) {
+            if (caseSpinning) return;
+            const caseDef = CASES.find(c => c.id === caseId);
+            if (state.caseBalance < caseDef.price) {
+                setCaseMessage('Недостаточно средств на балансе кейсов. Переведи деньги сверху.', 'msg-error');
+                return;
+            }
+            state.caseBalance -= caseDef.price;
+            updateCaseBalance(); saveAll();
+
+            const won = pickItemFromCase(caseDef);
+
+            // Рулетка: собираем длинную ленту из случайных предметов, в центр ставим выигрыш
+            const rouletteEl = document.getElementById('case-roulette');
+            const strip = document.getElementById('case-strip');
+            rouletteEl.style.display = 'block';
+            setCaseMessage('Крутим...', 'msg-info');
+            caseSpinning = true;
+
+            const totalCells = 40;
+            const winIndex = 35;
+            let html = '';
+            for (let i = 0; i < totalCells; i++) {
+                const it = (i === winIndex) ? won : ITEMS[Math.floor(Math.random() * ITEMS.length)];
+                html += `<div class="case-cell"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
+            }
+            strip.innerHTML = html;
+            // Перезапуск анимации: сброс transform, форс-рефлоу, потом плавный сдвиг
+            strip.style.transition = 'none';
+            strip.style.transform = 'translateX(0px)';
+            void strip.offsetWidth;
+            // Сдвигаем ленту так, чтобы выигравшая ячейка встала под золотым маркером (центр)
+            const shift = (winIndex * 110 + 55) - (rouletteEl.offsetWidth / 2);
+            strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1)';
+            strip.style.transform = `translateX(-${shift}px)`;
+
+            setTimeout(() => {
+                state.caseInventory.push({
+                    uid: state.nextUid++,
+                    itemId: won.id,
+                    name: won.name,
+                    emoji: won.emoji,
+                    price: won.price,
+                    rarity: won.rarity
+                });
+                setCaseMessage(`🎉 Из кейса выпало: ${won.emoji} ${won.name} (${won.rarity})! Забери в инвентаре.`, 'msg-success');
+                caseSpinning = false;
+                updateCaseBalance(); saveAll();
+            }, 3800);
+        }
+
+        function setCaseMessage(text, type) {
+            const el = document.getElementById('case-message');
+            el.textContent = text;
+            el.className = 'message ' + (type || '');
+        }
+
+        // ================== ИНВЕНТАРЬ КЕЙСОВ ==================
+        let selectedUid = null;
+
+        function renderInventory() {
+            const list = document.getElementById('inventory-list');
+            if (!state.caseInventory.length) {
+                list.innerHTML = '<div style="color:var(--muted)">Инвентарь пуст — открой кейсы!</div>';
+                return;
+            }
+            list.innerHTML = state.caseInventory.map(it => `
+                <div class="inv-item ${selectedUid === it.uid ? 'selected' : ''}">
+                    <span class="inv-emoji" onclick="toggleSelect(${it.uid})">${it.emoji}</span>
+                    <span class="inv-name" onclick="toggleSelect(${it.uid})">${it.name}<br>
+                        <small style="color:var(--muted);font-weight:normal">${it.rarity} • ${it.price.toLocaleString('ru-RU')}</small>
+                    </span>
+                    <button class="shop-buy" style="width:auto;padding:6px 12px;font-size:12px" onclick="sellItem(${it.uid})">Продать</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleSelect(uid) {
+            selectedUid = (selectedUid === uid) ? null : uid;
+            renderInventory();
+        }
+
+        function sellItem(uid) {
+            const idx = state.caseInventory.findIndex(i => i.uid === uid);
+            if (idx === -1) return;
+            const it = state.caseInventory[idx];
+            state.caseBalance += it.price;
+            if (selectedUid === uid) selectedUid = null;
+            setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')}.`, 'msg-success');
+            renderInventory(); updateCaseBalance(); saveAll();
+        }
+
+        // ================== АПГРЕЙД ==================
+        function renderUpgradeTargets() {
+            const box = document.getElementById('upg-selected');
+            const sel = state.caseInventory.find(i => i.uid === selectedUid);
+            box.textContent = sel ? `${sel.emoji} ${sel.name} (${sel.price.toLocaleString('ru-RU')})` : '— сначала выбери предмет в инвентаре —';
+
+            const grid = document.getElementById('upg-targets');
+            const container = document.getElementById('upgrade-container');
+            if (!sel) {
+                grid.innerHTML = '<div style="color:var(--muted)">Выбери предмет на вкладке «🎒 Инвентарь» — кликни по нему.</div>';
+                container.style.display = 'none';
+                return;
+            }
+            const targets = ITEMS.filter(i => i.price > sel.price);
+            if (!targets.length) {
+                grid.innerHTML = '<div style="color:var(--muted)">Это уже самый дорогой предмет в игре!</div>';
+                container.style.display = 'none';
+                return;
+            }
+            grid.innerHTML = targets.map(t => {
+                const chance = Math.min(90, Math.floor(sel.price / t.price * 90));
+                return `<button class="upg-target" onclick="startUpgrade('${t.id}')">${t.emoji} ${t.name}<br><small>Цена: ${t.price.toLocaleString('ru-RU')} • Шанс: ${chance}%</small></button>`;
+            }).join('');
+        }
+
+        function startUpgrade(targetId) {
+            if (upgradeBusy) return;
+            const sel = state.caseInventory.find(i => i.uid === selectedUid);
+            const target = ITEMS.find(i => i.id === targetId);
+            if (!sel || !target) return;
+
+            const chance = Math.min(90, Math.floor(sel.price / target.price * 90));
+
+            upgradeBusy = true;
+            // Лента: зелёная зона = шанс, остальное — красное
+            const container = document.getElementById('upgrade-container');
+            const strip = document.getElementById('upgrade-strip');
+            container.style.display = 'block';
+
+            const winWidthPct = chance; // % ширины зелёной зоны
+            const totalCells = 20;
+            const winIndex = 17;
+            let html = '';
+            for (let i = 0; i < totalCells; i++) {
+                const isWin = i === winIndex;
+                const width = isWin ? winWidthPct : (100 - winWidthPct) / (totalCells - 1);
+                const color = isWin ? 'linear-gradient(90deg,#27ae60,#2ecc71)' : 'linear-gradient(90deg,#5e1919,#c0392b)';
+                html += `<div class="up-zone" style="flex:0 0 ${width}%;background:${color}"></div>`;
+            }
+            strip.innerHTML = html;
+
+            // Перезапуск анимации
+            strip.style.transition = 'none';
+            strip.style.transform = 'translateX(0px)';
+            void strip.offsetWidth;
+            const containerW = container.offsetWidth;
+            const shift = (winWidthPct / 100) * (totalCells * containerW / totalCells) * (totalCells) / totalCells * totalCells; // упрощённо ниже
+            // Сдвиг: центр зелёной зоны под маркером
+            const stripW = totalCells * (containerW); // длинная лента
+            const winCenterInStrip = (winIndex * (containerW) + (winWidthPct / 100) * containerW / 2);
+            const finalShift = winCenterInStrip - containerW / 2;
+            strip.style.transition = 'transform 2.8s cubic-bezier(0.15, 0.9, 0.25, 1)';
+            strip.style.transform = `translateX(-${finalShift}px)`;
+
+            document.getElementById('upg-message').textContent = 'Крутим...';
+            document.getElementById('upg-message').className = 'message msg-info';
+
+            const success = Math.random() * 100 < chance;
+
+            setTimeout(() => {
+                const msg = document.getElementById('upg-message');
+                if (success) {
+                    // Предмет заменяется на целевой
+                    const idx = state.caseInventory.findIndex(i => i.uid === sel.uid);
+                    state.caseInventory[idx] = {
+                        uid: sel.uid, itemId: target.id, name: target.name, emoji: target.emoji,
+                        price: target.price, rarity: target.rarity
+                    };
+                    msg.textContent = `🎉 УСПЕХ! ${sel.name} превратился в ${target.name}!`;
+                    msg.className = 'message msg-success';
+                } else {
+                    // Предмет сгорает
+                    state.caseInventory = state.caseInventory.filter(i => i.uid !== sel.uid);
+                    selectedUid = null;
+                    msg.textContent = `💥 НЕУДАЧА! ${sel.name} сгорел. Шанс был ${chance}%.`;
+                    msg.className = 'message msg-error';
+                }
+                upgradeBusy = false;
+                renderInventory(); renderUpgradeTargets(); saveAll();
+            }, 3000);
+        }
+
+        // ================== МАГАЗИН КЕЙСОВ ==================
+        function renderCaseShop() {
+            document.getElementById('caseshop-excoins').textContent = state.excoins.toLocaleString('ru-RU') + ' ₿';
+            document.getElementById('caseluck-shop-value').textContent = state.caseLuck + '%';
+            document.getElementById('buy-case-luck-btn').disabled = state.caseLuck >= 100;
+            document.getElementById('buy-case-luck-btn').textContent = state.caseLuck >= 100 ? 'Максимум (100%)' : 'Купить за 50 ₿';
+        }
+
+        function buyCaseLuck() {
+            if (state.excoins < 50) { caseShopMsg('Недостаточно экс-валюты. Нужно 50 ₿.', 'msg-error'); return; }
+            if (state.caseLuck >= 100) { caseShopMsg('Удача кейсов уже максимальна (100%).', 'msg-info'); return; }
+            state.excoins -= 50;
+            state.caseLuck = Math.min(100, state.caseLuck + 1);
+            renderCaseShop(); updateCaseBalance(); saveAll();
+            caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие предметы теперь выпадают чаще.`, 'msg-success');
+        }
+
+        function caseShopMsg(text, type) {
+            const el = document.getElementById('caseshop-message');
+            el.textContent = text;
+            el.className = 'message ' + (type || '');
+        }
+
         // ================== СТАРТ ==================
         document.getElementById('crash-bet-input').addEventListener('keydown', e => {
             if (e.key === 'Enter') setCustomBetCrash();
         });
 
+        buildWheel();
+        renderWheelGrid();
         const savedActive = localStorage.getItem('casinox_active');
         if (savedActive && getProfiles()[savedActive]) {
             loadProfile(savedActive);
