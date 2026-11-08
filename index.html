@@ -657,7 +657,6 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
-            // Миграция старых сохранений
             if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
             if (!state.nextUid) state.nextUid = 1;
             state.caseInventory.forEach(it => {
@@ -1022,8 +1021,26 @@
             ]
         };
 
+        // === ГЛАВНОЕ ИСПРАВЛЕНИЕ: слоты открываются всегда ===
+        // Флаги (isSpinning/crashActive/wheelSpinning) могли «зависнуть» после ошибки —
+        // теперь при выборе слота они сбрасываются, а таймер краша гасится.
         function startSlot(n) {
-            if (state.isSpinning || wheelSpinning || crashActive) return;
+            if (crashTimer) { clearInterval(crashTimer); crashTimer = null; }
+            crashActive = false;
+            wheelSpinning = false;
+            state.isSpinning = false;
+            state.freeSpinsLeft = 0;
+            state.roundPot = 0;
+            document.getElementById('free-spins-badge').style.display = 'none';
+            const spinBtn = document.getElementById('spin-button');
+            if (spinBtn) spinBtn.disabled = false;
+            const wheelBtn = document.getElementById('wheel-button');
+            if (wheelBtn) wheelBtn.disabled = false;
+            const crashStartBtn = document.getElementById('crash-start-btn');
+            if (crashStartBtn) crashStartBtn.disabled = false;
+            const cashBtn = document.getElementById('cashout-btn');
+            if (cashBtn) cashBtn.disabled = true;
+
             state.currentSlot = n;
             showScreen('game-screen');
             document.getElementById('reels-block').style.display = (n <= 3) ? 'block' : 'none';
@@ -1032,7 +1049,6 @@
             document.getElementById('wheel-controls').style.display = (n === 4) ? 'flex' : 'none';
             document.getElementById('crash-block').style.display = (n === 5) ? 'block' : 'none';
             document.getElementById('crash-controls').style.display = (n === 5) ? 'flex' : 'none';
-            document.getElementById('free-spins-badge').style.display = 'none';
             document.getElementById('machine-status').textContent = { 1: 'BIG WIN', 2: 'FREE SPINS', 3: 'JACKPOT' }[n] || '';
             if (n <= 3) document.getElementById('payout-grid').innerHTML = payoutRows(SLOT_RULES[n]);
             setGameMessage('');
@@ -1107,7 +1123,7 @@
                 state.excoins += 1000000;
                 msgEl.textContent = 'Промокод CREATE активирован! +10 000 000 000 валюты и +1 000 000 ₿!';
                 msgEl.className = 'message msg-success';
-                updateDisplay(); saveAll(); input.value = '';
+                updateDisplay(); updateCaseBalance(); saveAll(); input.value = '';
                 return;
             }
 
@@ -1405,7 +1421,7 @@
         }
 
         function startCrash() {
-            if (crashActive || wheelSpinning || state.balance < state.currentBet || state.currentBet < 1) return;
+            if (crashActive || state.balance < state.currentBet || state.currentBet < 1) return;
             crashActive = true;
             crashBet = state.currentBet;
             state.balance -= crashBet;
@@ -1448,6 +1464,7 @@
 
         function crashOver(cashedOut) {
             clearInterval(crashTimer);
+            crashTimer = null;
             crashActive = false;
             const multEl = document.getElementById('crash-mult');
             const cashBtn = document.getElementById('cashout-btn');
@@ -1645,16 +1662,14 @@
                     { item: 'kn_butterfly_fade', weight: 0.5 }
                 ]
             },
-            // Перчатки-дуо: цена и призы в экс-валюте ₿
             {
                 id: 'gloves_duo', name: '🧤 Перчатки-дуо', price: 800, currency: 'ex',
                 contents: [
-                    { item: 'p250',          weight: 49 },  // самая дешёвая пушка
-                    { item: 'gl_bloodhound', weight: 49 },  // самая дешёвая пара перчаток
-                    { item: 'gl_vice',       weight: 0.5 }  // самая дорогая пара — Vice за 1000 ₿
+                    { item: 'p250',          weight: 49 },
+                    { item: 'gl_bloodhound', weight: 49 },
+                    { item: 'gl_vice',       weight: 0.5 }
                 ]
             },
-            // Перчаточный кейс: 10 пар перчаток, цена в экс-валюте ₿
             {
                 id: 'gloves', name: '🧤 Перчаточный кейс', price: 5000, currency: 'ex',
                 contents: [
@@ -1779,7 +1794,6 @@
             const caseDef = CASES.find(c => c.id === openCaseId);
             const totalCost = caseDef.price * openQty;
 
-            // Валюта кейса: перчаточные — экс-валюта ₿, остальные — баланс кейсов
             const useEx = caseDef.currency === 'ex';
             if (useEx && state.excoins < totalCost) {
                 setCaseOpenMessage(`Недостаточно экс-валюты. Нужно ${totalCost.toLocaleString('ru-RU')} ₿.`, 'msg-error');
@@ -1791,7 +1805,8 @@
             }
             if (useEx) state.excoins -= totalCost;
             else state.caseBalance -= totalCost;
-            updateCaseBalance(); saveAll();
+            // Мгновенное обновление всех балансов (шапка + кейсы + экран открытия)
+            updateDisplay(); updateCaseBalance(); renderOpenCost(); saveAll();
 
             const wins = [];
             for (let i = 0; i < openQty; i++) wins.push(pickItemFromCase(caseDef));
@@ -1905,7 +1920,6 @@
             const idx = state.caseInventory.findIndex(i => i.uid === uid);
             if (idx === -1) { renderInventory(); return; }
             const it = state.caseInventory[idx];
-            // Перчатки продаются за экс-валюту ₿, всё остальное — за баланс кейсов
             if (it.currency === 'ex') {
                 state.excoins += it.price;
                 setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')} ₿.`, 'msg-success');
@@ -1915,7 +1929,8 @@
             }
             state.caseInventory.splice(idx, 1);
             if (selectedUid === uid) selectedUid = null;
-            renderInventory(); updateCaseBalance(); saveAll();
+            // Мгновенное обновление всех балансов
+            updateDisplay(); updateCaseBalance(); renderInventory(); saveAll();
         }
 
         // ================== АПГРЕЙД: КРУГ СО СТРЕЛКОЙ ==================
@@ -1932,7 +1947,6 @@
                 circle.style.display = 'none';
                 return;
             }
-            // Апгрейд только между предметами одной валюты (нельзя обменять пушку на перчатки)
             const targets = ITEMS.filter(i => itemCurrency(i) === itemCurrency(sel) && i.price > sel.price);
             if (!targets.length) {
                 grid.innerHTML = '<div style="color:var(--muted)">Это уже самый дорогой предмет в своей категории!</div>';
@@ -1967,7 +1981,6 @@
             const greenDeg = chance * 3.6;
             ring.style.setProperty('--up-green', greenDeg + 'deg');
 
-            // Случай решается заранее, стрелка честно летит в соответствующую зону
             const success = Math.random() * 100 < chance;
             const margin = Math.min(6, greenDeg / 4);
             let finalTheta;
@@ -2020,7 +2033,8 @@
             if (state.caseLuck >= 100) { caseShopMsg('Удача кейсов уже максимальна (100%).', 'msg-info'); return; }
             state.excoins -= 50;
             state.caseLuck = Math.min(100, state.caseLuck + 1);
-            renderCaseShop(); updateCaseBalance(); saveAll();
+            // Мгновенное обновление всех балансов
+            renderCaseShop(); updateCaseBalance(); updateDisplay(); saveAll();
             caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие, Легендарные и Контрабанда теперь выпадают чаще.`, 'msg-success');
         }
 
