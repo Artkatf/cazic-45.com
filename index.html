@@ -152,21 +152,18 @@
         .inv-emoji { font-size: 28px; }
         .inv-name { flex: 1; font-weight: bold; }
 
-        /* Цвета редкости (текст) */
         .rarity-Мусор { color: #8fa0be; }
         .rarity-Обычный { color: #4b69ff; }
         .rarity-Редкий { color: #8847ff; }
         .rarity-Легендарный { color: #eb4b4b; }
         .rarity-Контрабанда { color: var(--gold); text-shadow: 0 0 8px rgba(241,196,15,0.8); font-weight: 900; }
 
-        /* Фоны редкости (подсветка всей карточки) */
         .bg-Мусор { background: linear-gradient(180deg, rgba(143,160,190,0.14), rgba(143,160,190,0.03)); }
         .bg-Обычный { background: linear-gradient(180deg, rgba(75,105,255,0.18), rgba(75,105,255,0.04)); }
         .bg-Редкий { background: linear-gradient(180deg, rgba(136,71,255,0.18), rgba(136,71,255,0.04)); }
         .bg-Легендарный { background: linear-gradient(180deg, rgba(235,75,75,0.20), rgba(235,75,75,0.05)); }
         .bg-Контрабанда { background: linear-gradient(180deg, rgba(241,196,15,0.22), rgba(241,196,15,0.05)); }
 
-        /* Контрабанда: золотая пульсирующая подсветка */
         .contraband-glow { border-color: var(--gold) !important; animation: pulse-gold 2s infinite; }
         @keyframes pulse-gold {
             0% { box-shadow: 0 0 5px var(--gold); }
@@ -418,7 +415,7 @@
             <div id="case-tab-upgrade" style="width:100%;display:none">
                 <div class="panel" style="max-width:700px">
                     <h3 style="color:var(--green);margin-bottom:5px">⚡ Апгрейд скина</h3>
-                    <p style="color:var(--muted);font-size:13px">Слева твой скин, справа цель. Шанс = цена скина ÷ цена цели × 90. Стрелка крутится: попала в зелёную зону — апгрейд удался, мимо — скин сгорает.</p>
+                    <p style="color:var(--muted);font-size:13px">Слева твой скин, справа цель. Шанс = цена скина ÷ цена цели × 90. Стрелка крутится: попала в зелёную зону — апгрейд удался, мимо — скин сгорает. Апгрейд идёт только внутри одной валюты.</p>
 
                     <div class="upg-layout" style="margin-top:10px">
                         <div class="upg-box">
@@ -660,6 +657,7 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
+            // Миграция старых сохранений
             if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
             if (!state.nextUid) state.nextUid = 1;
             state.caseInventory.forEach(it => {
@@ -1547,7 +1545,7 @@
         }
 
         // ================== СКИНЫ ИЗ CS2: ПУШКИ, НОЖИ И ПЕРЧАТКИ ==================
-        // У оружия цена в обычной валюте (валюта: main), у перчаток — в экс-валюте ₿ (валюта: ex).
+        // У оружия цена в обычной валюте (currency: main), у перчаток — в экс-валюте ₿ (currency: ex).
         // У перчаток поле inGame — цена в игре; на сайте они стоят в 1,5 раза дороже (price = inGame × 1,5).
         const ITEMS = [
             // --- Пушки ---
@@ -1586,7 +1584,6 @@
             { id: 'gl_vice',       name: '★ Sport Gloves | Vice',                  emoji: '🧤', price: 1000, inGame: 667,  rarity: 'Легендарный',  currency: 'ex' },
             { id: 'gl_pandora',    name: "★ Sport Gloves | Pandora's Box",         emoji: '🧤', price: 2025, inGame: 1350, rarity: 'Контрабанда',  currency: 'ex' }
         ];
-        // Удача усиливает Редкие, Легендарные и Контрабанду
         const isRareItem = (item) => item.rarity === 'Редкий' || item.rarity === 'Легендарный' || item.rarity === 'Контрабанда';
         const RARITY_COLORS = { 'Мусор': '#8fa0be', 'Обычный': '#4b69ff', 'Редкий': '#8847ff', 'Легендарный': '#eb4b4b', 'Контрабанда': '#f1c40f' };
 
@@ -1648,16 +1645,16 @@
                     { item: 'kn_butterfly_fade', weight: 0.5 }
                 ]
             },
-            // --- НОВОЕ: Перчатки-дуо (цена и призы в экс-валюте ₿) ---
-            {            {
+            // Перчатки-дуо: цена и призы в экс-валюте ₿
+            {
                 id: 'gloves_duo', name: '🧤 Перчатки-дуо', price: 800, currency: 'ex',
                 contents: [
-                    { item: 'p250',        weight: 49 },  // самая дешёвая пушка (валюта main, продаётся за неё)
-                    { item: 'gl_bloodhound', weight: 49 }, // самая дешёвая пара перчаток (75 ₿)
-                    { item: 'gl_vice',     weight: 0.5 }   // самая дорогая пара — Sport Gloves | Vice за 1000 ₿
+                    { item: 'p250',          weight: 49 },  // самая дешёвая пушка
+                    { item: 'gl_bloodhound', weight: 49 },  // самая дешёвая пара перчаток
+                    { item: 'gl_vice',       weight: 0.5 }  // самая дорогая пара — Vice за 1000 ₿
                 ]
             },
-            // --- НОВОЕ: Перчаточный кейс (10 пар перчаток из CS2, цена в экс-валюте ₿) ---
+            // Перчаточный кейс: 10 пар перчаток, цена в экс-валюте ₿
             {
                 id: 'gloves', name: '🧤 Перчаточный кейс', price: 5000, currency: 'ex',
                 contents: [
@@ -1670,7 +1667,7 @@
                     { item: 'gl_brokenfang', weight: 5 },
                     { item: 'gl_hedgemaze',  weight: 3.5 },
                     { item: 'gl_vice',       weight: 2 },
-                    { item: 'gl_pandora',    weight: 0.4 } // Контрабанда — Pandora's Box за 2025 ₿
+                    { item: 'gl_pandora',    weight: 0.4 }
                 ]
             }
         ];
@@ -1704,7 +1701,7 @@
             if (tab === 'shop') renderCaseShop();
         }
 
-        // Подсветка всей строки своим цветом редкости
+        // Подсветка всей карточки своим цветом редкости
         function rarityBG(item) { return 'bg-' + item.rarity; }
 
         function renderCasesScreen() {
@@ -2050,4 +2047,4 @@
         }
     </script>
 </body>
-</html>            
+</html>
