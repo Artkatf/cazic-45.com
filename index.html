@@ -11,6 +11,7 @@
         body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
         footer { text-align: center; padding: 15px; background: #0d1726; border-top: 1px solid #1f3154; font-size: 12px; color: var(--muted); margin-top: auto; }
         .version-badge { display: inline-block; background: #2c3e50; padding: 4px 12px; border-radius: 20px; color: var(--gold); font-weight: bold; }
+        .disclaimer { font-size: 11px; color: #ffffff; margin-top: 8px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.45; }
 
         header { background: var(--card); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2642; flex-wrap: wrap; gap: 10px; }
         .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; }
@@ -130,6 +131,7 @@
         .chip-win { background: #112c1a; color: #2ecc71; }
         .chip-lose { background: #2c1111; color: var(--red); }
 
+        /* ===== КЕЙСЫ ===== */
         .case-tabs { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; }
         .case-tab-btn { flex: 1; background: #0d1726; color: var(--muted); border: 1px solid #1f3154; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .case-tab-btn.active { color: #fff; border-color: var(--green); }
@@ -386,12 +388,25 @@
                     Экс-валюта: <b id="case-excoins-display" style="color:var(--btc)">0 ₿</b> •
                     Удача кейсов: <b id="case-luck-display" style="color:var(--gold)">5%</b>
                 </div>
+
+                <!-- Перевод между балансом и кейсами -->
                 <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
                     <input type="number" id="case-fund-input" class="input-field" placeholder="Сумма" min="1" style="flex:1;margin:0">
                     <button class="btn" style="width:auto;padding:10px 14px;font-size:13px" onclick="transferToCases()">С баланса → кейсы</button>
                     <button class="btn" style="width:auto;padding:10px 14px;font-size:13px;background:#f39c12" onclick="withdrawFromCases()">Кейсы → баланс</button>
                 </div>
                 <div id="case-fund-message" class="message" style="font-size:14px"></div>
+
+                <!-- Обмен валют: 1 ₿ = 1000 обычной -->
+                <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;align-items:center">
+                    <span style="color:var(--muted);font-size:13px">💱 Курс: <b style="color:var(--gold)">1 ₿ = 1000</b></span>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+                    <input type="number" id="exchange-input" class="input-field" placeholder="Сколько ₿ обменять" min="1" style="flex:1;margin:0">
+                    <button class="btn" style="width:auto;padding:10px 14px;font-size:13px;background:var(--btc)" onclick="exchangeExToMain()">₿ → валюта</button>
+                    <button class="btn" style="width:auto;padding:10px 14px;font-size:13px;background:#2980b9;color:#fff" onclick="exchangeMainToEx()">валюта → ₿</button>
+                </div>
+                <div id="exchange-message" class="message" style="font-size:14px"></div>
             </div>
 
             <div class="case-tabs" style="width:100%">
@@ -601,12 +616,11 @@
 
     <footer>
         <span class="version-badge" id="version-badge">Версия 1.0.0</span>
+        <div class="disclaimer">Сайт не является казино или сайтом какого-либо казино, также сайт не является пропагандой азартных игр, сайт сделан исключительно в развлекательных целях (14+)</div>
     </footer>
 
     <script>
         // ================== ВЕРСИЯ ==================
-        // Схема: 1.0.0 → 1.0.1 ... 1.0.9 → 1.1.0 ... 1.9.9 → 2.0.0
-        // После каждого изменения кода открой консоль (F12) и набери: bumpVersion()
         let VERSION = localStorage.getItem('casinox_version') || '1.0.0';
         function renderVersion() {
             document.getElementById('version-badge').textContent = 'Версия ' + VERSION;
@@ -623,6 +637,8 @@
         }
 
         // ================== СОСТОЯНИЕ ==================
+        const EX_RATE = 1000; // 1 экс-валюта = 1000 обычной валюты
+
         function freshState() {
             return {
                 balance: 5000, wallet: 0, currentBet: 100, isSpinning: false,
@@ -632,9 +648,8 @@
                 hintQueues: { 1: [], 2: [], 3: [] },
                 fate: null,
                 caseBalance: 0, caseLuck: 5, caseInventory: [], nextUid: 1,
-                // Промокоды за уровни и первый день
                 createdAt: null, day1PromoRevealed: false, day1PromoUsed: false,
-                usedLevelPromos: []
+                usedLevelPromos: [], notifiedLvl20: false, notifiedLvl100: false, notifiedLvl1K: false
             };
         }
 
@@ -662,7 +677,6 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
-            // Миграция старых сохранений
             if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
             if (!state.nextUid) state.nextUid = 1;
             state.caseInventory.forEach(it => {
@@ -682,7 +696,7 @@
             localStorage.setItem('casinox_profiles', JSON.stringify(profiles));
             state = freshState();
             state.activePhone = phone;
-            state.createdAt = new Date().toDateString(); // дата создания аккаунта — для DAY1
+            state.createdAt = new Date().toDateString();
             saveAll();
             afterProfileLoad();
             return true;
@@ -818,7 +832,6 @@
             document.getElementById('level-badge').innerHTML = `Уровень: <b>${lvl}</b> (${getRank(lvl)}) • XP: ${state.xp}`;
         }
 
-        // Проверка промокодов за уровни: на 20/100/1000 уровне сообщаем игроку код
         function checkLevelPromos(lvl) {
             if (lvl >= 20 && !state.usedLevelPromos.includes('LVL20') && !state.notifiedLvl20) {
                 state.notifiedLvl20 = true;
@@ -843,7 +856,6 @@
             state.balance += bonus;
             renderDailyBtn(); updateDisplay(); saveAll();
 
-            // Первый день жизни аккаунта: при нажатии бонуса показываем промокод DAY1
             if (state.createdAt === today && !state.day1PromoRevealed && !state.day1PromoUsed) {
                 state.day1PromoRevealed = true;
                 saveAll();
@@ -860,7 +872,6 @@
             btn.textContent = taken ? '🎁 Бонус получен' : '🎁 Ежедневный бонус';
         }
 
-        // Плашка с промокодом DAY1 на главном экране (видна, пока промокод не использован)
         function renderDay1PromoBanner() {
             const b = document.getElementById('day1-promo-banner');
             if (!b) return;
@@ -1077,7 +1088,6 @@
             ]
         };
 
-        // === Слоты открываются всегда: сбрасываем зависшие флаги ===
         function startSlot(n) {
             if (crashTimer) { clearInterval(crashTimer); crashTimer = null; }
             crashActive = false;
@@ -1166,9 +1176,6 @@
         }
 
         // ================== ПРОМОКОДЫ ==================
-        // DAY1 — показывается в первый день аккаунта (при нажатии ежедневного бонуса),
-        // но сам код действует всегда, только один раз на аккаунт.
-        // LVL20 / LVL100 / LVL1K — выдаются за достижение уровня, тоже один раз.
         function activatePromo() {
             const input = document.getElementById('promo-input');
             const msgEl = document.getElementById('promo-message');
@@ -1176,7 +1183,6 @@
             msgEl.textContent = ''; msgEl.className = 'message';
             input.value = '';
 
-            // --- DAY1: 10 000 валюты + 5 экс-валют, один раз, без срока действия ---
             if (code === 'DAY1') {
                 if (state.day1PromoUsed) {
                     msgEl.textContent = 'Промокод DAY1 уже был использован в этом аккаунте.';
@@ -1192,7 +1198,6 @@
                 return;
             }
 
-            // --- LVL20: 20 000 валюты + 10 экс-валют, от 20 уровня ---
             if (code === 'LVL20') {
                 if (state.usedLevelPromos.includes('LVL20')) {
                     msgEl.textContent = 'Промокод LVL20 уже был использован в этом аккаунте.';
@@ -1213,7 +1218,6 @@
                 return;
             }
 
-            // --- LVL100: 50 000 валюты + 50 экс-валют, от 100 уровня ---
             if (code === 'LVL100') {
                 if (state.usedLevelPromos.includes('LVL100')) {
                     msgEl.textContent = 'Промокод LVL100 уже был использован в этом аккаунте.';
@@ -1234,7 +1238,6 @@
                 return;
             }
 
-            // --- LVL1K: 1 000 000 валюты + 100 экс-валют, от 1000 уровня ---
             if (code === 'LVL1K') {
                 if (state.usedLevelPromos.includes('LVL1K')) {
                     msgEl.textContent = 'Промокод LVL1K уже был использован в этом аккаунте.';
@@ -1255,7 +1258,6 @@
                 return;
             }
 
-            // --- Старые промокоды ---
             if (code === 'CREATE') {
                 state.balance += 10000000000;
                 state.excoins += 1000000;
@@ -1699,9 +1701,38 @@
             updateDisplay(); updateCaseBalance(); saveAll();
         }
 
+        // ================== ОБМЕН ВАЛЮТ: 1 ₿ = 1000 обычной ==================
+        function exchangeExToMain() {
+            const input = document.getElementById('exchange-input');
+            const msgEl = document.getElementById('exchange-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите, сколько ₿ обменять.'; msgEl.className = 'message msg-error'; return; }
+            if (amount > state.excoins) { msgEl.textContent = `Недостаточно экс-валюты (есть ${state.excoins.toLocaleString('ru-RU')} ₿).`; msgEl.className = 'message msg-error'; return; }
+            state.excoins -= amount;
+            state.balance += amount * EX_RATE;
+            input.value = '';
+            msgEl.textContent = `Обменяно ${amount} ₿ → +${(amount * EX_RATE).toLocaleString('ru-RU')} валюты.`;
+            msgEl.className = 'message msg-success';
+            updateDisplay(); updateCaseBalance(); saveAll();
+        }
+        function exchangeMainToEx() {
+            const input = document.getElementById('exchange-input');
+            const msgEl = document.getElementById('exchange-message');
+            const amount = parseInt(input.value, 10);
+            msgEl.textContent = ''; msgEl.className = 'message';
+            if (!amount || amount <= 0) { msgEl.textContent = 'Введите, сколько ₿ получить.'; msgEl.className = 'message msg-error'; return; }
+            const cost = amount * EX_RATE;
+            if (cost > state.balance) { msgEl.textContent = `Нужно ${cost.toLocaleString('ru-RU')} валюты, на балансе ${state.balance.toLocaleString('ru-RU')}.`; msgEl.className = 'message msg-error'; return; }
+            state.balance -= cost;
+            state.excoins += amount;
+            input.value = '';
+            msgEl.textContent = `Куплено ${amount} ₿ за ${cost.toLocaleString('ru-RU')} валюты.`;
+            msgEl.className = 'message msg-success';
+            updateDisplay(); updateCaseBalance(); saveAll();
+        }
+
         // ================== СКИНЫ ИЗ CS2: ПУШКИ, НОЖИ И ПЕРЧАТКИ ==================
-        // У оружия цена в обычной валюте (currency: main), у перчаток — в экс-валюте ₿ (currency: ex).
-        // У перчаток поле inGame — цена в игре; на сайте они стоят в 1,5 раза дороже (price = inGame × 1,5).
         const ITEMS = [
             { id: 'p250',   name: 'P250 | Песчаная дюна',           emoji: '🔫', price: 50,      rarity: 'Мусор' },
             { id: 'nova',   name: 'Nova | Орех',                    emoji: '🔫', price: 90,      rarity: 'Мусор' },
@@ -1774,8 +1805,9 @@
                     { item: 'kn_kara_doppler', weight: 1 }
                 ]
             },
+            // Ножевой кейс: теперь стоит 250 экс-валют (₿)
             {
-                id: 'knife', name: '★ Ножевой кейс', price: 25000, currency: 'main',
+                id: 'knife', name: '★ Ножевой кейс', price: 250, currency: 'ex',
                 contents: [
                     { item: 'kn_gut_aurora',   weight: 20 },
                     { item: 'kn_flip_grad',    weight: 18 },
@@ -1876,7 +1908,6 @@
             }
         }
 
-        // ---------- Открытие кейса на всю страницу ----------
         let openCaseId = null;
         let openQty = 1;
 
@@ -1950,7 +1981,7 @@
             setCaseOpenMessage('Крутим...', 'msg-info');
             caseSpinning = true;
 
-                       // В рулетке крутятся ТОЛЬКО предметы этого кейса
+            // В рулетке крутятся ТОЛЬКО предметы этого кейса
             const pool = caseDef.contents.map(cc => ITEMS.find(i => i.id === cc.item));
             const totalCells = 40;
             const winIndex = 35;
@@ -1994,7 +2025,7 @@
                     `<br>Лучший: <b style="color:var(--gold)">${best.name}</b>`,
                     'msg-success'
                 );
-                caseSpinning = false;
+                                caseSpinning = false;
                 renderOpenCost();
                 saveAll();
             }, 3800);
@@ -2052,6 +2083,7 @@
             const idx = state.caseInventory.findIndex(i => i.uid === uid);
             if (idx === -1) { renderInventory(); return; }
             const it = state.caseInventory[idx];
+            // Перчатки продаются за экс-валюту ₿, всё остальное — за баланс кейсов
             if (it.currency === 'ex') {
                 state.excoins += it.price;
                 setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')} ₿.`, 'msg-success');
@@ -2061,6 +2093,7 @@
             }
             state.caseInventory.splice(idx, 1);
             if (selectedUid === uid) selectedUid = null;
+            // Мгновенное обновление всех балансов
             updateDisplay(); updateCaseBalance(); renderInventory(); saveAll();
         }
 
@@ -2078,6 +2111,7 @@
                 circle.style.display = 'none';
                 return;
             }
+            // Апгрейд только между предметами одной валюты (нельзя обменять пушку на перчатки)
             const targets = ITEMS.filter(i => itemCurrency(i) === itemCurrency(sel) && i.price > sel.price);
             if (!targets.length) {
                 grid.innerHTML = '<div style="color:var(--muted)">Это уже самый дорогой предмет в своей категории!</div>';
@@ -2112,6 +2146,7 @@
             const greenDeg = chance * 3.6;
             ring.style.setProperty('--up-green', greenDeg + 'deg');
 
+            // Случай решается заранее, стрелка честно летит в соответствующую зону
             const success = Math.random() * 100 < chance;
             const margin = Math.min(6, greenDeg / 4);
             let finalTheta;
