@@ -9,6 +9,9 @@
         :root { --bg: #0b111e; --card: #111a2e; --green: #00ffcc; --text: #fff; --muted: #8fa0be; --red: #ff4a4a; --gold: #f1c40f; --btc: #f7931a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; }
         body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+        footer { text-align: center; padding: 15px; background: #0d1726; border-top: 1px solid #1f3154; font-size: 12px; color: var(--muted); margin-top: auto; }
+        .version-badge { display: inline-block; background: #2c3e50; padding: 4px 12px; border-radius: 20px; color: var(--gold); font-weight: bold; }
+
         header { background: var(--card); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1a2642; flex-wrap: wrap; gap: 10px; }
         .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; }
         .user-icon { width: 40px; height: 40px; background: #7f8c8d; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -102,7 +105,6 @@
 
         .hint-box { background: #0d1726; border: 1px solid #5a1f4a; border-radius: 8px; padding: 12px; font-size: 14px; text-align: left; margin-top: 10px; }
 
-        /* Выбор судьбы кликами */
         .fate-symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
         .symbol-choice { font-size: 24px; background: #0d1726; border: 2px solid #1f3154; border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: border-color 0.15s; }
         .symbol-choice:hover { border-color: var(--muted); }
@@ -111,13 +113,11 @@
         .fate-slot-btns { display: flex; gap: 10px; margin-bottom: 15px; }
         .fate-slot-btns .btn { padding: 10px; font-size: 14px; }
 
-        /* Колесо фортуны */
         .wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 0 auto 25px auto; }
         .wheel-pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 34px; z-index: 5; }
         .wheel { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #c0392b; box-shadow: 0 0 25px rgba(0,0,0,0.6); transition: transform 4s cubic-bezier(0.15, 0.9, 0.25, 1); will-change: transform; }
         .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #111; border: 3px solid var(--gold); border-radius: 50%; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--gold); z-index: 4; }
 
-        /* Краш */
         .crash-container { background: #0d1726; border: 2px solid #1f3154; border-radius: 16px; padding: 30px; width: 100%; max-width: 500px; margin-bottom: 25px; text-align: center; }
         .crash-mult { font-size: 72px; font-weight: 900; color: var(--green); min-height: 90px; }
         .crash-mult.crashed { color: var(--red); }
@@ -135,7 +135,7 @@
 
         .case-card { background: var(--card); border: 1px solid #1a2642; border-radius: 10px; padding: 20px; width: 230px; text-align: center; }
         .case-card h4 { color: var(--gold); margin: 5px 0; }
-        .case-preview { font-size: 12px; color: var(--muted); text-align: left; margin: 10px 0; border-top: 1px solid #1a2642; padding-top: 8px; }
+        .case-preview { font-size: 12px; color: var(--muted); text-align: left; margin: 10px 0; border-top: 1px solid #1a2642; padding-top: 8px; max-height: 160px; overflow-y: auto; }
         .case-preview-row { display: flex; justify-content: space-between; padding: 2px 0; }
         .case-open-btn { background: #f39c12; border: none; color: #111; font-weight: bold; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; }
         .case-open-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
@@ -156,8 +156,16 @@
         .rarity-Обычный { color: #4b69ff; }
         .rarity-Редкий { color: #8847ff; }
         .rarity-Легендарный { color: #eb4b4b; }
+        .rarity-Контрабанда { color: var(--gold); text-shadow: 0 0 8px rgba(241,196,15,0.8); font-weight: 900; }
 
-        /* Апгрейд: круг со стрелкой */
+        /* Контрабанда: золотая пульсирующая подсветка */
+        .contraband-glow { border-color: var(--gold) !important; animation: pulse-gold 2s infinite; }
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 5px var(--gold); }
+            50% { box-shadow: 0 0 22px var(--gold); }
+            100% { box-shadow: 0 0 5px var(--gold); }
+        }
+
         .up-circle-wrap { position: relative; width: 240px; height: 240px; margin: 15px auto; }
         .up-ring { position: absolute; inset: 0; border-radius: 50%; border: 10px solid #5e1919; background: conic-gradient(from 0deg, #2ecc71 0deg, #2ecc71 var(--up-green, 36deg), transparent var(--up-green, 36deg), transparent 360deg); box-shadow: 0 0 25px rgba(0,0,0,0.6); }
         .up-arrow { position: absolute; left: 50%; top: -8px; transform-origin: 50% 128px; font-size: 42px; z-index: 5; filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); will-change: transform; }
@@ -169,7 +177,6 @@
         .upg-box .inv-emoji { font-size: 34px; }
         .upg-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
 
-        /* Открытие кейсов на всю страницу */
         .qty-btns { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
         .qty-btn { background: #0d1726; border: 2px solid #1f3154; color: #fff; width: 48px; height: 48px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 17px; }
         .qty-btn.active { border-color: var(--green); background: #0f2a24; }
@@ -364,7 +371,7 @@
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
 
             <div class="panel" style="max-width:700px;margin-bottom:20px">
-                <h2 style="color:var(--gold);margin-bottom:10px">📦 Кейсы: скины из CS</h2>
+                <h2 style="color:var(--gold);margin-bottom:10px">📦 Кейсы: скины из CS2</h2>
                 <div style="color:var(--muted)">
                     Баланс кейсов: <b style="color:var(--gold)" id="case-balance-display">0</b> •
                     Удача кейсов: <b id="case-luck-display" style="color:var(--gold)">5%</b>
@@ -384,22 +391,19 @@
                 <button class="case-tab-btn" id="tab-btn-shop" onclick="showCaseTab('shop')">🛒 Магазин</button>
             </div>
 
-            <!-- Вкладка: кейсы -->
             <div id="case-tab-cases" style="width:100%">
                 <div id="case-message" class="message"></div>
                 <div style="display:flex;gap:15px;flex-wrap:wrap;justify-content:center" id="cases-list"></div>
             </div>
 
-            <!-- Вкладка: инвентарь -->
             <div id="case-tab-inventory" style="width:100%;display:none">
                 <div class="panel" style="max-width:700px">
                     <h3 style="color:var(--green);margin-bottom:15px">🎒 Инвентарь кейсов</h3>
-                    <p style="color:var(--muted);font-size:13px;margin-bottom:15px">Клик по предмету — выбрать его для апгрейда (вкладка «⚡ Апгрейд»). «Продать» — обменять скин на баланс кейсов.</p>
+                    <p style="color:var(--muted);font-size:13px;margin-bottom:15px">Клик по предмету — выбрать его для апгрейда. «Продать» — обменять скин на баланс кейсов.</p>
                     <div id="inventory-list"></div>
                 </div>
             </div>
 
-            <!-- Вкладка: апгрейд -->
             <div id="case-tab-upgrade" style="width:100%;display:none">
                 <div class="panel" style="max-width:700px">
                     <h3 style="color:var(--green);margin-bottom:5px">⚡ Апгрейд скина</h3>
@@ -432,7 +436,6 @@
                 </div>
             </div>
 
-            <!-- Вкладка: магазин кейсов -->
             <div id="case-tab-shop" style="width:100%;display:none">
                 <div class="panel">
                     <h3 style="color:var(--btc);margin-bottom:10px">🛒 Магазин кейсов</h3>
@@ -440,7 +443,7 @@
 
                     <div class="shop-item">
                         <h4>🍀 Удача кейсов +1% — 50 ₿</h4>
-                        <p>Повышает шанс Редких и Легендарных скинов при открытии кейсов. На слоты НЕ действует. Сейчас: <b id="caseluck-shop-value">5%</b>. Максимум — 100%.</p>
+                        <p>Повышает шанс Редких, Легендарных и Контрабанды при открытии кейсов. На слоты НЕ действует. Сейчас: <b id="caseluck-shop-value">5%</b>. Максимум — 100%.</p>
                         <button class="shop-buy" id="buy-case-luck-btn" onclick="buyCaseLuck()">Купить за 50 ₿</button>
                     </div>
 
@@ -486,7 +489,6 @@
 
         <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:700px">
 
-            <!-- Слоты 1-3: барабаны -->
             <div class="slot-machine-container" id="reels-block">
                 <div class="machine-header"><h1 id="machine-status">BIG WIN</h1></div>
                 <div class="reels-wrapper">
@@ -497,14 +499,12 @@
                 <div class="free-spins-badge" id="free-spins-badge" style="display:none"></div>
             </div>
 
-            <!-- Слот 4: колесо -->
             <div class="wheel-wrapper" id="wheel-block" style="display:none">
                 <div class="wheel-pointer">🔻</div>
                 <div class="wheel" id="wheel"></div>
                 <div class="wheel-center">SPIN</div>
             </div>
 
-            <!-- Слот 5: краш -->
             <div class="crash-container" id="crash-block" style="display:none">
                 <div style="color:var(--muted);margin-bottom:5px">Ракета летит 🚀 — забери деньги до взрыва!</div>
                 <div class="crash-mult" id="crash-mult">x1.00</div>
@@ -515,7 +515,6 @@
                 <div class="crash-history" id="crash-history"></div>
             </div>
 
-            <!-- Управление ставкой (слоты 1-3) -->
             <div class="controls-panel" id="reels-controls">
                 <div id="current-bet-display" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold">Текущая ставка: <span style="color:var(--green)">100</span></div>
 
@@ -540,7 +539,6 @@
                 </div>
             </div>
 
-            <!-- Управление слотом 4 -->
             <div class="controls-panel" id="wheel-controls" style="display:none">
                 <div id="current-bet-display-wheel" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
                 <div class="controls-row">
@@ -557,7 +555,6 @@
                 </div>
             </div>
 
-            <!-- Управление слотом 5 -->
             <div class="controls-panel" id="crash-controls" style="display:none">
                 <div id="current-bet-display-crash" style="text-align:center;color:var(--muted);font-size:15px;font-weight:bold"></div>
 
@@ -592,7 +589,29 @@
         </div>
     </div>
 
+    <footer>
+        <span class="version-badge" id="version-badge">Версия 1.0.0</span>
+    </footer>
+
     <script>
+        // ================== ВЕРСИЯ ==================
+        // Схема: 1.0.0 → 1.0.1 ... 1.0.9 → 1.1.0 ... 1.9.9 → 2.0.0
+        // После каждого изменения кода открой консоль (F12) и набери: bumpVersion()
+        let VERSION = localStorage.getItem('casinox_version') || '1.0.0';
+        function renderVersion() {
+            document.getElementById('version-badge').textContent = 'Версия ' + VERSION;
+        }
+        function bumpVersion() {
+            const parts = VERSION.split('.').map(Number);
+            parts[2]++;
+            if (parts[2] > 9) { parts[2] = 0; parts[1]++; }
+            if (parts[1] > 9) { parts[1] = 0; parts[0]++; }
+            VERSION = parts.join('.');
+            localStorage.setItem('casinox_version', VERSION);
+            renderVersion();
+            console.log('Версия обновлена:', VERSION);
+        }
+
         // ================== СОСТОЯНИЕ ==================
         function freshState() {
             return {
@@ -630,7 +649,6 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
-            // Миграция старых сохранений: выделяем uid предметам без него
             if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
             if (!state.nextUid) state.nextUid = 1;
             state.caseInventory.forEach(it => { if (!it.uid) it.uid = state.nextUid++; });
@@ -714,7 +732,6 @@
         }
 
         // ================== ЭКС-ВАЛЮТА ==================
-        // 1 ₿ за каждую полную 1000 ставки — только слоты 1-3 и только если раунд принёс ПРИБЫЛЬ (delta > 0)
         function earnExcoins(bet, delta) {
             if (delta <= 0) return;
             const earned = Math.floor(bet / 1000);
@@ -807,7 +824,6 @@
         const noBombPool = symbolsConfig.filter(s => s.char !== '💣');
         const SYMBOL_CHARS = symbolsConfig.map(s => s.char);
 
-        // Результат спина: судьба > подсказка > случайность (с учётом удачи)
         function takeSpinResult(slot) {
             if (state.fate && state.fate.slot === slot) {
                 const chars = state.fate.symbols;
@@ -873,7 +889,6 @@
             showScreen('fate-form-screen');
         }
 
-        // ---------- Судьба: выбор кликами ----------
         let fateSelection = { slot: null, symbols: [null, null, null] };
 
         function pickFateSlot(slot) {
@@ -1238,7 +1253,7 @@
 
             if (a === '💎' && b === '💎' && c === '💎') {
                 const jackpotWin = state.jackpot;
-                state.balance += jackpotWin + bet; // джекпот + возврат ставки
+                state.balance += jackpotWin + bet;
                 state.jackpot = 10000;
                 setGameMessage(`💎💎💎 ДЖЕКПОТ! Ты забрал ${jackpotWin.toLocaleString('ru-RU')} валюты, ставка возвращена!`, 'msg-success');
                 addHistory('💎💎💎 ДЖЕКПОТ!', jackpotWin);
@@ -1326,7 +1341,6 @@
             const sectorCenter = ((cum + wheelSectors[index].weight / 2) / total) * 360;
 
             const wheelEl = document.getElementById('wheel');
-            // Перезапуск анимации: сбрасываем transition, ставим базовый угол, форсируем reflow
             wheelEl.style.transition = 'none';
             wheelRotation = wheelRotation % 360;
             wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
@@ -1468,7 +1482,7 @@
             setGameMessage('');
             state.isSpinning = true;
             spinBtn.disabled = true;
-            state.balance -= state.currentBet; // ставка списывается один раз в начале
+            state.balance -= state.currentBet;
             updateDisplay();
             reels.forEach(r => r.innerHTML = '<span class="symbol-item">⏳</span>');
 
@@ -1518,25 +1532,38 @@
             updateDisplay(); updateCaseBalance(); saveAll();
         }
 
-        // ================== СКИНЫ ОРУЖИЯ ИЗ CS ==================
+        // ================== СКИНЫ ИЗ CS2: ПУШКИ И НОЖИ ==================
         const ITEMS = [
-            { id: 'p250',   name: 'P250 | Песчаная дюна',      emoji: '🔫', price: 50,      rarity: 'Мусор' },
-            { id: 'nova',   name: 'Nova | Орех',               emoji: '🔫', price: 90,      rarity: 'Мусор' },
-            { id: 'mac10',  name: 'MAC-10 | Ультрафиолет',     emoji: '🔫', price: 150,     rarity: 'Мусор' },
-            { id: 'glock',  name: 'Glock-18 | Песок',          emoji: '🔫', price: 250,     rarity: 'Мусор' },
-            { id: 'usp',    name: 'USP-S | Корт',              emoji: '🔫', price: 400,     rarity: 'Обычный' },
-            { id: 'fivesn', name: 'Five-SeveN | Вишнёвый марш',emoji: '🔫', price: 700,     rarity: 'Обычный' },
-            { id: 'galil',  name: 'Galil AR | Оранжевый круг', emoji: '🔫', price: 1500,    rarity: 'Обычный' },
-            { id: 'p90',    name: 'P90 | Асимов',              emoji: '🔫', price: 4000,    rarity: 'Редкий' },
-            { id: 'm4a1s',  name: 'M4A1-S | Пустотный элитный',emoji: '🔫', price: 10000,   rarity: 'Редкий' },
-            { id: 'akred',  name: 'AK-47 | Красная линия',     emoji: '🔫', price: 25000,   rarity: 'Редкий' },
-            { id: 'awp',    name: 'AWP | Азимов',              emoji: '🎯', price: 60000,   rarity: 'Легендарный' },
-            { id: 'howl',   name: 'M4A4 | Howl',               emoji: '🔫', price: 150000,  rarity: 'Легендарный' },
-            { id: 'kara',   name: '★ Karambit | Доплер',       emoji: '🔪', price: 400000,  rarity: 'Легендарный' }
+            // --- Пушки ---
+            { id: 'p250',   name: 'P250 | Песчаная дюна',           emoji: '🔫', price: 50,      rarity: 'Мусор' },
+            { id: 'nova',   name: 'Nova | Орех',                    emoji: '🔫', price: 90,      rarity: 'Мусор' },
+            { id: 'mac10',  name: 'MAC-10 | Ультрафиолет',          emoji: '🔫', price: 150,     rarity: 'Мусор' },
+            { id: 'glock',  name: 'Glock-18 | Песок',               emoji: '🔫', price: 250,     rarity: 'Мусор' },
+            { id: 'usp',    name: 'USP-S | Корт',                   emoji: '🔫', price: 400,     rarity: 'Обычный' },
+            { id: 'fivesn', name: 'Five-SeveN | Вишнёвый марш',     emoji: '🔫', price: 700,     rarity: 'Обычный' },
+            { id: 'galil',  name: 'Galil AR | Оранжевый круг',      emoji: '🔫', price: 1500,    rarity: 'Обычный' },
+            { id: 'p90',    name: 'P90 | Асимов',                   emoji: '🔫', price: 4000,    rarity: 'Редкий' },
+            { id: 'm4a1s',  name: 'M4A1-S | Пустотный элитный',     emoji: '🔫', price: 10000,   rarity: 'Редкий' },
+            { id: 'akred',  name: 'AK-47 | Красная линия',          emoji: '🔫', price: 25000,   rarity: 'Редкий' },
+            { id: 'awp',    name: 'AWP | Азимов',                   emoji: '🎯', price: 60000,   rarity: 'Легендарный' },
+            { id: 'howl',   name: 'M4A4 | Howl',                    emoji: '🔫', price: 150000,  rarity: 'Легендарный' },
+            // --- Ножи (10 штук) ---
+            { id: 'kn_gut_aurora',  name: '★ Gut Knife | Автотроника',          emoji: '🔪', price: 1000,    rarity: 'Обычный' },
+            { id: 'kn_flip_grad',   name: '★ Flip Knife | Градиент',            emoji: '🗡️', price: 2500,    rarity: 'Обычный' },
+            { id: 'kn_gut_doppler', name: '★ Gut Knife | Доплер',               emoji: '🔪', price: 5000,    rarity: 'Редкий' },
+            { id: 'kn_huntsman',    name: '★ Huntsman Knife | Гипербист',       emoji: '🗡️', price: 9000,    rarity: 'Редкий' },
+            { id: 'kn_falchion',    name: '★ Falchion Knife | Мёртвые воды',    emoji: '🗡️', price: 15000,   rarity: 'Редкий' },
+            { id: 'kn_bayonet',     name: '★ Bayonet | Убийца волны',           emoji: '🗡️', price: 28000,   rarity: 'Редкий' },
+            { id: 'kn_butterfly_b', name: '★ Butterfly Knife | Мёртвые воды',   emoji: '🗡️', price: 60000,   rarity: 'Легендарный' },
+            { id: 'kn_m9_marble',   name: '★ M9 Bayonet | Мраморный градиент',  emoji: '🗡️', price: 120000,  rarity: 'Легендарный' },
+            { id: 'kn_kara_doppler',name: '★ Karambit | Доплер',                emoji: '🔪', price: 400000,  rarity: 'Легендарный' },
+            { id: 'kn_butterfly_fade', name: '★ Butterfly Knife | Fade «Контрабанда»', emoji: '🗡️', price: 1000000, rarity: 'Контрабанда' }
         ];
-        const isRareItem = (item) => item.rarity === 'Редкий' || item.rarity === 'Легендарный';
+        // Удача усиливает Редкие, Легендарные и Контрабанду
+        const isRareItem = (item) => item.rarity === 'Редкий' || item.rarity === 'Легендарный' || item.rarity === 'Контрабанда';
+        const RARITY_COLORS = { 'Мусор': '#8fa0be', 'Обычный': '#4b69ff', 'Редкий': '#8847ff', 'Легендарный': '#eb4b4b', 'Контрабанда': '#f1c40f' };
 
-        // ================== КЕЙСЫ ==================
+        // ================== КЕЙСЫ (5 штук) ==================
         const CASES = [
             {
                 id: 'trash', name: '🗑 Мусорный дроп', price: 500,
@@ -1568,7 +1595,32 @@
                     { item: 'akred',  weight: 32 },
                     { item: 'awp',    weight: 18 },
                     { item: 'howl',   weight: 6 },
-                    { item: 'kara',   weight: 1 }
+                    { item: 'kn_kara_doppler', weight: 1 }
+                ]
+            },
+            // --- НОВОЕ: Ножевой кейс (10 ножей) ---
+            {
+                id: 'knife', name: '★ Ножевой кейс', price: 25000,
+                contents: [
+                    { item: 'kn_gut_aurora',   weight: 20 },
+                    { item: 'kn_flip_grad',    weight: 18 },
+                    { item: 'kn_gut_doppler',  weight: 16 },
+                    { item: 'kn_huntsman',     weight: 13 },
+                    { item: 'kn_falchion',     weight: 10 },
+                    { item: 'kn_bayonet',      weight: 8 },
+                    { item: 'kn_butterfly_b',  weight: 6 },
+                    { item: 'kn_m9_marble',    weight: 4 },
+                    { item: 'kn_kara_doppler', weight: 2 },
+                    { item: 'kn_butterfly_fade', weight: 0.4 } // Контрабанда — почти недостижима, усиливается удачей
+                ]
+            },
+            // --- НОВОЕ: Дуо-кейс (дешёвая пушка + дешёвый нож + контрабанда) ---
+            {
+                id: 'duo', name: '🎲 Дуо-кейс', price: 8000,
+                contents: [
+                    { item: 'p250',            weight: 49 },  // самая дешёвая пушка
+                    { item: 'kn_gut_aurora',   weight: 49 },  // самый дешёвый нож
+                    { item: 'kn_butterfly_fade', weight: 0.5 } // контрабанда — усиливается удачей
                 ]
             }
         ];
@@ -1600,7 +1652,8 @@
                     const preview = c.contents.map(cc => {
                         const it = ITEMS.find(i => i.id === cc.item);
                         const total = c.contents.reduce((s, x) => s + x.weight, 0);
-                        return `<div class="case-preview-row"><span>${it.emoji} <span class="rarity-${it.rarity}">${it.name}</span></span><span>${Math.round(cc.weight / total * 100)}%</span></div>`;
+                        const glow = it.rarity === 'Контрабанда' ? ' contraband-glow' : '';
+                        return `<div class="case-preview-row${glow}" style="${it.rarity === 'Контрабанда' ? 'border-radius:4px;padding:2px 4px;' : ''}"><span>${it.emoji} <span class="rarity-${it.rarity}">${it.name}</span></span><span>${cc.weight < 1 ? cc.weight : Math.round(cc.weight / total * 100) + '%'}</span></div>`;
                     }).join('');
                     return `<div class="case-card" style="cursor:pointer" onclick="enterCaseOpen('${c.id}')">
                         <h4>${c.name}</h4>
@@ -1614,7 +1667,6 @@
         }
 
         // ---------- Открытие кейса на всю страницу ----------
-        const RARITY_COLORS = { 'Мусор': '#8fa0be', 'Обычный': '#4b69ff', 'Редкий': '#8847ff', 'Легендарный': '#eb4b4b' };
         let openCaseId = null;
         let openQty = 1;
 
@@ -1669,7 +1721,6 @@
             state.caseBalance -= totalCost;
             updateCaseBalance(); saveAll();
 
-            // Выбираем все выигрыши заранее
             const wins = [];
             for (let i = 0; i < openQty; i++) wins.push(pickItemFromCase(caseDef));
 
@@ -1680,13 +1731,13 @@
             setCaseOpenMessage('Крутим...', 'msg-info');
             caseSpinning = true;
 
-            // Лента: случайные скины, под маркером — первый выигрыш
             const totalCells = 40;
             const winIndex = 35;
             let html = '';
             for (let i = 0; i < totalCells; i++) {
                 const it = (i === winIndex) ? wins[0] : ITEMS[Math.floor(Math.random() * ITEMS.length)];
-                html += `<div class="case-cell"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
+                const glow = it.rarity === 'Контрабанда' ? ' contraband-glow' : '';
+                html += `<div class="case-cell${glow}"><span class="case-cell-emoji">${it.emoji}</span><span class="case-cell-name">${it.name}</span></div>`;
             }
             strip.innerHTML = html;
             strip.style.transition = 'none';
@@ -1697,7 +1748,6 @@
             strip.style.transform = `translateX(-${shift}px)`;
 
             setTimeout(() => {
-                // Все выигрыши — в инвентарь
                 wins.forEach(w => {
                     state.caseInventory.push({
                         uid: state.nextUid++,
@@ -1705,10 +1755,9 @@
                     });
                 });
 
-                // Карточки результатов появляются по очереди
                 const grid = document.getElementById('open-results');
                 grid.innerHTML = wins.map(w =>
-                    `<div class="result-card" style="border-color:${RARITY_COLORS[w.rarity]}">
+                    `<div class="result-card${w.rarity === 'Контрабанда' ? ' contraband-glow' : ''}" style="border-color:${RARITY_COLORS[w.rarity]}">
                         <div class="res-emoji">${w.emoji}</div>
                         <div class="res-name"><span class="rarity-${w.rarity}">${w.name}</span></div>
                         <div class="res-price">${w.rarity} • ${w.price.toLocaleString('ru-RU')}</div>
@@ -1730,7 +1779,6 @@
             }, 3800);
         }
 
-        // Эффективный вес скина с учётом удачи кейсов (только Редкие и Легендарные)
         function effectiveItemWeight(caseDef, entry) {
             const it = ITEMS.find(i => i.id === entry.item);
             if (!isRareItem(it)) return entry.weight;
@@ -1763,7 +1811,7 @@
                 return;
             }
             list.innerHTML = state.caseInventory.map(it => `
-                <div class="inv-item ${selectedUid === it.uid ? 'selected' : ''}" onclick="toggleSelect(${it.uid})">
+                <div class="inv-item ${selectedUid === it.uid ? 'selected' : ''} ${it.rarity === 'Контрабанда' ? 'contraband-glow' : ''}" onclick="toggleSelect(${it.uid})">
                     <span class="inv-emoji">${it.emoji}</span>
                     <span class="inv-name">${it.name}<br>
                         <small style="font-weight:normal"><span class="rarity-${it.rarity}">${it.rarity}</span> • ${it.price.toLocaleString('ru-RU')}</small>
@@ -1783,7 +1831,7 @@
             if (idx === -1) { renderInventory(); return; }
             const it = state.caseInventory[idx];
             state.caseBalance += it.price;
-            state.caseInventory.splice(idx, 1); // предмет реально удаляется из инвентаря
+            state.caseInventory.splice(idx, 1);
             if (selectedUid === uid) selectedUid = null;
             renderInventory(); updateCaseBalance(); saveAll();
             setCaseMessage(`Продано: ${it.name} за ${it.price.toLocaleString('ru-RU')}.`, 'msg-success');
@@ -1811,7 +1859,8 @@
             }
             grid.innerHTML = targets.map(t => {
                 const chance = Math.max(1, Math.min(90, Math.floor(sel.price / t.price * 90)));
-                return `<button class="upg-target" onclick="startUpgrade('${t.id}')">${t.emoji} <span class="rarity-${t.rarity}">${t.name}</span><br><small>Цена: ${t.price.toLocaleString('ru-RU')} • Шанс: ${chance}%</small></button>`;
+                const glow = t.rarity === 'Контрабанда' ? ' contraband-glow' : '';
+                return `<button class="upg-target${glow}" onclick="startUpgrade('${t.id}')">${t.emoji} <span class="rarity-${t.rarity}">${t.name}</span><br><small>Цена: ${t.price.toLocaleString('ru-RU')} • Шанс: ${chance}%</small></button>`;
             }).join('');
         }
 
@@ -1824,7 +1873,6 @@
             const chance = Math.max(1, Math.min(90, Math.floor(sel.price / target.price * 90)));
             upgradeBusy = true;
 
-            // Показываем цель и круг
             document.getElementById('upg-target-emoji').textContent = target.emoji;
             document.getElementById('upg-target-name').textContent = target.name;
             document.getElementById('upg-target-price').textContent = target.price.toLocaleString('ru-RU');
@@ -1834,10 +1882,9 @@
 
             const ring = document.getElementById('up-ring');
             const arrow = document.getElementById('up-arrow');
-            const greenDeg = chance * 3.6; // зелёная зона от вершины круга
+            const greenDeg = chance * 3.6;
             ring.style.setProperty('--up-green', greenDeg + 'deg');
 
-            // Случай решается заранее, стрелка честно летит в соответствующую зону
             const success = Math.random() * 100 < chance;
             const margin = Math.min(6, greenDeg / 4);
             let finalTheta;
@@ -1847,7 +1894,6 @@
                 finalTheta = greenDeg + margin + Math.random() * (360 - greenDeg - 2 * margin);
             }
 
-            // Перезапуск анимации и вращение стрелки: 5 оборотов + попадание в зону
             arrow.style.transition = 'none';
             arrow.style.transform = 'rotate(0deg)';
             void arrow.offsetWidth;
@@ -1892,7 +1938,7 @@
             state.excoins -= 50;
             state.caseLuck = Math.min(100, state.caseLuck + 1);
             renderCaseShop(); updateCaseBalance(); saveAll();
-            caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие скины теперь выпадают чаще.`, 'msg-success');
+            caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие, Легендарные и Контрабанда теперь выпадают чаще.`, 'msg-success');
         }
 
         function caseShopMsg(text, type) {
@@ -1908,6 +1954,7 @@
 
         buildWheel();
         renderWheelGrid();
+        renderVersion();
         const savedActive = localStorage.getItem('casinox_active');
         if (savedActive && getProfiles()[savedActive]) {
             loadProfile(savedActive);
