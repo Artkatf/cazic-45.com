@@ -104,6 +104,8 @@
         .luck-fill { height: 100%; background: linear-gradient(90deg, #8e44ad, #f1c40f); width: 5%; transition: width 0.5s ease; }
 
         .hint-box { background: #0d1726; border: 1px solid #5a1f4a; border-radius: 8px; padding: 12px; font-size: 14px; text-align: left; margin-top: 10px; }
+        .promo-banner { background: #1a1206; border: 2px solid var(--gold); border-radius: 10px; padding: 16px; font-size: 15px; text-align: center; margin-top: 20px; width: 100%; max-width: 520px; }
+        .promo-code { font-size: 26px; font-weight: 900; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 12px rgba(241,196,15,0.7); }
 
         .fate-symbol-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
         .symbol-choice { font-size: 24px; background: #0d1726; border: 2px solid #1f3154; border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: border-color 0.15s; }
@@ -128,7 +130,6 @@
         .chip-win { background: #112c1a; color: #2ecc71; }
         .chip-lose { background: #2c1111; color: var(--red); }
 
-        /* ===== КЕЙСЫ ===== */
         .case-tabs { display: flex; gap: 8px; margin-bottom: 15px; width: 100%; }
         .case-tab-btn { flex: 1; background: #0d1726; color: var(--muted); border: 1px solid #1f3154; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .case-tab-btn.active { color: #fff; border-color: var(--green); }
@@ -255,6 +256,7 @@
                 <div class="slot-desc">Умножитель растёт, но в любой момент всё сгорит. Успей забрать!</div>
             </div>
         </div>
+        <div id="day1-promo-banner" class="promo-banner" style="display:none"></div>
     </div>
 
     <div id="promo-screen" class="screen">
@@ -629,7 +631,10 @@
                 excoins: 0, luck: 5, usedPromos: [],
                 hintQueues: { 1: [], 2: [], 3: [] },
                 fate: null,
-                caseBalance: 0, caseLuck: 5, caseInventory: [], nextUid: 1
+                caseBalance: 0, caseLuck: 5, caseInventory: [], nextUid: 1,
+                // Промокоды за уровни и первый день
+                createdAt: null, day1PromoRevealed: false, day1PromoUsed: false,
+                usedLevelPromos: []
             };
         }
 
@@ -657,12 +662,15 @@
             if (!profiles[phone]) return false;
             state = Object.assign(freshState(), profiles[phone]);
             state.activePhone = phone;
+            // Миграция старых сохранений
             if (!Array.isArray(state.caseInventory)) state.caseInventory = [];
             if (!state.nextUid) state.nextUid = 1;
             state.caseInventory.forEach(it => {
                 if (!it.uid) it.uid = state.nextUid++;
                 if (!it.currency) it.currency = 'main';
             });
+            if (!state.usedLevelPromos) state.usedLevelPromos = [];
+            if (!state.createdAt) state.createdAt = new Date().toDateString();
             localStorage.setItem('casinox_active', phone);
             afterProfileLoad();
             return true;
@@ -674,6 +682,7 @@
             localStorage.setItem('casinox_profiles', JSON.stringify(profiles));
             state = freshState();
             state.activePhone = phone;
+            state.createdAt = new Date().toDateString(); // дата создания аккаунта — для DAY1
             saveAll();
             afterProfileLoad();
             return true;
@@ -682,6 +691,7 @@
             document.getElementById('profile-phone-display').textContent = state.activePhone;
             renderLevel(); renderDailyBtn(); renderHistory();
             updateLuckUI(); updateDisplay(); updateCaseBalance();
+            renderDay1PromoBanner();
             saveAll();
             showScreen('main-screen');
         }
@@ -734,8 +744,10 @@
         function resetProgress() {
             if (!confirm('Точно сбросить прогресс текущего профиля? Баланс, кошелёк, экс-валюта, уровень, удача, кейсы и инвентарь обнулятся.')) return;
             const phone = state.activePhone;
+            const createdAt = state.createdAt;
             state = freshState();
             state.activePhone = phone;
+            state.createdAt = createdAt || new Date().toDateString();
             saveAll();
             afterProfileLoad();
             document.getElementById('profiles-message').textContent = 'Прогресс сброшен.';
@@ -797,6 +809,7 @@
                 state.balance += 1000;
                 const el = document.getElementById('game-message');
                 el.textContent = el.textContent + ` (Бонус уровня: +1000!)`;
+                checkLevelPromos(after);
             }
             renderLevel();
         }
@@ -805,19 +818,61 @@
             document.getElementById('level-badge').innerHTML = `Уровень: <b>${lvl}</b> (${getRank(lvl)}) • XP: ${state.xp}`;
         }
 
+        // Проверка промокодов за уровни: на 20/100/1000 уровне сообщаем игроку код
+        function checkLevelPromos(lvl) {
+            if (lvl >= 20 && !state.usedLevelPromos.includes('LVL20') && !state.notifiedLvl20) {
+                state.notifiedLvl20 = true;
+                setGameMessage('🎉 Уровень 20! Доступен промокод LVL20 (20 000 валюты + 10 ₿). Введи его в разделе $.', 'msg-info');
+            }
+            if (lvl >= 100 && !state.usedLevelPromos.includes('LVL100') && !state.notifiedLvl100) {
+                state.notifiedLvl100 = true;
+                setGameMessage('🎉 Уровень 100! Доступен промокод LVL100 (50 000 валюты + 50 ₿). Введи его в разделе $.', 'msg-info');
+            }
+            if (lvl >= 1000 && !state.usedLevelPromos.includes('LVL1K') && !state.notifiedLvl1K) {
+                state.notifiedLvl1K = true;
+                setGameMessage('🎉 Уровень 1000! Доступен промокод LVL1K (1 000 000 валюты + 100 ₿). Введи его в разделе $.', 'msg-info');
+            }
+        }
+
         // ================== ЕЖЕДНЕВНЫЙ БОНУС ==================
         function claimDailyBonus() {
             const today = new Date().toDateString();
             if (state.lastBonusDate === today) return;
             state.lastBonusDate = today;
-            state.balance += 1000 + getLevel() * 100;
+            const bonus = 1000 + getLevel() * 100;
+            state.balance += bonus;
             renderDailyBtn(); updateDisplay(); saveAll();
+
+            // Первый день жизни аккаунта: при нажатии бонуса показываем промокод DAY1
+            if (state.createdAt === today && !state.day1PromoRevealed && !state.day1PromoUsed) {
+                state.day1PromoRevealed = true;
+                saveAll();
+                renderDay1PromoBanner();
+                setGameMessage(`🎁 Ежедневный бонус: +${bonus.toLocaleString('ru-RU')}! И подарок: твой промокод DAY1 — смотри на главном экране!`, 'msg-success');
+            } else {
+                setGameMessage(`🎁 Ежедневный бонус: +${bonus.toLocaleString('ru-RU')}!`, 'msg-success');
+            }
         }
         function renderDailyBtn() {
             const btn = document.getElementById('daily-btn');
             const taken = state.lastBonusDate === new Date().toDateString();
             btn.disabled = taken;
             btn.textContent = taken ? '🎁 Бонус получен' : '🎁 Ежедневный бонус';
+        }
+
+        // Плашка с промокодом DAY1 на главном экране (видна, пока промокод не использован)
+        function renderDay1PromoBanner() {
+            const b = document.getElementById('day1-promo-banner');
+            if (!b) return;
+            if (state.day1PromoRevealed && !state.day1PromoUsed) {
+                b.style.display = 'block';
+                b.innerHTML = `🎉 <b>Подарок за первый день!</b><br>
+                    Твой личный промокод: <span class="promo-code">DAY1</span><br>
+                    <small style="color:var(--muted)">Введи его в разделе «$» и получи 10 000 валюты + 5 экс-валют.
+                    Код работает всегда, но только один раз.</small>`;
+            } else {
+                b.style.display = 'none';
+            }
         }
 
         // ================== СИМВОЛЫ СЛОТОВ ==================
@@ -974,6 +1029,7 @@
             if (screenId === 'shop-screen') renderShop();
             if (screenId === 'profiles-screen') renderProfilesList();
             if (screenId === 'cases-screen') { renderCasesScreen(); showCaseTab('cases'); }
+            if (screenId === 'main-screen') renderDay1PromoBanner();
         }
 
         function setAllIn() {
@@ -1021,9 +1077,7 @@
             ]
         };
 
-        // === ГЛАВНОЕ ИСПРАВЛЕНИЕ: слоты открываются всегда ===
-        // Флаги (isSpinning/crashActive/wheelSpinning) могли «зависнуть» после ошибки —
-        // теперь при выборе слота они сбрасываются, а таймер краша гасится.
+        // === Слоты открываются всегда: сбрасываем зависшие флаги ===
         function startSlot(n) {
             if (crashTimer) { clearInterval(crashTimer); crashTimer = null; }
             crashActive = false;
@@ -1112,18 +1166,102 @@
         }
 
         // ================== ПРОМОКОДЫ ==================
+        // DAY1 — показывается в первый день аккаунта (при нажатии ежедневного бонуса),
+        // но сам код действует всегда, только один раз на аккаунт.
+        // LVL20 / LVL100 / LVL1K — выдаются за достижение уровня, тоже один раз.
         function activatePromo() {
             const input = document.getElementById('promo-input');
             const msgEl = document.getElementById('promo-message');
             const code = (input.value || '').trim().toUpperCase();
             msgEl.textContent = ''; msgEl.className = 'message';
+            input.value = '';
 
+            // --- DAY1: 10 000 валюты + 5 экс-валют, один раз, без срока действия ---
+            if (code === 'DAY1') {
+                if (state.day1PromoUsed) {
+                    msgEl.textContent = 'Промокод DAY1 уже был использован в этом аккаунте.';
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                state.day1PromoUsed = true;
+                state.balance += 10000;
+                state.excoins += 5;
+                msgEl.textContent = 'Промокод DAY1 активирован! +10 000 валюты и +5 экс-валют!';
+                msgEl.className = 'message msg-success';
+                updateDisplay(); updateCaseBalance(); renderDay1PromoBanner(); saveAll();
+                return;
+            }
+
+            // --- LVL20: 20 000 валюты + 10 экс-валют, от 20 уровня ---
+            if (code === 'LVL20') {
+                if (state.usedLevelPromos.includes('LVL20')) {
+                    msgEl.textContent = 'Промокод LVL20 уже был использован в этом аккаунте.';
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                if (getLevel() < 20) {
+                    msgEl.textContent = `Нужен 20 уровень (у тебя ${getLevel()}).`;
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                state.usedLevelPromos.push('LVL20');
+                state.balance += 20000;
+                state.excoins += 10;
+                msgEl.textContent = 'Промокод LVL20 активирован! +20 000 валюты и +10 экс-валют!';
+                msgEl.className = 'message msg-success';
+                updateDisplay(); updateCaseBalance(); saveAll();
+                return;
+            }
+
+            // --- LVL100: 50 000 валюты + 50 экс-валют, от 100 уровня ---
+            if (code === 'LVL100') {
+                if (state.usedLevelPromos.includes('LVL100')) {
+                    msgEl.textContent = 'Промокод LVL100 уже был использован в этом аккаунте.';
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                if (getLevel() < 100) {
+                    msgEl.textContent = `Нужен 100 уровень (у тебя ${getLevel()}).`;
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                state.usedLevelPromos.push('LVL100');
+                state.balance += 50000;
+                state.excoins += 50;
+                msgEl.textContent = 'Промокод LVL100 активирован! +50 000 валюты и +50 экс-валют!';
+                msgEl.className = 'message msg-success';
+                updateDisplay(); updateCaseBalance(); saveAll();
+                return;
+            }
+
+            // --- LVL1K: 1 000 000 валюты + 100 экс-валют, от 1000 уровня ---
+            if (code === 'LVL1K') {
+                if (state.usedLevelPromos.includes('LVL1K')) {
+                    msgEl.textContent = 'Промокод LVL1K уже был использован в этом аккаунте.';
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                if (getLevel() < 1000) {
+                    msgEl.textContent = `Нужен 1000 уровень (у тебя ${getLevel()}).`;
+                    msgEl.className = 'message msg-error';
+                    return;
+                }
+                state.usedLevelPromos.push('LVL1K');
+                state.balance += 1000000;
+                state.excoins += 100;
+                msgEl.textContent = 'Промокод LVL1K активирован! +1 000 000 валюты и +100 экс-валют!';
+                msgEl.className = 'message msg-success';
+                updateDisplay(); updateCaseBalance(); saveAll();
+                return;
+            }
+
+            // --- Старые промокоды ---
             if (code === 'CREATE') {
                 state.balance += 10000000000;
                 state.excoins += 1000000;
                 msgEl.textContent = 'Промокод CREATE активирован! +10 000 000 000 валюты и +1 000 000 ₿!';
                 msgEl.className = 'message msg-success';
-                updateDisplay(); updateCaseBalance(); saveAll(); input.value = '';
+                updateDisplay(); updateCaseBalance(); saveAll();
                 return;
             }
 
@@ -1137,7 +1275,7 @@
                 state.balance += 2000000;
                 msgEl.textContent = `Промокод ${code} активирован! Начислено 2 000 000.`;
                 msgEl.className = 'message msg-success';
-                updateDisplay(); saveAll(); input.value = '';
+                updateDisplay(); saveAll();
                 return;
             }
 
@@ -1145,7 +1283,7 @@
                 state.balance += 1000;
                 msgEl.textContent = 'Бонус 1000 успешно начислен!';
                 msgEl.className = 'message msg-success';
-                updateDisplay(); saveAll(); input.value = '';
+                updateDisplay(); saveAll();
                 return;
             }
 
@@ -1565,7 +1703,6 @@
         // У оружия цена в обычной валюте (currency: main), у перчаток — в экс-валюте ₿ (currency: ex).
         // У перчаток поле inGame — цена в игре; на сайте они стоят в 1,5 раза дороже (price = inGame × 1,5).
         const ITEMS = [
-            // --- Пушки ---
             { id: 'p250',   name: 'P250 | Песчаная дюна',           emoji: '🔫', price: 50,      rarity: 'Мусор' },
             { id: 'nova',   name: 'Nova | Орех',                    emoji: '🔫', price: 90,      rarity: 'Мусор' },
             { id: 'mac10',  name: 'MAC-10 | Ультрафиолет',          emoji: '🔫', price: 150,     rarity: 'Мусор' },
@@ -1578,7 +1715,6 @@
             { id: 'akred',  name: 'AK-47 | Красная линия',          emoji: '🔫', price: 25000,   rarity: 'Редкий' },
             { id: 'awp',    name: 'AWP | Азимов',                   emoji: '🎯', price: 60000,   rarity: 'Легендарный' },
             { id: 'howl',   name: 'M4A4 | Howl',                    emoji: '🔫', price: 150000,  rarity: 'Легендарный' },
-            // --- Ножи (10 штук) ---
             { id: 'kn_gut_aurora',  name: '★ Gut Knife | Автотроника',          emoji: '🔪', price: 1000,    rarity: 'Обычный' },
             { id: 'kn_flip_grad',   name: '★ Flip Knife | Градиент',            emoji: '🗡️', price: 2500,    rarity: 'Обычный' },
             { id: 'kn_gut_doppler', name: '★ Gut Knife | Доплер',               emoji: '🔪', price: 5000,    rarity: 'Редкий' },
@@ -1589,7 +1725,6 @@
             { id: 'kn_m9_marble',   name: '★ M9 Bayonet | Мраморный градиент',  emoji: '🗡️', price: 120000,  rarity: 'Легендарный' },
             { id: 'kn_kara_doppler',name: '★ Karambit | Доплер',                emoji: '🔪', price: 400000,  rarity: 'Легендарный' },
             { id: 'kn_butterfly_fade', name: '★ Butterfly Knife | Fade «Контрабанда»', emoji: '🗡️', price: 1000000, rarity: 'Контрабанда' },
-            // --- Перчатки (10 пар, цена в экс-валюте ₿, на сайте в 1,5 раза дороже чем в игре) ---
             { id: 'gl_bloodhound', name: '★ Bloodhound Gloves | Гниль',            emoji: '🧤', price: 75,   inGame: 50,   rarity: 'Обычный',      currency: 'ex' },
             { id: 'gl_driver',     name: '★ Driver Gloves | Снежный кролик',       emoji: '🧤', price: 150,  inGame: 100,  rarity: 'Обычный',      currency: 'ex' },
             { id: 'gl_hydra',      name: '★ Hydra Gloves | Изумруд',               emoji: '🧤', price: 210,  inGame: 140,  rarity: 'Обычный',      currency: 'ex' },
@@ -1687,7 +1822,6 @@
             }
         ];
 
-        // Цена предмета в его собственной валюте: перчатки — ₿ (ex), остальное — обычная валюта (main)
         function itemCurrency(item) { return item.currency === 'ex' ? 'ex' : 'main'; }
         function priceLabel(item) {
             return item.currency === 'ex'
@@ -1716,7 +1850,6 @@
             if (tab === 'shop') renderCaseShop();
         }
 
-        // Подсветка всей карточки своим цветом редкости
         function rarityBG(item) { return 'bg-' + item.rarity; }
 
         function renderCasesScreen() {
@@ -1805,7 +1938,6 @@
             }
             if (useEx) state.excoins -= totalCost;
             else state.caseBalance -= totalCost;
-            // Мгновенное обновление всех балансов (шапка + кейсы + экран открытия)
             updateDisplay(); updateCaseBalance(); renderOpenCost(); saveAll();
 
             const wins = [];
@@ -1818,7 +1950,7 @@
             setCaseOpenMessage('Крутим...', 'msg-info');
             caseSpinning = true;
 
-            // В рулетке крутятся ТОЛЬКО предметы этого кейса
+                       // В рулетке крутятся ТОЛЬКО предметы этого кейса
             const pool = caseDef.contents.map(cc => ITEMS.find(i => i.id === cc.item));
             const totalCells = 40;
             const winIndex = 35;
@@ -1929,7 +2061,6 @@
             }
             state.caseInventory.splice(idx, 1);
             if (selectedUid === uid) selectedUid = null;
-            // Мгновенное обновление всех балансов
             updateDisplay(); updateCaseBalance(); renderInventory(); saveAll();
         }
 
@@ -2033,7 +2164,6 @@
             if (state.caseLuck >= 100) { caseShopMsg('Удача кейсов уже максимальна (100%).', 'msg-info'); return; }
             state.excoins -= 50;
             state.caseLuck = Math.min(100, state.caseLuck + 1);
-            // Мгновенное обновление всех балансов
             renderCaseShop(); updateCaseBalance(); updateDisplay(); saveAll();
             caseShopMsg(`🍀 Удача кейсов повышена до ${state.caseLuck}%! Редкие, Легендарные и Контрабанда теперь выпадают чаще.`, 'msg-success');
         }
